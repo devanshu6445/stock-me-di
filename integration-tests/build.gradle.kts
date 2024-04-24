@@ -13,13 +13,13 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    implementation(projects.di.runtime)
+    implementation(projects.runtime)
     implementation(libs.kotlin.inject.runtime)
-    ksp(projects.di.compiler)
+    ksp(projects.compiler)
     ksp(libs.kotlin.inject.compiler)
 
     testImplementation(libs.kotlin.inject.compiler)
-    testImplementation(projects.di.compiler)
+    testImplementation(projects.compiler)
     testImplementation(libs.ksp.testing)
     testImplementation(libs.koTest)
 }

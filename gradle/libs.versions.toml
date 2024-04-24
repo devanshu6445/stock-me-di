@@ -1,0 +1,133 @@
+
+[versions]
+agp = "8.2.1"
+kotlin = "1.9.21"
+ktor = "2.0.3"
+kotlinx-serialization = "1.6.2"
+coroutines = "1.7.1" # https://github.com/Kotlin/kotlinx.coroutines
+lifecycle = "2.6.1" # https://developer.android.com/jetpack/androidx/releases/lifecycle
+core-ktx = "1.10.1"
+local-kmp = "1.0.0-SNAPSHOT"
+compose-plugin = "1.5.11"
+composeCompilerExtension = "1.5.7"
+ksp = "1.9.21-1.0.16"
+kotlin-inject = "0.7.0-SNAPSHOT"
+fragment-ktx = "1.6.2"
+dataStore-core = "1.1.0-beta01"
+mokoResource = "0.23.0"
+moko-mvvm = "0.16.1"
+decompose = "2.2.2"
+decompose-ios = "2.2.2-compose-experimental"
+essenty = "1.3.0"
+lifecycleCommon = "2.7.0"
+detekt = "1.23.4"
+kotlinPoet = "1.15.3"
+kspTesting = "1.5.0"
+koTest = "5.7.2"
+codeGen = "1.0.0"
+okio = "3.7.0"
+stockMePublish = "1.0.0-SNAPSHOT"
+coreDi = "1.0.0-SNAPSHOT"
+coreData = "1.0.0-SNAPSHOT"
+coreDomain = "1.0.0-SNAPSHOT"
+coreUi = "1.0.0-SNAPSHOT"
+codeDataModel = "1.0.0-SNAPSHOT"
+designSystem = "1.0.0-SNAPSHOT"
+stockMeNavigation = "1.0.0-SNAPSHOT"
+stockMeDi = "1.0.0-SNAPSHOT"
+di-runtime = "1.0.0-SNAPSHOT"
+di-compiler = "1.0.0-SNAPSHOT"
+dagger = "2.48"
+kmp-convention = "1.0.0-SNAPSHOT"
+
+[libraries]
+ktor-core-client = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-okHttpEngine = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+
+# kotlinx
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# AndroidX
+androidx-lifecycle-viewModel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-fragmentKtx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment-ktx" }
+androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+androidx-lifecycle-viewModel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+# Data store
+androidx-dataStore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "dataStore-core" }
+androidx-dataStore-core-okio = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "dataStore-core" }
+
+# Kotlin inject
+kotlin-inject-compiler = { group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "kotlin-inject" }
+kotlin-inject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "kotlin-inject" }
+
+# Moko resource
+moko-resources = { group = "dev.icerock.moko", name = "resources", version.ref = "mokoResource" }
+moko-resources-compose = { group = "dev.icerock.moko", name = "resources-compose", version.ref = "mokoResource" }
+moko-mvvm-compose = { group = "dev.icerock.moko", name = "mvvm-compose", version.ref = "moko-mvvm" }
+
+# Navigation decompose
+decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
+decompose-ios = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose-ios" }
+decompose-compose-extension = { group = "com.arkivanov.decompose", name = "extensions-compose-jetbrains", version.ref = "decompose" }
+decompose-compose-extension-ios = { group = "com.arkivanov.decompose", name = "extensions-compose-jetbrains", version.ref = "decompose-ios" }
+essenty-lifecycle = { group = "com.arkivanov.essenty", name = "lifecycle", version.ref = "essenty" }
+essenty-instanceKeeper = { group = "com.arkivanov.essenty", name = "instance-keeper", version.ref = "essenty" }
+androidx-lifecycle-common = { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "lifecycleCommon" }
+
+# Detekt
+detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-ruleset-compiler = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", version = "0.0.4" }
+detekt-ruleset-ktlint = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-ruleset-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.3.11" }
+
+# Code gen
+ksp-processor-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+kotlin-poet = { group = "com.squareup", name = "kotlinpoet-ksp", version.ref = "kotlinPoet" }
+koTest = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "koTest" }
+ksp-testing = { group = "com.github.tschuchortdev", name = "kotlin-compile-testing-ksp", version.ref = "kspTesting" }
+
+# Gradle
+kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+
+# Core dependency
+core-di = { group = "in.stock.me", name = "core-di", version.ref = "coreDi"}
+core-data = { group = "in.stock.me", name = "core-data", version.ref = "coreData"}
+core-domain = { group = "in.stock.me", name = "core-domain", version.ref = "coreDomain"}
+core-ui = { group = "in.stock.me", name = "core-ui", version.ref = "coreUi"}
+core-data-model = { group = "in.stock.me", name = "core-data-model", version.ref = "codeDataModel"}
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+
+stock-me-designSystem = { group = "in.stock.me", name = "design-system", version.ref = "designSystem" }
+stock-me-navigation = { group = "in.stock.me", name = "navigation", version.ref = "stockMeNavigation" }
+di-runtime = { group = "in.stock.me", name = "di-runtime", version.ref = "di-runtime"}
+di-compiler = { group = "in.stock.me", name = "di-compiler", version.ref = "di-compiler"}
+
+# Dagger
+dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
+
+[bundles]
+ktor = ["ktor-core-client", "ktor-serialization", "ktor-contentNegotiation", "ktor-logging"]
+coroutines = ["kotlinx-coroutines-core", "kotlinx-coroutines-android"]
+
+[plugins]
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+android-kmp = { id = "plugin.android.multiplatform", version.ref = "local-kmp" }
+jvm-kmp = { id = "plugin.jvm.multiplatform", version.ref = "local-kmp" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+code-gen = { id = "plugin.code.gen", version.ref = "codeGen" }
+stock-me-publish = { id = "in.stock.me.publish", version.ref = "stockMePublish" }
+stock-me-di = { id = "in.stock.me.di", version.ref = "stockMeDi" }
+kmp-convention = { id = "plugin.kmp.convention", version.ref = "kmp-convention" }
