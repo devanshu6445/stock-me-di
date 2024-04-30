@@ -9,6 +9,7 @@ import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
+import java.util.Locale
 import kotlin.reflect.KClass
 
 internal val primitiveTypes =
@@ -65,3 +66,5 @@ private fun KSAnnotation.hasName(packageName: String, simpleName: String): Boole
 fun ClassName.toAnnotationSpec() = AnnotationSpec.builder(this).build()
 
 fun ClassName.toLowerName() = simpleName.replaceFirstChar { it.lowercaseChar() }
+
+fun String.capitalize() = replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }

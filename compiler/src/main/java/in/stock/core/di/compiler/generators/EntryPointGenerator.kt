@@ -17,6 +17,7 @@ import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.TypeCollector
 import `in`.stock.core.di.compiler.core.writeTo
 import `in`.stock.core.di.compiler.utils.addConstructorProperty
+import `in`.stock.core.di.compiler.utils.capitalize
 import `in`.stock.core.di.compiler.utils.value
 import `in`.stock.core.di.runtime.annotations.Component
 import javax.inject.Inject
@@ -46,32 +47,26 @@ class EntryPointGenerator @Inject constructor(
 
     private fun KSFunctionDeclaration.generateComponentForFunction() {
 
-        val properties = parameters
-            .map {
+        val properties = parameters.map {
                 PropertySpec.builder(
-                    it.name?.asString().value,
-                    it.type.toTypeName(),
-                    KModifier.ABSTRACT
+                    it.name?.asString().value, it.type.toTypeName(), KModifier.ABSTRACT
                 ).build()
             }
 
         generateComponent(
             componentName = ClassName(
-                packageName.asString().value,
-                "${simpleName.asString()}Component"
-            ),
-            properties = sequenceOf(*properties.toTypedArray()) // todo check
+                packageName.asString().value, "${simpleName.asString().capitalize()}Component"
+            ), properties = sequenceOf(*properties.toTypedArray()) // todo check
         )
     }
 
     private fun KSClassDeclaration.generateComponentForClass() {
-        val componentName =
-            ClassName(packageName.asString(), "${simpleName.asString()}Component")
+        val componentName = ClassName(packageName.asString(), "${
+            simpleName.asString().capitalize()
+        }Component")
 
-        val properties = getConstructors()
-            .flatMap { constructor ->
-                constructor.parameters
-                    .map { param ->
+        val properties = getConstructors().flatMap { constructor ->
+                constructor.parameters.map { param ->
                         PropertySpec.builder(
                             param.name?.asString().value,
                             param.type.toTypeName(),
@@ -80,32 +75,22 @@ class EntryPointGenerator @Inject constructor(
                     }
             }
         generateComponent(
-            componentName = componentName,
-            properties = properties
+            componentName = componentName, properties = properties
         )
     }
 
     private fun KSDeclaration.generateComponent(
-        componentName: ClassName,
-        properties: Sequence<PropertySpec>
+        componentName: ClassName, properties: Sequence<PropertySpec>
     ) {
-        val depComponents = typeCollector.collectTypes(this)
-            .map {
+        val depComponents = typeCollector.collectTypes(this).map {
                 ClassName(it.packageName.asString(), it.simpleName.asString())
             }
 
-
-        FileSpec.builder(componentName)
-            .addType(
-                TypeSpec.classBuilder(componentName)
-                    .addModifiers(KModifier.ABSTRACT)
-                    .addAnnotation(Component::class)
-                    .constructorBuilder(depComponents.toList())
-                    .addProperties(properties.asIterable())
-                    .build()
-            )
-            .build()
-            .writeTo(codeGenerator)
+        FileSpec.builder(componentName).addType(
+                TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
+                    .addAnnotation(Component::class).constructorBuilder(depComponents.toList())
+                    .addProperties(properties.asIterable()).build()
+            ).build().writeTo(codeGenerator)
     }
 
     private fun TypeSpec.Builder.constructorBuilder(
@@ -119,12 +104,8 @@ class EntryPointGenerator @Inject constructor(
             val name = component.simpleName.replaceFirstChar { it.lowercaseChar() } + "1"
 
             constructorBuilder.addConstructorProperty(
-                typeSpec = this,
-                name = name,
-                type = component,
-                annotations = listOf(
-                    AnnotationSpec.builder(Component::class)
-                        .build()
+                typeSpec = this, name = name, type = component, annotations = listOf(
+                    AnnotationSpec.builder(Component::class).build()
                 )
             )
         }

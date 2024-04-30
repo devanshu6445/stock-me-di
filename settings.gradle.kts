@@ -45,3 +45,4 @@ dependencyResolutionManagement {
 include(":runtime")
 include(":compiler")
 include(":integration-tests")
+include(":kotlin-di-compiler")
