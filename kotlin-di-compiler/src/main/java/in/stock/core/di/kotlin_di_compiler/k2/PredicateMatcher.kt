@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler
+package `in`.stock.core.di.kotlin_di_compiler.k2
 
 import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
 import org.jetbrains.kotlin.fir.FirSession

@@ -25,7 +25,7 @@ class TypeCollector @Inject constructor(
     private val kspLogger: KSPLogger
 ) {
 
-    private val typeToComponentMap = hashMapOf<String, List<KSClassDeclaration>>()
+    private val typeToComponentMap = hashMapOf<String, Sequence<KSClassDeclaration>>()
 
     private val allProvidersMap by lazy {
         resolver.getAllProviders().associate {
@@ -38,8 +38,10 @@ class TypeCollector @Inject constructor(
             is KSClassDeclaration, is KSFunctionDeclaration -> {
                 val components = type.getComponents()
                     .distinctBy { it.qualifiedName?.asString() }
+
                 typeToComponentMap[type.qualifiedName?.asString().value] =
-                    components.toList() // todo check
+                    components // todo check
+
                 components
             }
 
@@ -74,35 +76,43 @@ class TypeCollector @Inject constructor(
     private fun KSDeclaration.getComponents(): Sequence<KSClassDeclaration> {
         val types = getDependencies().distinctBy { it.qualifiedName?.asString() }
 
-        val components = types.map {
-            when (it) {
-                is KSClassDeclaration -> {
-                    when {
-                        it.hasAnnotation(INJECT.packageName, INJECT.simpleName) -> {
-                            it.annotations.first { annotation ->
-                                annotation.annotationType.resolve()
-                                    .declaration.hasAnnotation(Scope.packageName, Scope.simpleName)
+        val components = sequence {
+            types.forEach {
+                kspLogger.warn("${it.qualifiedName?.asString()}", it)
+                when (it) {
+                    is KSClassDeclaration -> {
+                        when {
+                            it.hasAnnotation(INJECT.packageName, INJECT.simpleName) -> {
+                                val component =
+                                    it.annotations.firstOrNull { annotation ->
+                                        annotation.annotationType.resolve()
+                                            .declaration.hasAnnotation(Scope.packageName, Scope.simpleName)
+                                    }
+                                        // todo remove this `AssociatedWith` annotation dependency from codebase
+                                        ?.annotationType?.resolve()?.declaration?.findAnnotation(AssociatedWith::class.qualifiedName.value) as? KSClassDeclaration?
+                                if (component != null)
+                                    yield(component)
                             }
-                                // todo remove this `AssociatedWith` annotation dependency from codebase
-                                .annotationType.resolve().declaration.findAnnotation(AssociatedWith::class.qualifiedName.value) as KSClassDeclaration
-                        }
 
-                        allProvidersMap[it.qualifiedName?.asString()] != null -> {
-                            allProvidersMap[it.qualifiedName?.asString()]
-                                ?.findAnnotation(InstallIn::class.qualifiedName.value) as KSClassDeclaration
-                        }
+                            allProvidersMap[it.qualifiedName?.asString()] != null -> {
+                                yield(
+                                    allProvidersMap[it.qualifiedName?.asString()]
+                                        ?.findAnnotation(InstallIn::class.qualifiedName.value) as KSClassDeclaration
+                                )
+                            }
 
-                        else -> {
-                            throw ClassConstructException("Please mark the class with @Inject or provide it through @Provides")
+                            else -> {
+                                throw ClassConstructException("Please mark the class with @Inject or provide it through @Provides")
+                            }
                         }
                     }
-                }
 
-                is KSFunctionDeclaration -> {
-                    throw Exception() // todo get parameters type components
-                }
+                    is KSFunctionDeclaration -> {
+                        throw Exception() // todo get parameters type components
+                    }
 
-                else -> throw Exception()
+                    else -> throw Exception()
+                }
             }
         }
 

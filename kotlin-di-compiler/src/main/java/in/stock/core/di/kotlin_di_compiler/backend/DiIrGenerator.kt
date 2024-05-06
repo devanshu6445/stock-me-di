@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler
+package `in`.stock.core.di.kotlin_di_compiler.backend
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -10,6 +10,6 @@ class DiIrGenerator(
     private val messageCollector: MessageCollector
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        moduleFragment.transformChildrenVoid(IrEntryPointTransformer(context = pluginContext))
+        moduleFragment.transformChildrenVoid(IrEntryPointTransformer(context = pluginContext, messageCollector = messageCollector))
     }
 }

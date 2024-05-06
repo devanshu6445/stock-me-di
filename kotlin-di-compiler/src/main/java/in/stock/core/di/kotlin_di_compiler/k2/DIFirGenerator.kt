@@ -1,5 +1,6 @@
-package `in`.stock.core.di.kotlin_di_compiler
+package `in`.stock.core.di.kotlin_di_compiler.k2
 
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 

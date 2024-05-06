@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler
+package `in`.stock.core.di.kotlin_di_compiler.k2
 
 import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
 import org.jetbrains.kotlin.GeneratedDeclarationKey
@@ -13,10 +13,12 @@ import org.jetbrains.kotlin.fir.extensions.predicate.LookupPredicate
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.plugin.createConstructor
 import org.jetbrains.kotlin.fir.plugin.createTopLevelFunction
+import org.jetbrains.kotlin.fir.resolve.providers.firProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.types.impl.ConeClassLikeTypeImpl
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
@@ -60,7 +62,20 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
             owner = context.owner,
             key = Key,
             isPrimary = false,
-        )
+        ){
+            val component = session.firProvider.getFirClassifierByFqName(ClassId(
+                context.owner.classId.packageFqName, Name.identifier("${context.owner.name.identifier}Component")
+            ))?.symbol as FirRegularClassSymbol
+
+            valueParameter(
+                name = Name.identifier("component"),
+                type = ConeClassLikeTypeImpl(
+                    component.toLookupTag(),
+                    emptyArray(),
+                    false
+                )
+            )
+        }
         return listOf(constructor.symbol)
     }
 
@@ -119,12 +134,15 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
         else emptySet()
     }
 
-
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(DeclarationPredicate.create {
             annotated(FqNames.EntryPoint)
         })
     }
 
-    object Key : GeneratedDeclarationKey()
+    object Key : GeneratedDeclarationKey() {
+        override fun toString(): String {
+            return "EntryPointGeneratorKey"
+        }
+    }
 }

@@ -1,15 +1,11 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     alias(libs.plugins.org.jetbrains.kotlin.jvm)
     alias(libs.plugins.ksp)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    application
+    id("com.bennyhuo.kotlin.ir.printer") version "1.9.20-1.0.2"
 }
 
 tasks.withType<Test> {
@@ -17,9 +13,9 @@ tasks.withType<Test> {
 }
 // Adding kotlin compiler plugin tp the build, doing this instead of using gradle plugin to not publish compiler
 // plugin artifact o maven/mavenLocal to reflect the changes
-tasks.withType<KotlinCompilationTask<*>>().configureEach {
+kotlin {
     compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+//        languageVersion.set(KotlinVersion.KOTLIN_2_0)
         freeCompilerArgs.add("-Xplugin=${project(":kotlin-di-compiler").projectDir}/build/libs/kotlin-di-compiler-1.0.0.jar")
     }
 }
@@ -43,4 +39,8 @@ dependencies {
 
     // to depend this project onto kotlin-di-compiler so that jar is generated every time this project is compiled
     implementation(projects.kotlinDiCompiler)
+}
+
+application {
+    mainClass.set("MainKt")
 }

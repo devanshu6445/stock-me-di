@@ -1,15 +1,26 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     alias(libs.plugins.org.jetbrains.kotlin.jvm)
-    alias(libs.plugins.stock.me.publish)
+    `maven-publish`
 }
 
-stockMePublish {
-    group = "in.stock.me"
-    publishingName = "di-kotlin-compiler"
-    version = "1.0.0"
+group = "in.stock.me"
+version = "1.0.0"
+
+//stockMePublish {
+//    group = "in.stock.me"
+//    publishingName = "di-kotlin-compiler"
+//    version = "1.0.0"
+//}
+
+publishing {
+    publications {
+        create("Maven",MavenPublication::class.java) {
+            artifactId = "di-kotlin-compiler"
+            from(components["kotlin"])
+        }
+    }
 }
 
 kotlin {
@@ -18,7 +29,6 @@ kotlin {
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {
     compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
         freeCompilerArgs.add("-opt-in=org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
     }
 }

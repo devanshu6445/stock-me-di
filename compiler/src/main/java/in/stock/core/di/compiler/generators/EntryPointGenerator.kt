@@ -1,6 +1,7 @@
 package `in`.stock.core.di.compiler.generators
 
 import com.google.devtools.ksp.getConstructors
+import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
@@ -25,6 +26,7 @@ import javax.inject.Inject
 class EntryPointGenerator @Inject constructor(
     private val typeCollector: TypeCollector,
     private val codeGenerator: FlexibleCodeGenerator,
+    private val kspLogger: KSPLogger
 ) : Generator<@JvmSuppressWildcards Sequence<KSDeclaration>, Unit> {
     override fun generate(data: Sequence<KSDeclaration>) {
         data.forEach {
@@ -68,7 +70,7 @@ class EntryPointGenerator @Inject constructor(
         val properties = getConstructors().flatMap { constructor ->
                 constructor.parameters.map { param ->
                         PropertySpec.builder(
-                            param.name?.asString().value,
+                            param.name?.asString().value + "1",
                             param.type.toTypeName(),
                             KModifier.ABSTRACT
                         ).build()
@@ -83,19 +85,21 @@ class EntryPointGenerator @Inject constructor(
         componentName: ClassName, properties: Sequence<PropertySpec>
     ) {
         val depComponents = typeCollector.collectTypes(this).map {
-                ClassName(it.packageName.asString(), it.simpleName.asString())
-            }
+            ClassName(it.packageName.asString(), it.simpleName.asString())
+        }
 
         FileSpec.builder(componentName).addType(
                 TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
-                    .addAnnotation(Component::class).constructorBuilder(depComponents.toList())
+                    .addAnnotation(Component::class).constructorBuilder(depComponents)
                     .addProperties(properties.asIterable()).build()
             ).build().writeTo(codeGenerator)
     }
 
     private fun TypeSpec.Builder.constructorBuilder(
-        parentComponent: List<ClassName>,
+        parentComponent: Sequence<ClassName>,
     ) = apply {
+        if (parentComponent.count() == 0) return@apply
+
         val constructorBuilder = FunSpec.constructorBuilder()
 
         parentComponent.forEach { component ->

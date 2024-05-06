@@ -29,14 +29,10 @@ object Module1 {
 object Module2 {
 
     @Provides
-    fun bind(dep: Dep): Dep2 {
-        return Dep2(dep)
-    }
+    fun bind(dep: Dep): Dep2 { return Dep2(dep) }
 
     @Provides
-    fun bindA(): Dep3 {
-        return Dep3()
-    }
+    fun bindA(): Dep3 { return Dep3() }
 }
 
 class Dep

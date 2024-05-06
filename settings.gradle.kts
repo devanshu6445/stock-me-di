@@ -14,6 +14,7 @@ pluginManagement {
                 password = (properties["spaceToken"] ?: "") as String
             }
         }
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
         google()
         mavenCentral()
         mavenLocal()
