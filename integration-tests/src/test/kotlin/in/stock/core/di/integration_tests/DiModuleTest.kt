@@ -9,13 +9,13 @@ import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.shouldBe
 
 class DiModuleTest : FreeSpec({
-    "Module must be object class" {
-        shouldThrowExactly<Exception> {
-            ProjectCompiler(
-                workingDir = tempdir()
-            ).source(
-                fileName = "Main.kt",
-                source = """
+  "Module must be object class" {
+    shouldThrowExactly<Exception> {
+      ProjectCompiler(
+        workingDir = tempdir()
+      ).source(
+        fileName = "Main.kt",
+        source = """
                 package main
                 import `in`.stock.core.di.runtime.annotations.Module
                 import `in`.stock.core.di.runtime.annotations.Component
@@ -25,15 +25,15 @@ class DiModuleTest : FreeSpec({
                 abstract class Main
 
             """.trimIndent()
-            ).compile()
-        }.message?.contains("Module must be a object class") shouldBe true
-    }
+      ).compile()
+    }.message?.contains("Module must be a object class") shouldBe true
+  }
 
-    "Module installing in component" {
-        ProjectCompiler()
-            .source(
-                fileName = "Man.kt",
-                source = """
+  "Module installing in component" {
+    ProjectCompiler()
+      .source(
+        fileName = "Man.kt",
+        source = """
 package main
 import `in`.stock.core.di.runtime.annotations.Module
 import `in`.stock.core.di.runtime.annotations.Component
@@ -53,22 +53,22 @@ abstract class Comp1 {
  abstract val a: A
 }
                 """.trimIndent()
-            ).compile()
-    }
+      ).compile()
+  }
 
-    "Multi-gradle-module di module installation" {
-        val subProject = ProjectCompiler(
-            target = Target.KSP,
-        )
+  "Multi-gradle-module di module installation" {
+    val subProject = ProjectCompiler(
+      target = Target.KSP,
+    )
 
-        val mainProject = ProjectCompiler(
-            target = Target.KSP,
-            dependencies = listOf(subProject)
-        )
+    val mainProject = ProjectCompiler(
+      target = Target.KSP,
+      dependencies = listOf(subProject)
+    )
 
-        subProject.source(
-            fileName = "Sub.kt",
-            """
+    subProject.source(
+      fileName = "Sub.kt",
+      """
                 package com.sub
                 import `in`.stock.core.di.runtime.Singleton
                 import `in`.stock.core.di.runtime.SingletonComponent
@@ -95,11 +95,11 @@ abstract class Comp1 {
                 abstract val depA: DepA
                 }
             """.trimIndent()
-        )
+    )
 
-        mainProject.source(
-            fileName = "Main.kt",
-            """
+    mainProject.source(
+      fileName = "Main.kt",
+      """
                 package com.dev
                 import com.sub.SubjectComponent
                 import com.sub.DepA
@@ -124,14 +124,14 @@ abstract class Comp1 {
                 }
 
             """.trimIndent()
-        )
+    )
 
-        mainProject.compile().runJvm(
-            function = Function(
-                className = "com.dev.MainKt",
-                functionName = "main",
-                args = listOf()
-            )
-        )
-    }
+    mainProject.compile().runJvm(
+      function = Function(
+        className = "com.dev.MainKt",
+        functionName = "main",
+        args = listOf()
+      )
+    )
+  }
 })

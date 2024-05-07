@@ -8,19 +8,19 @@ import io.kotest.core.spec.style.FreeSpec
 
 class KotlinCompilationTest : FreeSpec({
 
-    "Multi-module compilation test" {
-        val subProject = ProjectCompiler(
-            target = Target.KSP,
-        )
+  "Multi-module compilation test" {
+    val subProject = ProjectCompiler(
+      target = Target.KSP,
+    )
 
-        val mainProject = ProjectCompiler(
-            target = Target.KSP,
-            dependencies = listOf(subProject)
-        )
+    val mainProject = ProjectCompiler(
+      target = Target.KSP,
+      dependencies = listOf(subProject)
+    )
 
-        subProject.source(
-            fileName = "Sub.kt",
-            """
+    subProject.source(
+      fileName = "Sub.kt",
+      """
                 package com.sub
                 
                 fun function1() {
@@ -28,11 +28,11 @@ class KotlinCompilationTest : FreeSpec({
                 }
                 
             """.trimIndent()
-        )
+    )
 
-        mainProject.source(
-            fileName = "Main.kt",
-            """
+    mainProject.source(
+      fileName = "Main.kt",
+      """
                 package com.dev
                 import com.sub.function1
 
@@ -42,14 +42,14 @@ class KotlinCompilationTest : FreeSpec({
                 }
 
             """.trimIndent()
-        )
+    )
 
-        mainProject.compile().runJvm(
-            function = Function(
-                className = "com.dev.MainKt",
-                functionName = "main",
-                args = listOf()
-            )
-        )
-    }
+    mainProject.compile().runJvm(
+      function = Function(
+        className = "com.dev.MainKt",
+        functionName = "main",
+        args = listOf()
+      )
+    )
+  }
 })

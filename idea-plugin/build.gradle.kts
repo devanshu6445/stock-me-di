@@ -1,22 +1,22 @@
 plugins {
-    alias(libs.plugins.org.jetbrains.kotlin.jvm)
-    id("org.jetbrains.intellij") version "1.17.0"
+  alias(libs.plugins.org.jetbrains.kotlin.jvm)
+  id("org.jetbrains.intellij") version "1.17.0"
 }
 
 group = "in.stock.core.di.idea.plugin"
 version = "unspecified"
 
 repositories {
-    mavenCentral()
-    mavenLocal()
+  mavenCentral()
+  mavenLocal()
 }
 
 kotlin {
-    jvmToolchain(17)
+  jvmToolchain(17)
 }
 
 dependencies {
-    implementation(projects.kotlinDiCompiler)
+  implementation(projects.kotlinDiCompiler)
 }
 
 
@@ -25,25 +25,25 @@ dependencies {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version = "2023.2.5"
-    plugins = listOf("Kotlin")
-    updateSinceUntilBuild = false
+  version = "2023.2.5"
+  plugins = listOf("Kotlin")
+  updateSinceUntilBuild = false
 }
 
 tasks {
 
-    patchPluginXml {
-        sinceBuild.set("223")
+  patchPluginXml {
+    sinceBuild.set("223")
 //    untilBuild.set("242.*")
-    }
+  }
 
-    signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
-        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-    }
+  signPlugin {
+    certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
+    privateKey.set(System.getenv("PRIVATE_KEY"))
+    password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+  }
 
-    publishPlugin {
-        token.set(System.getenv("PUBLISH_TOKEN"))
-    }
+  publishPlugin {
+    token.set(System.getenv("PUBLISH_TOKEN"))
+  }
 }

@@ -11,29 +11,29 @@ const val CompilerPluginId = "stock-me-di-compiler"
 
 @OptIn(ExperimentalCompilerApi::class)
 class DiCommandLineProcessor : CommandLineProcessor {
-    override val pluginId: String
-        get() = CompilerPluginId
-    override val pluginOptions: Collection<AbstractCliOption>
-        get() = listOf(
-            CliOption(
-                optionName = "enabled",
-                valueDescription = "enabled",
-                description = "enabled",
-                required = false
-            )
-        )
+  override val pluginId: String
+    get() = CompilerPluginId
+  override val pluginOptions: Collection<AbstractCliOption>
+    get() = listOf(
+      CliOption(
+        optionName = "enabled",
+        valueDescription = "enabled",
+        description = "enabled",
+        required = false
+      )
+    )
 
-    override fun processOption(
-        option: AbstractCliOption,
-        value: String,
-        configuration: CompilerConfiguration
-    ) {
-        when(option.optionName) {
-            "enabled" -> configuration.put(ARG_ENABLED,value)
-        }
+  override fun processOption(
+    option: AbstractCliOption,
+    value: String,
+    configuration: CompilerConfiguration
+  ) {
+    when (option.optionName) {
+      "enabled" -> configuration.put(ARG_ENABLED, value)
     }
+  }
 
-    companion object {
-        val ARG_ENABLED = CompilerConfigurationKey<String>("enabled")
-    }
+  companion object {
+    val ARG_ENABLED = CompilerConfigurationKey<String>("enabled")
+  }
 }

@@ -14,47 +14,47 @@ import `in`.stock.core.di.compiler.di.ProcessorMapper
 import kotlin.reflect.KClass
 
 abstract class KspBaseProcessor(
-    private val environment: SymbolProcessorEnvironment,
+  private val environment: SymbolProcessorEnvironment,
 ) : SymbolProcessor {
 
-    protected val logger: KSPLogger
-        get() = environment.logger
+  protected val logger: KSPLogger
+    get() = environment.logger
 
-    final override fun process(resolver: Resolver): List<KSAnnotated> {
-        //Injecting the child classes pf KspBaseProcessor by using a ProcessorMapper
-        ProcessorMapper(
-            DaggerCompilerComponent.factory().create(
-                kspLogger = logger,
-                codeGenerator = FlexibleCodeGeneratorImpl(delegate = environment.codeGenerator),
-                resolver = KspResolver(delegate = resolver)
-            ), this
-        ).injectProcessors()
-        //Do the actual processing
-        return processSymbols(resolver)
-    }
+  final override fun process(resolver: Resolver): List<KSAnnotated> {
+    //Injecting the child classes pf KspBaseProcessor by using a ProcessorMapper
+    ProcessorMapper(
+      DaggerCompilerComponent.factory().create(
+        kspLogger = logger,
+        codeGenerator = FlexibleCodeGeneratorImpl(delegate = environment.codeGenerator),
+        resolver = KspResolver(delegate = resolver)
+      ), this
+    ).injectProcessors()
+    //Do the actual processing
+    return processSymbols(resolver)
+  }
 
-    abstract fun processSymbols(resolver: Resolver): List<KSAnnotated>
+  abstract fun processSymbols(resolver: Resolver): List<KSAnnotated>
 
-    protected inline fun <reified T : KSNode> Resolver.getSymbols(cls: KClass<*>) =
-        this.getSymbolsWithAnnotation(cls.qualifiedName.orEmpty())
-            .filterIsInstance<T>()
-            .filter(KSNode::validate)
+  protected inline fun <reified T : KSNode> Resolver.getSymbols(cls: KClass<*>) =
+    this.getSymbolsWithAnnotation(cls.qualifiedName.orEmpty())
+      .filterIsInstance<T>()
+      .filter(KSNode::validate)
 
-    protected inline fun <reified T : KSNode> Resolver.getSymbols(className: ClassName) =
-        this.getSymbolsWithAnnotation(className.canonicalName)
-            .filterIsInstance<T>()
-            .filter(KSNode::validate)
+  protected inline fun <reified T : KSNode> Resolver.getSymbols(className: ClassName) =
+    this.getSymbolsWithAnnotation(className.canonicalName)
+      .filterIsInstance<T>()
+      .filter(KSNode::validate)
 
-    protected inline fun <reified T : KSNode> Resolver.getSymbols(
-        cls: KClass<*>,
-        validator: KSVisitor<Unit, Unit>,
-    ) =
-        this.getSymbolsWithAnnotation(cls.qualifiedName.orEmpty())
-            .filterIsInstance<T>()
-            .filter(KSNode::validate)
-            .apply {
-                forEach {
-                    it.accept(validator, Unit)
-                }
-            }
+  protected inline fun <reified T : KSNode> Resolver.getSymbols(
+    cls: KClass<*>,
+    validator: KSVisitor<Unit, Unit>,
+  ) =
+    this.getSymbolsWithAnnotation(cls.qualifiedName.orEmpty())
+      .filterIsInstance<T>()
+      .filter(KSNode::validate)
+      .apply {
+        forEach {
+          it.accept(validator, Unit)
+        }
+      }
 }

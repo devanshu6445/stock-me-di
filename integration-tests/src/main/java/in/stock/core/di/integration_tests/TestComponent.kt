@@ -9,10 +9,10 @@ import me.tatarka.inject.annotations.Scope
 @Component
 @TestScope
 abstract class TestComponent(
-    @Component singletonComponent: SingletonComponent,
-    dep3: Dep3
+  @Component singletonComponent: SingletonComponent,
+  dep3: Dep3
 ) {
-    abstract val dep: Dep
+  abstract val dep: Dep
 }
 
 @Scope
@@ -22,7 +22,7 @@ annotation class TestScope
 @Component
 @NewScope
 abstract class NewComponent {
-    abstract val dep3: Dep3
+  abstract val dep3: Dep3
 }
 
 @Scope

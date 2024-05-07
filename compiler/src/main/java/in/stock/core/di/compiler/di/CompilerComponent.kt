@@ -10,14 +10,14 @@ import `in`.stock.core.di.compiler.core.KspResolver
 @Component(modules = [GeneratorsBinder::class])
 interface CompilerComponent {
 
-    fun injectModuleProcessor(processor: ModuleProcessor)
+  fun injectModuleProcessor(processor: ModuleProcessor)
 
-    @Component.Factory
-    interface Factory {
-        fun create(
-            @BindsInstance kspLogger: KSPLogger,
-            @BindsInstance codeGenerator: CodeGenerator,
-            @BindsInstance resolver: KspResolver
-        ): CompilerComponent
-    }
+  @Component.Factory
+  interface Factory {
+    fun create(
+      @BindsInstance kspLogger: KSPLogger,
+      @BindsInstance codeGenerator: CodeGenerator,
+      @BindsInstance resolver: KspResolver
+    ): CompilerComponent
+  }
 }

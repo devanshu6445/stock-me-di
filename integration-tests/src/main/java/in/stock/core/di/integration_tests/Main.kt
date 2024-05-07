@@ -9,13 +9,13 @@ import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
 
 fun main(args: Array<String>) {
-    println("Hello Wold!")
+  println("Hello Wold!")
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.cop-m/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
-    println(B(component = BComponent::class.create()).ab.toString())
-    println("L")
+  // Try adding program arguments via Run/Debug configuration.
+  // Learn more about running applications: https://www.jetbrains.cop-m/help/idea/running-applications.html.
+  println("Program arguments: ${args.joinToString()}")
+  println(B(component = BComponent::class.create()).ab.toString())
+  println("L")
 }
 
 @Inject
@@ -32,6 +32,6 @@ class C
 @Singleton
 object Module {
 
-    @Provides
-    fun provide() = C()
+  @Provides
+  fun provide() = C()
 }

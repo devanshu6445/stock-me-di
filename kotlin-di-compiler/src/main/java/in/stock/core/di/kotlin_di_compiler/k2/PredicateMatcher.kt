@@ -6,9 +6,9 @@ import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
 import org.jetbrains.kotlin.fir.extensions.utils.AbstractSimpleClassPredicateMatchingService
 
 class PredicateMatcher(
-    session: FirSession
+  session: FirSession
 ) : AbstractSimpleClassPredicateMatchingService(session = session) {
-    override val predicate: DeclarationPredicate = DeclarationPredicate.create {
-        annotated(FqNames.EntryPoint)
-    }
+  override val predicate: DeclarationPredicate = DeclarationPredicate.create {
+    annotated(FqNames.EntryPoint)
+  }
 }

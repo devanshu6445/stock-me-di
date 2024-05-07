@@ -1,14 +1,13 @@
 package `in`.stock.core.di.kotlin_di_compiler.k2
 
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 
 class DIFirGenerator(
-    private val messageCollector: MessageCollector
+  private val messageCollector: MessageCollector
 ) : FirExtensionRegistrar() {
-    override fun ExtensionRegistrarContext.configurePlugin() {
-        +::FirDeclarationGenerator.bind(messageCollector)
-        +::PredicateMatcher
-    }
+  override fun ExtensionRegistrarContext.configurePlugin() {
+    +::FirDeclarationGenerator.bind(messageCollector)
+    +::PredicateMatcher
+  }
 }

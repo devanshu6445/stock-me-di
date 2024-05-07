@@ -14,44 +14,44 @@ import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 
 abstract class AbstractTransformerForGenerator(private val context: IrPluginContext) : IrElementTransformerVoid() {
 
-    protected val irBuiltIns = context.irBuiltIns
+  protected val irBuiltIns = context.irBuiltIns
 
-    abstract val keys: List<GeneratedDeclarationKey>
+  abstract val keys: List<GeneratedDeclarationKey>
 
-    abstract fun generateBodyForFunction(declaration: IrSimpleFunction): IrBody?
+  abstract fun generateBodyForFunction(declaration: IrSimpleFunction): IrBody?
 
-    abstract fun generateBodyForConstructor(declaration: IrConstructor): IrBody?
+  abstract fun generateBodyForConstructor(declaration: IrConstructor): IrBody?
 
-    override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
+  override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
 
-        if (!declaration.isFromPlugin(context.afterK2)) {
-            return super.visitSimpleFunction(declaration)
-        }
-
-        require(declaration.body == null)
-        declaration.body = generateBodyForFunction(declaration)
-
-        return declaration
+    if (!declaration.isFromPlugin(context.afterK2)) {
+      return super.visitSimpleFunction(declaration)
     }
 
-    override fun visitConstructor(declaration: IrConstructor): IrStatement {
+    require(declaration.body == null)
+    declaration.body = generateBodyForFunction(declaration)
 
-        if (!declaration.isFromPlugin(context.afterK2)) {
-            return super.visitConstructor(declaration)
-        }
-        require(declaration.body == null)
+    return declaration
+  }
 
-        declaration.body = generateBodyForConstructor(declaration)
-        return declaration
+  override fun visitConstructor(declaration: IrConstructor): IrStatement {
+
+    if (!declaration.isFromPlugin(context.afterK2)) {
+      return super.visitConstructor(declaration)
     }
+    require(declaration.body == null)
 
-    @OptIn(ObsoleteDescriptorBasedAPI::class)
-    private fun IrDeclaration.isFromPlugin(afterK2: Boolean): Boolean {
-        val origin = origin
-        return if (afterK2) {
-            origin is IrDeclarationOrigin.GeneratedByPlugin && keys.any { it == origin.pluginKey }
-        } else {
-            (descriptor as? CallableMemberDescriptor)?.kind == CallableMemberDescriptor.Kind.SYNTHESIZED
-        }
+    declaration.body = generateBodyForConstructor(declaration)
+    return declaration
+  }
+
+  @OptIn(ObsoleteDescriptorBasedAPI::class)
+  private fun IrDeclaration.isFromPlugin(afterK2: Boolean): Boolean {
+    val origin = origin
+    return if (afterK2) {
+      origin is IrDeclarationOrigin.GeneratedByPlugin && keys.any { it == origin.pluginKey }
+    } else {
+      (descriptor as? CallableMemberDescriptor)?.kind == CallableMemberDescriptor.Kind.SYNTHESIZED
     }
+  }
 }

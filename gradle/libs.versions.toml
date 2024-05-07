@@ -1,4 +1,3 @@
-
 [versions]
 agp = "8.2.1"
 autoService = "1.0-rc4"
@@ -38,8 +37,8 @@ ksp-testing = { group = "com.github.tschuchortdev", name = "kotlin-compile-testi
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler", version.ref = "kotlin" }
 
 # Core dependency
-di-runtime = { group = "in.stock.me", name = "di-runtime", version.ref = "di-runtime"}
-di-compiler = { group = "in.stock.me", name = "di-compiler", version.ref = "di-compiler"}
+di-runtime = { group = "in.stock.me", name = "di-runtime", version.ref = "di-runtime" }
+di-compiler = { group = "in.stock.me", name = "di-compiler", version.ref = "di-compiler" }
 
 # Dagger
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }

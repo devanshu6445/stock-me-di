@@ -12,16 +12,16 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 
 class DiComponentRegistrar : CompilerPluginRegistrar() {
-    override val supportsK2: Boolean = true
+  override val supportsK2: Boolean = true
 
-    override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        val messageCollector =
-            configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+  override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
+    val messageCollector =
+      configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
 //        val enabled = configuration.get(DiCommandLineProcessor.ARG_ENABLED, "true").toBoolean()
 
-        SyntheticResolveExtension.registerExtension(SyntheticResolver())
+    SyntheticResolveExtension.registerExtension(SyntheticResolver())
 
-        FirExtensionRegistrarAdapter.registerExtension(DIFirGenerator(messageCollector))
-        IrGenerationExtension.registerExtension(DiIrGenerator())
-    }
+    FirExtensionRegistrarAdapter.registerExtension(DIFirGenerator(messageCollector))
+    IrGenerationExtension.registerExtension(DiIrGenerator())
+  }
 }

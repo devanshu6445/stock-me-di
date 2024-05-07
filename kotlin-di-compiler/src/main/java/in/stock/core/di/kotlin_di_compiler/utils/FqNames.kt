@@ -5,10 +5,10 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
 object FqNames {
-    private fun classIdFor(cname: String) =
-        ClassId(FqName("in.stock.core.di.runtime.annotations"), Name.identifier(cname))
+  private fun classIdFor(cname: String) =
+    ClassId(FqName("in.stock.core.di.runtime.annotations"), Name.identifier(cname))
 
-    val EntryPoint = FqName("in.stock.core.di.runtime.annotations.EntryPoint")
+  val EntryPoint = FqName("in.stock.core.di.runtime.annotations.EntryPoint")
 
-    val EntryPointClassId = classIdFor("EntryPoint")
+  val EntryPointClassId = classIdFor("EntryPoint")
 }

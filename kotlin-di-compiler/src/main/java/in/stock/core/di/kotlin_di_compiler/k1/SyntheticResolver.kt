@@ -14,67 +14,67 @@ import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 
 open class SyntheticResolver : SyntheticResolveExtension {
 
-    companion object {
+  companion object {
 
-        private val GenerateConstructor = Name.identifier("generateConstructor")
+    private val GenerateConstructor = Name.identifier("generateConstructor")
+  }
+
+  override fun getSyntheticNestedClassNames(thisDescriptor: ClassDescriptor): List<Name> {
+    return if (thisDescriptor.annotations.hasAnnotation(FqNames.EntryPoint)) listOf(
+      GenerateConstructor
+    ) else emptyList()
+  }
+
+  override fun generateSyntheticSecondaryConstructors(
+    thisDescriptor: ClassDescriptor,
+    bindingContext: BindingContext,
+    result: MutableCollection<ClassConstructorDescriptor>
+  ) {
+    if (thisDescriptor.annotations.hasAnnotation(FqNames.EntryPoint)) {
+      generateComponentConstructor(thisDescriptor, result)
     }
+  }
 
-    override fun getSyntheticNestedClassNames(thisDescriptor: ClassDescriptor): List<Name> {
-        return if (thisDescriptor.annotations.hasAnnotation(FqNames.EntryPoint)) listOf(
-            GenerateConstructor
-        ) else emptyList()
-    }
+  private fun generateComponentConstructor(
+    classDescriptor: ClassDescriptor,
+    result: MutableCollection<ClassConstructorDescriptor>
+  ) {
+    val componentClass = classDescriptor.classId?.let {
+      classDescriptor.module.findClassAcrossModuleDependencies(
+        ClassId(it.packageFqName, Name.identifier("${classDescriptor.name.asString()}Component"))
+      )
+    } ?: return
 
-    override fun generateSyntheticSecondaryConstructors(
-        thisDescriptor: ClassDescriptor,
-        bindingContext: BindingContext,
-        result: MutableCollection<ClassConstructorDescriptor>
-    ) {
-        if (thisDescriptor.annotations.hasAnnotation(FqNames.EntryPoint)) {
-            generateComponentConstructor(thisDescriptor, result)
-        }
-    }
-
-    private fun generateComponentConstructor(
-        classDescriptor: ClassDescriptor,
-        result: MutableCollection<ClassConstructorDescriptor>
-    ) {
-        val componentClass = classDescriptor.classId?.let {
-            classDescriptor.module.findClassAcrossModuleDependencies(
-                ClassId(it.packageFqName, Name.identifier("${classDescriptor.name.asString()}Component"))
-            )
-        } ?: return
-
-        val constructor = ClassConstructorDescriptorImpl.createSynthesized(
-            classDescriptor,
-            Annotations.create(listOf()),
-            false,
-            SourceElement.NO_SOURCE
-        )
+    val constructor = ClassConstructorDescriptorImpl.createSynthesized(
+      classDescriptor,
+      Annotations.create(listOf()),
+      false,
+      SourceElement.NO_SOURCE
+    )
 
 //        val primaryConstructor = classDescriptor.constructors.find { it.isPrimary }
 
-        val componentParameter = ValueParameterDescriptorImpl(
-            containingDeclaration = constructor,
-            original = null,
-            index = 0,
-            annotations = Annotations.create(listOf()),
-            name = Name.identifier("component"),
-            outType = componentClass.defaultType,
-            declaresDefaultValue = false,
-            isCrossinline = false,
-            isNoinline = false,
-            varargElementType = null,
-            source = SourceElement.NO_SOURCE
-        )
+    val componentParameter = ValueParameterDescriptorImpl(
+      containingDeclaration = constructor,
+      original = null,
+      index = 0,
+      annotations = Annotations.create(listOf()),
+      name = Name.identifier("component"),
+      outType = componentClass.defaultType,
+      declaresDefaultValue = false,
+      isCrossinline = false,
+      isNoinline = false,
+      varargElementType = null,
+      source = SourceElement.NO_SOURCE
+    )
 
-        constructor.initialize(
-            listOf(componentParameter),
-            DescriptorVisibilities.DEFAULT_VISIBILITY,
-        )
+    constructor.initialize(
+      listOf(componentParameter),
+      DescriptorVisibilities.DEFAULT_VISIBILITY,
+    )
 
-        constructor.returnType = classDescriptor.defaultType
+    constructor.returnType = classDescriptor.defaultType
 
-        result.add(constructor)
-    }
+    result.add(constructor)
+  }
 }

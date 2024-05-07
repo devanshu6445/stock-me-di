@@ -1,16 +1,7 @@
 package `in`.stock.core.di.compiler.generators
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.ksp.toClassName
 import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
 import `in`.stock.core.di.compiler.core.Generator
@@ -25,120 +16,120 @@ import javax.inject.Inject
 import kotlin.reflect.KClass
 
 class ComponentGenerator @Inject constructor(
-    private val codeGenerator: FlexibleCodeGenerator,
+  private val codeGenerator: FlexibleCodeGenerator,
 ) :
-    Generator<ComponentInfo, ComponentGeneratorResult> {
-    override fun generate(data: ComponentInfo): ComponentGeneratorResult {
+  Generator<ComponentInfo, ComponentGeneratorResult> {
+  override fun generate(data: ComponentInfo): ComponentGeneratorResult {
 
-        val name = data.generatedName
+    val name = data.generatedName
 
-        FileSpec.builder(name)
-            .addType(
-                TypeSpec.classBuilder(name)
-                    .addAnnotation(COMPONENT)
-                    .superclass(data.root.toClassName())
-                    .apply {
-                        (data.parentComponents + data.dependencies).map {
-                            CodeBlock.of(
-                                format = "%N",
-                                ParameterSpec(
-                                    name = it.simpleName.replaceFirstChar { char -> char.lowercaseChar() },
-                                    type = it
-                                )
-                            )
-                        }.forEach {
-                            addSuperclassConstructorParameter(it)
-                        }
-                    }
-                    .addSuperinterfaces(data.providersToImplement)
-                    .constructorBuilder(
-                        parentComponent = data.parentComponents,
-                        dependencies = data.dependencies
-                    )
-                    .addModifiers(KModifier.ABSTRACT)
-                    .build()
+    FileSpec.builder(name)
+      .addType(
+        TypeSpec.classBuilder(name)
+          .addAnnotation(COMPONENT)
+          .superclass(data.root.toClassName())
+          .apply {
+            (data.parentComponents + data.dependencies).map {
+              CodeBlock.of(
+                format = "%N",
+                ParameterSpec(
+                  name = it.simpleName.replaceFirstChar { char -> char.lowercaseChar() },
+                  type = it
+                )
+              )
+            }.forEach {
+              addSuperclassConstructorParameter(it)
+            }
+          }
+          .addSuperinterfaces(data.providersToImplement)
+          .constructorBuilder(
+            parentComponent = data.parentComponents,
+            dependencies = data.dependencies
+          )
+          .addModifiers(KModifier.ABSTRACT)
+          .build()
+      )
+      .generateCreatorFunction(
+        components = data.parentComponents,
+        dependencies = data.dependencies,
+        componentType = data.root.toClassName(),
+        generatedComponent = data.generatedName
+      )
+      .build().writeTo(codeGenerator)
+
+    return ComponentGeneratorResult(name = name)
+  }
+
+  private fun FileSpec.Builder.generateCreatorFunction(
+    components: List<ClassName>,
+    dependencies: List<ClassName>,
+    componentType: TypeName,
+    generatedComponent: TypeName,
+  ) = apply {
+    addFunction(
+      FunSpec.builder(MemberName(packageName, "create"))
+        .receiver(KClass::class.asTypeName().plusParameter(componentType))
+        .addParameters(components.map {
+          // adding import manually for create because CodeBlock is not able to resolve the extension function import
+          addImport(packageName = it.packageName, "create")
+          ParameterSpec.builder(it.simpleName.replaceFirstChar { it.lowercaseChar() }, it)
+            .defaultValue(
+              CodeBlock.of(
+                "%T::class.create()",
+                it,
+              )
             )
-            .generateCreatorFunction(
-                components = data.parentComponents,
-                dependencies = data.dependencies,
-                componentType = data.root.toClassName(),
-                generatedComponent = data.generatedName
-            )
-            .build().writeTo(codeGenerator)
-
-        return ComponentGeneratorResult(name = name)
-    }
-
-    private fun FileSpec.Builder.generateCreatorFunction(
-        components: List<ClassName>,
-        dependencies: List<ClassName>,
-        componentType: TypeName,
-        generatedComponent: TypeName,
-    ) = apply {
-        addFunction(
-            FunSpec.builder(MemberName(packageName, "create"))
-                .receiver(KClass::class.asTypeName().plusParameter(componentType))
-                .addParameters(components.map {
-                    // adding import manually for create because CodeBlock is not able to resolve the extension function import
-                    addImport(packageName = it.packageName, "create")
-                    ParameterSpec.builder(it.simpleName.replaceFirstChar { it.lowercaseChar() }, it)
-                        .defaultValue(
-                            CodeBlock.of(
-                                "%T::class.create()",
-                                it,
-                            )
-                        )
-                        .build()
-                })
-                .addParameters(dependencies.map {
-                    ParameterSpec.builder(
-                        it.simpleName.replaceFirstChar { it.lowercaseChar() },
-                        it
-                    ).build()
-                })
-                .returns(componentType)
-                .addStatement("""
+            .build()
+        })
+        .addParameters(dependencies.map {
+          ParameterSpec.builder(
+            it.simpleName.replaceFirstChar { it.lowercaseChar() },
+            it
+          ).build()
+        })
+        .returns(componentType)
+        .addStatement("""
                     return %T::class.create(
                     ${
-                    buildString {
-                        (components + dependencies).map { it.toLowerName() }.forEach {
-                            append("$it,")
-                        }
-                    }
-                }
+          buildString {
+            (components + dependencies).map { it.toLowerName() }.forEach {
+              append("$it,")
+            }
+          }
+        }
                     )
                 """.trimIndent(), generatedComponent)
-                .build()
-        )
+        .build()
+    )
+  }
+
+  private fun TypeSpec.Builder.constructorBuilder(
+    parentComponent: List<ClassName>,
+    dependencies: List<ClassName>
+  ) = apply {
+    val constructorBuilder = FunSpec.constructorBuilder()
+
+    parentComponent.forEach { component ->
+      val name = component.simpleName.replaceFirstChar { it.lowercaseChar() }
+
+      constructorBuilder.addConstructorProperty(
+        typeSpec = this,
+        name = name,
+        type = component,
+        annotations = listOf(COMPONENT.toAnnotationSpec())
+      )
     }
 
-    private fun TypeSpec.Builder.constructorBuilder(
-        parentComponent: List<ClassName>,
-        dependencies: List<ClassName>
-    ) = apply {
-        val constructorBuilder = FunSpec.constructorBuilder()
+    dependencies.forEach { dependency ->
+      val name = dependency.simpleName.replaceFirstChar { it.lowercaseChar() }
 
-        parentComponent.forEach { component ->
-            val name = component.simpleName.replaceFirstChar { it.lowercaseChar() }
-
-            constructorBuilder.addConstructorProperty(
-                typeSpec = this,
-                name = name,
-                type = component,
-                annotations = listOf(COMPONENT.toAnnotationSpec())
-            )
-        }
-
-        dependencies.forEach { dependency ->
-            val name = dependency.simpleName.replaceFirstChar { it.lowercaseChar() }
-
-            constructorBuilder.addConstructorProperty(
-                typeSpec = this,
-                name = name,
-                type = dependency,
-            )
-        }
-
-        primaryConstructor(constructorBuilder.build())
+      constructorBuilder.addConstructorProperty(
+        typeSpec = this,
+        name = name,
+        type = dependency,
+      )
     }
+
+    primaryConstructor(constructorBuilder.build())
+  }
 }

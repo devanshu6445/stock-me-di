@@ -13,26 +13,26 @@ import `in`.stock.core.di.runtime.annotations.internals.Registry
 import javax.inject.Inject
 
 class ModuleProviderRegistryGenerator @Inject constructor(
-    private val codeGenerator: FlexibleCodeGenerator
+  private val codeGenerator: FlexibleCodeGenerator
 ) : Generator<List<@JvmSuppressWildcards ModuleProviderResult>, Unit> {
 
-    override fun generate(data: List<ModuleProviderResult>) {
+  override fun generate(data: List<ModuleProviderResult>) {
 
-        val properties = data.map {
-            PropertySpec.builder(
-                name = it.name.simpleName,
-                type = String::class
-            ).addModifiers(KModifier.CONST)
-                .initializer(format = "%S", it.name.canonicalName)
-                .build()
-        }
-        FileSpec.builder(ModuleProviderRegistry)
-            .addType(
-                TypeSpec.objectBuilder(ModuleProviderRegistry)
-                    .addAnnotation(Registry::class)
-                    .addProperties(properties)
-                    .build()
-            )
-            .build().writeTo(codeGenerator)
+    val properties = data.map {
+      PropertySpec.builder(
+        name = it.name.simpleName,
+        type = String::class
+      ).addModifiers(KModifier.CONST)
+        .initializer(format = "%S", it.name.canonicalName)
+        .build()
     }
+    FileSpec.builder(ModuleProviderRegistry)
+      .addType(
+        TypeSpec.objectBuilder(ModuleProviderRegistry)
+          .addAnnotation(Registry::class)
+          .addProperties(properties)
+          .build()
+      )
+      .build().writeTo(codeGenerator)
+  }
 }

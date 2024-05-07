@@ -11,16 +11,16 @@ import me.tatarka.inject.annotations.Provides
 @Singleton
 object Module1 {
 
-    @Provides
-    fun bind(
-    ): Dep {
-        return Dep()
-    }
+  @Provides
+  fun bind(
+  ): Dep {
+    return Dep()
+  }
 
-    @Provides
-    fun bindA(): DepB {
-        return DepB()
-    }
+  @Provides
+  fun bindA(): DepB {
+    return DepB()
+  }
 }
 
 @Module
@@ -28,11 +28,15 @@ object Module1 {
 @NewScope
 object Module2 {
 
-    @Provides
-    fun bind(dep: Dep): Dep2 { return Dep2(dep) }
+  @Provides
+  fun bind(dep: Dep): Dep2 {
+    return Dep2(dep)
+  }
 
-    @Provides
-    fun bindA(): Dep3 { return Dep3() }
+  @Provides
+  fun bindA(): Dep3 {
+    return Dep3()
+  }
 }
 
 class Dep
@@ -42,8 +46,8 @@ class DepB
 class Dep2(private val dep: Dep)
 
 class Dep3 {
-    private val a: Dep
-        get() = TestComponent::class.create(
-            dep3 = this
-        ).dep
+  private val a: Dep
+    get() = TestComponent::class.create(
+      dep3 = this
+    ).dep
 }

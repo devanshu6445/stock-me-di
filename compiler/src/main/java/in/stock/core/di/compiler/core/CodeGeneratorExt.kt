@@ -7,30 +7,30 @@ import java.nio.charset.StandardCharsets
 
 
 fun FileSpec.writeTo(
-    codeGenerator: FlexibleCodeGenerator,
-    dependencies: Dependencies = Dependencies(true),
+  codeGenerator: FlexibleCodeGenerator,
+  dependencies: Dependencies = Dependencies(true),
 ) {
-    writeTo(
-        codeGenerator = codeGenerator,
-        packageName = packageName,
-        fileName = name,
-        dependencies = dependencies
-    )
+  writeTo(
+    codeGenerator = codeGenerator,
+    packageName = packageName,
+    fileName = name,
+    dependencies = dependencies
+  )
 }
 
 fun FileSpec.writeTo(
-    codeGenerator: FlexibleCodeGenerator,
-    packageName: String,
-    fileName: String,
-    extension: String = "kt",
-    dependencies: Dependencies = Dependencies(true),
+  codeGenerator: FlexibleCodeGenerator,
+  packageName: String,
+  fileName: String,
+  extension: String = "kt",
+  dependencies: Dependencies = Dependencies(true),
 ) {
-    val file = codeGenerator.createNewFile(
-        dependencies = dependencies,
-        packageName = packageName,
-        fileName = fileName,
-        extensionName = extension
-    )
-    OutputStreamWriter(file, StandardCharsets.UTF_8)
-        .use(::writeTo)
+  val file = codeGenerator.createNewFile(
+    dependencies = dependencies,
+    packageName = packageName,
+    fileName = fileName,
+    extensionName = extension
+  )
+  OutputStreamWriter(file, StandardCharsets.UTF_8)
+    .use(::writeTo)
 }

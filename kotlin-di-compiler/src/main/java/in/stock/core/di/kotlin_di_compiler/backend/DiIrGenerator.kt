@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 
 open class DiIrGenerator : IrGenerationExtension {
-    override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        moduleFragment.transformChildrenVoid(IrEntryPointTransformer(context = pluginContext))
-    }
+  override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
+    moduleFragment.transformChildrenVoid(IrEntryPointTransformer(context = pluginContext))
+  }
 }
