@@ -49,9 +49,10 @@ dependencyResolutionManagement {
 include(":runtime")
 include(":compiler")
 include(":integration-tests")
-include(":kotlin-di-compiler")
 include(":idea-plugin")
 include("compiler:core")
 findProject(":compiler:core")?.name = "core"
 include("compiler:ksp")
 findProject(":compiler:ksp")?.name = "ksp"
+include("compiler:kcp")
+findProject(":compiler:kcp")?.name = "kcp"

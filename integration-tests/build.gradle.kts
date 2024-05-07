@@ -16,7 +16,7 @@ kotlin {
   compilerOptions {
 //        languageVersion.set(KotlinVersion.KOTLIN_2_0)
     freeCompilerArgs.add(
-        "-Xplugin=${project(":kotlin-di-compiler").projectDir}/build/libs/kotlin-di-compiler-1.0.0.jar"
+        "-Xplugin=${project(":compiler:kcp").projectDir}/build/libs/kcp-1.0.0.jar"
     )
   }
 }
@@ -39,7 +39,7 @@ dependencies {
   testImplementation(libs.koTest)
 
   // to depend this project onto kotlin-di-compiler so that jar is generated every time this project is compiled
-  implementation(projects.kotlinDiCompiler)
+  implementation(projects.compiler.kcp)
 }
 
 application {
