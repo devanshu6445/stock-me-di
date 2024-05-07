@@ -10,6 +10,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/compiler" />
+            <option value="$PROJECT_DIR$/compiler/core" />
+            <option value="$PROJECT_DIR$/idea-plugin" />
             <option value="$PROJECT_DIR$/integration-tests" />
             <option value="$PROJECT_DIR$/kotlin-di-compiler" />
             <option value="$PROJECT_DIR$/runtime" />

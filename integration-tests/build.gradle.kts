@@ -30,11 +30,11 @@ afterEvaluate {
 dependencies {
   implementation(projects.runtime)
   implementation(libs.kotlin.inject.runtime)
-  ksp(projects.compiler)
+  ksp(projects.compiler.ksp)
   ksp(libs.kotlin.inject.compiler)
 
   testImplementation(libs.kotlin.inject.compiler)
-  testImplementation(projects.compiler)
+  testImplementation(projects.compiler.ksp)
   testImplementation(libs.ksp.testing)
   testImplementation(libs.koTest)
 
