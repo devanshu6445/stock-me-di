@@ -17,7 +17,6 @@ class ModuleProviderRegistryGenerator @Inject constructor(
 ) : Generator<List<@JvmSuppressWildcards ModuleProviderResult>, Unit> {
 
   override fun generate(data: List<ModuleProviderResult>) {
-
     val properties = data.map {
       PropertySpec.builder(
         name = it.name.simpleName,

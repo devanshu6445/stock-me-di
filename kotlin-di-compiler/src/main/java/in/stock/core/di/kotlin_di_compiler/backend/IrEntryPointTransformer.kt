@@ -26,21 +26,21 @@ class IrEntryPointTransformer(
   override val keys: List<GeneratedDeclarationKey>
     get() = listOf(FirDeclarationGenerator.Key)
 
-
   override fun generateBodyForFunction(
     declaration: IrSimpleFunction,
   ): IrBody {
-    if (!declaration.annotations.hasAnnotation(FqNames.EntryPoint))
-      error("Synthetic function should not be generated for non EntryPoint function.")
+    if (!declaration.annotations.hasAnnotation(FqNames.EntryPoint)) {
+        error("Synthetic function should not be generated for non EntryPoint function.")
+    }
     return context.irFactory.createBlockBody(-1, -1)
   }
 
   override fun generateBodyForConstructor(
     declaration: IrConstructor,
   ): IrBody? {
-
-    if (!declaration.parentAsClass.annotations.hasAnnotation(FqNames.EntryPoint))
-      error("Synthetic constructor should not be generated for non EntryPoint Class.")
+    if (!declaration.parentAsClass.annotations.hasAnnotation(FqNames.EntryPoint)) {
+        error("Synthetic constructor should not be generated for non EntryPoint Class.")
+    }
 
     val typeArgs = declaration.parentAsClass.primaryConstructor?.typeParameters?.size ?: -1
     val valueArgs = declaration.parentAsClass.primaryConstructor?.valueParameters?.size ?: -1
@@ -90,7 +90,8 @@ class IrEntryPointTransformer(
     }
 
     return context.irFactory.createBlockBody(
-      -1, -1
+      -1,
+        -1
     ).apply {
       statements.add(parentConstructorCall)
     }

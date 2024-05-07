@@ -21,15 +21,16 @@ abstract class KspBaseProcessor(
     get() = environment.logger
 
   final override fun process(resolver: Resolver): List<KSAnnotated> {
-    //Injecting the child classes pf KspBaseProcessor by using a ProcessorMapper
+    // Injecting the child classes pf KspBaseProcessor by using a ProcessorMapper
     ProcessorMapper(
       DaggerCompilerComponent.factory().create(
         kspLogger = logger,
         codeGenerator = FlexibleCodeGeneratorImpl(delegate = environment.codeGenerator),
         resolver = KspResolver(delegate = resolver)
-      ), this
+      ),
+          this
     ).injectProcessors()
-    //Do the actual processing
+    // Do the actual processing
     return processSymbols(resolver)
   }
 

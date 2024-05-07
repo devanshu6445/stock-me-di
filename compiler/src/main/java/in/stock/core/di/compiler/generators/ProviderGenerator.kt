@@ -85,7 +85,7 @@ class ProviderGenerator @Inject constructor(
         CodeBlock.builder()
           .addStatement(
             format = """
-                        lazy { %T.${binderFunctionName}(${
+                        lazy { %T.$binderFunctionName(${
               buildString {
                 dependenciesName.forEach {
                   append(it.asString())

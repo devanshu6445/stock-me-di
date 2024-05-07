@@ -8,11 +8,11 @@ plugins {
 group = "in.stock.me"
 version = "1.0.0"
 
-//stockMePublish {
+// stockMePublish {
 //    group = "in.stock.me"
 //    publishingName = "di-kotlin-compiler"
 //    version = "1.0.0"
-//}
+// }
 
 publishing {
   publications {

@@ -12,8 +12,7 @@ import me.tatarka.inject.annotations.Provides
 object Module1 {
 
   @Provides
-  fun bind(
-  ): Dep {
+  fun bind(): Dep {
     return Dep()
   }
 
@@ -30,7 +29,7 @@ object Module2 {
 
   @Provides
   fun bind(dep: Dep): Dep2 {
-    return Dep2(dep)
+    return Dep2(dep = dep)
   }
 
   @Provides
@@ -43,11 +42,19 @@ class Dep
 
 class DepB
 
-class Dep2(private val dep: Dep)
+class Dep2(private val dep: Dep) {
+  override fun toString(): String {
+    return super.toString() + dep.toString()
+  }
+}
 
 class Dep3 {
   private val a: Dep
     get() = TestComponent::class.create(
       dep3 = this
     ).dep
+
+  override fun toString(): String {
+    return super.toString() + a.toString()
+  }
 }

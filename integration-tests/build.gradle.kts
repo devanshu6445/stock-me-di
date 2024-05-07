@@ -1,5 +1,4 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
   alias(libs.plugins.org.jetbrains.kotlin.jvm)
@@ -16,7 +15,9 @@ tasks.withType<Test> {
 kotlin {
   compilerOptions {
 //        languageVersion.set(KotlinVersion.KOTLIN_2_0)
-    freeCompilerArgs.add("-Xplugin=${project(":kotlin-di-compiler").projectDir}/build/libs/kotlin-di-compiler-1.0.0.jar")
+    freeCompilerArgs.add(
+        "-Xplugin=${project(":kotlin-di-compiler").projectDir}/build/libs/kotlin-di-compiler-1.0.0.jar"
+    )
   }
 }
 

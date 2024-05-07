@@ -1,6 +1,5 @@
 package `in`.stock.core.di.integration_tests
 
-
 import `in`.stock.core.di.integration_tests.core.Function
 import `in`.stock.core.di.integration_tests.core.ProjectCompiler
 import `in`.stock.core.di.integration_tests.core.Target

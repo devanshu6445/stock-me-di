@@ -20,9 +20,13 @@ open class SyntheticResolver : SyntheticResolveExtension {
   }
 
   override fun getSyntheticNestedClassNames(thisDescriptor: ClassDescriptor): List<Name> {
-    return if (thisDescriptor.annotations.hasAnnotation(FqNames.EntryPoint)) listOf(
+    return if (thisDescriptor.annotations.hasAnnotation(FqNames.EntryPoint)) {
+        listOf(
       GenerateConstructor
-    ) else emptyList()
+    )
+    } else {
+        emptyList()
+    }
   }
 
   override fun generateSyntheticSecondaryConstructors(

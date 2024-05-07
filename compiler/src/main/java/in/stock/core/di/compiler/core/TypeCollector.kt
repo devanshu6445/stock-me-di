@@ -46,18 +46,22 @@ class TypeCollector @Inject constructor(
   }
 
   private fun KSDeclaration.getDependencies(): Sequence<KSDeclaration> {
-
     val parameters = when (this) {
-      is KSClassDeclaration -> getConstructors().flatMap { it.parameters }
-      is KSFunctionDeclaration -> sequenceOf(*parameters.toTypedArray())
+      is KSClassDeclaration -> {
+        getConstructors().flatMap { it.parameters }
+      }
+      is KSFunctionDeclaration -> {
+        parameters.asSequence()
+      }
       else -> {
         kspLogger.error("This type is not supported by @EntryPoint", this)
         throw IllegalArgumentException("This type is not supported by @EntryPoint")
       }
     }
 
-    if (parameters.count() == 0)
-      return emptySequence()
+    if (parameters.count() == 0) {
+        return emptySequence()
+    }
 
     val currentTypeParam = parameters.map {
       it.type.resolve().declaration
@@ -83,9 +87,12 @@ class TypeCollector @Inject constructor(
                       .declaration.hasAnnotation(Scope.packageName, Scope.simpleName)
                   }
                     // todo remove this `AssociatedWith` annotation dependency from codebase
-                    ?.annotationType?.resolve()?.declaration?.findAnnotation(AssociatedWith::class.qualifiedName.value) as? KSClassDeclaration?
-                if (component != null)
-                  yield(component)
+                    ?.annotationType?.resolve()?.declaration?.findAnnotation(
+                        AssociatedWith::class.qualifiedName.value
+                    ) as? KSClassDeclaration?
+                if (component != null) {
+                    yield(component)
+                }
               }
 
               allProvidersMap[it.qualifiedName?.asString()] != null -> {
@@ -102,10 +109,10 @@ class TypeCollector @Inject constructor(
           }
 
           is KSFunctionDeclaration -> {
-            throw Exception() // todo get parameters type components
+            throw NotImplementedError()
           }
 
-          else -> throw Exception()
+          else -> throw NotImplementedError()
         }
       }
     }
@@ -116,7 +123,6 @@ class TypeCollector @Inject constructor(
 
 @OptIn(KspExperimental::class)
 fun Resolver.getAllProviders(): Sequence<KSFunctionDeclaration> {
-
   suspend fun SequenceScope<KSFunctionDeclaration>.visit(declarations: Sequence<KSDeclaration>) {
     declarations.forEach {
       when (it) {

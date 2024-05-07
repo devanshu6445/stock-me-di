@@ -1,7 +1,11 @@
 package `in`.stock.core.di.compiler
 
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.tschuchort.compiletesting.*
+import com.tschuchort.compiletesting.KotlinCompilation
+import com.tschuchort.compiletesting.SourceFile
+import com.tschuchort.compiletesting.kspIncremental
+import com.tschuchort.compiletesting.symbolProcessorProviders
+import com.tschuchort.compiletesting.kspSourcesDir
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldNotBe
 import java.io.File
@@ -10,7 +14,8 @@ class ModuleProcessorTest : FreeSpec({
   "test-1" {
     val compilation = prepareCompilation(
       SourceFile.kotlin(
-        "Test.kt", """
+        "Test.kt",
+        """
             package main
 
             import `in`.stock.core.di.runtime.Module

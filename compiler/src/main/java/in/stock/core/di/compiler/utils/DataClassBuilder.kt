@@ -37,8 +37,9 @@ fun FunSpec.Builder.addConstructorProperty(
   typeSpec.addProperty(
     PropertySpec.builder(name, type)
       .apply {
-        if (addInitializer)
-          initializer(name)
+        if (addInitializer) {
+            initializer(name)
+        }
       }
       .build()
   )

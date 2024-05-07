@@ -5,7 +5,6 @@ import `in`.stock.core.di.runtime.annotations.AssociatedWith
 import `in`.stock.core.di.runtime.annotations.Component
 import me.tatarka.inject.annotations.Scope
 
-
 @Component
 @TestScope
 abstract class TestComponent(
@@ -18,7 +17,6 @@ abstract class TestComponent(
 @Scope
 annotation class TestScope
 
-
 @Component
 @NewScope
 abstract class NewComponent {
@@ -28,4 +26,3 @@ abstract class NewComponent {
 @Scope
 @AssociatedWith(NewComponent::class)
 annotation class NewScope
-

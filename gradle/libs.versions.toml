@@ -13,6 +13,7 @@ di-runtime = "1.0.0-SNAPSHOT"
 di-compiler = "1.0.0-SNAPSHOT"
 dagger = "2.48"
 kmp-convention = "1.0.0-SNAPSHOT"
+stockMeLinter = "1.0.0-SNAPSHOT"
 
 [libraries]
 # Kotlin inject
@@ -44,6 +45,10 @@ di-compiler = { group = "in.stock.me", name = "di-compiler", version.ref = "di-c
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
 
+# Linting
+stock-me-linter = { group = "in.stock.me", name = "linter", version.ref = "stockMeLinter" }
+
+
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -53,3 +58,4 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 stock-me-publish = { id = "in.stock.me.publish", version.ref = "stockMePublish" }
 kmp-convention = { id = "plugin.kmp.convention", version.ref = "kmp-convention" }
 di-compiler = { id = "plugin.di.compiler", version.ref = "di-compiler" }
+stock-me-linter = { id = "in.stock.me.linter", version.ref = "stockMeLinter" }

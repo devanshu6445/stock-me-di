@@ -17,7 +17,6 @@ class ModuleProviderGenerator @Inject constructor(
   private val codeGenerator: FlexibleCodeGenerator,
 ) : Generator<ModuleInfo, ModuleProviderResult> {
   override fun generate(data: ModuleInfo): ModuleProviderResult {
-
     val moduleName = data.root.toClassName().let {
       ClassName(it.packageName, "${it.simpleName}Provider")
     }

@@ -10,9 +10,11 @@ class ProcessorMapper(
 
   fun injectProcessors() {
     when (processor) {
-      is ModuleProcessor -> daggerCompilerComponent.injectModuleProcessor(
-        processor = processor,
-      )
+      is ModuleProcessor -> {
+        daggerCompilerComponent.injectModuleProcessor(
+          processor = processor,
+        )
+      }
     }
   }
 }

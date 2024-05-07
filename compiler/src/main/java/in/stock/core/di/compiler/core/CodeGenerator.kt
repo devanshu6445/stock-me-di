@@ -53,5 +53,4 @@ class FlexibleCodeGeneratorImpl @Inject constructor(private val delegate: CodeGe
   ): OutputStream {
     return delegate.createNewFileByPath(dependencies, path, extensionName)
   }
-
 }

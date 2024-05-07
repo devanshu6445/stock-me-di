@@ -5,7 +5,6 @@ import com.squareup.kotlinpoet.FileSpec
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 
-
 fun FileSpec.writeTo(
   codeGenerator: FlexibleCodeGenerator,
   dependencies: Dependencies = Dependencies(true),

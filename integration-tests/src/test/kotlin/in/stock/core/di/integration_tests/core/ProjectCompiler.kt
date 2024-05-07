@@ -28,8 +28,9 @@ class ProjectCompiler(
   // was not being resolved in the same compilation round
   // todo: Try to convert it into single compilation round
   private val kspCompilation = newCompilation {
-    if (this@ProjectCompiler.workingDir != null)
+    if (this@ProjectCompiler.workingDir != null) {
       workingDir = this@ProjectCompiler.workingDir
+    }
 
     when (target) {
       Target.KSP -> {
@@ -43,7 +44,6 @@ class ProjectCompiler(
 
     messageOutputStream = System.out
   }
-
 
   fun source(fileName: String, @Language("kotlin") source: String): ProjectCompiler {
     sourceFiles.add(SourceFile.kotlin(fileName, source))
@@ -69,10 +69,11 @@ class ProjectCompiler(
     // First generate generate code by kspCompilation
     val kspCompilationResult = kspCompilation.compile()
 
-    if (kspCompilationResult.exitCode != KotlinCompilation.ExitCode.OK)
-      throw Exception(
-        kspCompilationResult.toTestCompilationResult().output(Diagnostic.Kind.ERROR)
+    if (kspCompilationResult.exitCode != KotlinCompilation.ExitCode.OK) {
+      throw ProjectCompilationException(
+        diagnosticInfo = kspCompilationResult.toTestCompilationResult().output(Diagnostic.Kind.ERROR)
       )
+    }
 
     // Add the generated code sources from kspCompilation to final round of compilation
     compilation.sources += kspCompilation.kspSourcesDir.walkTopDown()
@@ -81,11 +82,10 @@ class ProjectCompiler(
         SourceFile.new(it.name, it.readTextAndUnify())
       }
 
-
     val result = compilation.compile().toTestCompilationResult()
 
     if (!result.success) {
-      throw Exception(result.output(Diagnostic.Kind.ERROR))
+      throw ProjectCompilationException(result.output(Diagnostic.Kind.ERROR))
     }
     return result
   }

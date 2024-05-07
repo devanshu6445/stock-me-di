@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>BracesOnWhenStatements:FirDeclarationGenerator.kt$FirDeclarationGenerator$-&gt;</ID>
+    <ID>BracesOnWhenStatements:TypeCollector.kt$TypeCollector$-&gt;</ID>
+    <ID>PrintStackTrace:TestCompilationResult.kt$TestCompilationResult$t</ID>
+    <ID>UnusedPrivateProperty:TestComponent.kt$TestComponent$@Component singletonComponent: SingletonComponent</ID>
+    <ID>UnusedPrivateProperty:TestComponent.kt$TestComponent$dep3: Dep3</ID>
+    <ID>UtilityClassWithPublicConstructor:SingletonComponent.kt$SingletonComponent</ID>
+  </CurrentIssues>
+</SmellBaseline>

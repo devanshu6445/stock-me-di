@@ -20,7 +20,6 @@ class ComponentGenerator @Inject constructor(
 ) :
   Generator<ComponentInfo, ComponentGeneratorResult> {
   override fun generate(data: ComponentInfo): ComponentGeneratorResult {
-
     val name = data.generatedName
 
     FileSpec.builder(name)
@@ -69,7 +68,8 @@ class ComponentGenerator @Inject constructor(
     addFunction(
       FunSpec.builder(MemberName(packageName, "create"))
         .receiver(KClass::class.asTypeName().plusParameter(componentType))
-        .addParameters(components.map {
+        .addParameters(
+            components.map {
           // adding import manually for create because CodeBlock is not able to resolve the extension function import
           addImport(packageName = it.packageName, "create")
           ParameterSpec.builder(it.simpleName.replaceFirstChar { it.lowercaseChar() }, it)
@@ -80,15 +80,19 @@ class ComponentGenerator @Inject constructor(
               )
             )
             .build()
-        })
-        .addParameters(dependencies.map {
+        }
+        )
+        .addParameters(
+            dependencies.map {
           ParameterSpec.builder(
             it.simpleName.replaceFirstChar { it.lowercaseChar() },
             it
           ).build()
-        })
+        }
+        )
         .returns(componentType)
-        .addStatement("""
+        .addStatement(
+            """
                     return %T::class.create(
                     ${
           buildString {
@@ -98,7 +102,9 @@ class ComponentGenerator @Inject constructor(
           }
         }
                     )
-                """.trimIndent(), generatedComponent)
+                """.trimIndent(),
+            generatedComponent
+        )
         .build()
     )
   }

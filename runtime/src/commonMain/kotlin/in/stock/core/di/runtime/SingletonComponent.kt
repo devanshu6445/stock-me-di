@@ -24,7 +24,6 @@ abstract class SingletonComponent {
         /**
          * Get a singleton instance of [SingletonComponent].
          */
-        fun getInstance() = instance ?: SingletonComponent::class.create(
-        ).also { instance = it }
+        fun getInstance() = instance ?: SingletonComponent::class.create().also { instance = it }
     }
 }

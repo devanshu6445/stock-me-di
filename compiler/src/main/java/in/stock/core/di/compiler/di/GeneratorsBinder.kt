@@ -22,10 +22,14 @@ interface GeneratorsBinder {
   fun bindComponentGenerator(componentGenerator: ComponentGenerator): Generator<ComponentInfo, ComponentGeneratorResult>
 
   @Binds
-  fun bindModuleProviderGenerator(moduleProviderGenerator: ModuleProviderGenerator): Generator<ModuleInfo, ModuleProviderResult>
+  fun bindModuleProviderGenerator(
+    moduleProviderGenerator: ModuleProviderGenerator
+): Generator<ModuleInfo, ModuleProviderResult>
 
   @Binds
-  fun bindModuleProviderRegistryGenerator(moduleProviderRegistryGenerator: ModuleProviderRegistryGenerator): Generator<List<ModuleProviderResult>, Unit>
+  fun bindModuleProviderRegistryGenerator(
+    moduleProviderRegistryGenerator: ModuleProviderRegistryGenerator
+): Generator<List<ModuleProviderResult>, Unit>
 
   @Binds
   fun bindCodeGenerator(flexibleCodeGeneratorImpl: FlexibleCodeGeneratorImpl): FlexibleCodeGenerator

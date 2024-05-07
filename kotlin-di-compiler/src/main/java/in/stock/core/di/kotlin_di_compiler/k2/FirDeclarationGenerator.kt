@@ -40,12 +40,6 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
       .filterIsInstance<FirRegularClassSymbol>()
   }
 
-  private val matchedClassesClassId by lazy {
-    matchedClasses.map {
-      it.classId
-    }
-  }
-
   private val matchedTopLevelFunctions by lazy {
     session.predicateBasedProvider.getSymbolsByPredicate(predicate)
       .filterIsInstance<FirNamedFunctionSymbol>()
@@ -65,7 +59,8 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
     ) {
       val component = session.firProvider.getFirClassifierByFqName(
         ClassId(
-          context.owner.classId.packageFqName, Name.identifier("${context.owner.name.identifier}Component")
+          context.owner.classId.packageFqName,
+            Name.identifier("${context.owner.name.identifier}Component")
         )
       )?.symbol as FirRegularClassSymbol
 
@@ -110,7 +105,6 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
     }
   }
 
-
   override fun getTopLevelCallableIds(): Set<CallableId> {
     return matchedTopLevelFunctions.map {
       it.callableId
@@ -131,15 +125,19 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
     classSymbol: FirClassSymbol<*>,
     context: MemberGenerationContext
   ): Set<Name> {
-    return if (classSymbol in matchedClasses)
-      setOf(classSymbol.name, SpecialNames.INIT)
-    else emptySet()
+    return if (classSymbol in matchedClasses) {
+        setOf(classSymbol.name, SpecialNames.INIT)
+    } else {
+        emptySet()
+    }
   }
 
   override fun FirDeclarationPredicateRegistrar.registerPredicates() {
-    register(DeclarationPredicate.create {
+    register(
+        DeclarationPredicate.create {
       annotated(FqNames.EntryPoint)
-    })
+    }
+    )
   }
 
   object Key : GeneratedDeclarationKey() {

@@ -23,7 +23,6 @@ abstract class AbstractTransformerForGenerator(private val context: IrPluginCont
   abstract fun generateBodyForConstructor(declaration: IrConstructor): IrBody?
 
   override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
-
     if (!declaration.isFromPlugin(context.afterK2)) {
       return super.visitSimpleFunction(declaration)
     }
@@ -35,7 +34,6 @@ abstract class AbstractTransformerForGenerator(private val context: IrPluginCont
   }
 
   override fun visitConstructor(declaration: IrConstructor): IrStatement {
-
     if (!declaration.isFromPlugin(context.afterK2)) {
       return super.visitConstructor(declaration)
     }

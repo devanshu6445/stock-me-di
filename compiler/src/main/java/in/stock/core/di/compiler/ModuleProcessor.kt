@@ -95,7 +95,6 @@ class ModuleProcessor(
   }
 
   private fun process(element: KSClassDeclaration) {
-
     val scope = element.scopeAnnotation()
     val providers = mutableListOf<ProvidesInfo>()
 
@@ -135,8 +134,9 @@ class ModuleProcessor(
   private fun validate(element: KSClassDeclaration): Boolean {
     if (!element.validate()) return false
 
-    if (element.classKind != ClassKind.OBJECT)
-      logger.error("Module must be a object class", element)
+    if (element.classKind != ClassKind.OBJECT) {
+        logger.error("Module must be a object class", element)
+    }
 
     return element.hasScope()
   }

@@ -1,7 +1,6 @@
 package `in`.stock.core.di.compiler.generators
 
 import com.google.devtools.ksp.getConstructors
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
@@ -20,11 +19,9 @@ import javax.inject.Inject
 class EntryPointGenerator @Inject constructor(
   private val typeCollector: TypeCollector,
   private val codeGenerator: FlexibleCodeGenerator,
-  private val kspLogger: KSPLogger
 ) : Generator<@JvmSuppressWildcards Sequence<KSDeclaration>, Unit> {
   override fun generate(data: Sequence<KSDeclaration>) {
     data.forEach {
-
       when (it) {
         is KSClassDeclaration -> {
           it.generateComponentForClass()
@@ -42,23 +39,27 @@ class EntryPointGenerator @Inject constructor(
   }
 
   private fun KSFunctionDeclaration.generateComponentForFunction() {
-
     val properties = parameters.map {
       PropertySpec.builder(
-        it.name?.asString().value, it.type.toTypeName(), KModifier.ABSTRACT
+        it.name?.asString().value,
+        it.type.toTypeName(),
+        KModifier.ABSTRACT
       ).build()
     }
 
     generateComponent(
       componentName = ClassName(
-        packageName.asString().value, "${simpleName.asString().capitalize()}Component"
-      ), properties = sequenceOf(*properties.toTypedArray()) // todo check
+        packageName.asString().value,
+        "${simpleName.asString().capitalize()}Component"
+      ),
+      properties = properties.asSequence() // todo check
     )
   }
 
   private fun KSClassDeclaration.generateComponentForClass() {
     val componentName = ClassName(
-      packageName.asString(), "${
+      packageName.asString(),
+      "${
         simpleName.asString().capitalize()
       }Component"
     )
@@ -73,12 +74,14 @@ class EntryPointGenerator @Inject constructor(
       }
     }
     generateComponent(
-      componentName = componentName, properties = properties
+      componentName = componentName,
+      properties = properties
     )
   }
 
   private fun KSDeclaration.generateComponent(
-    componentName: ClassName, properties: Sequence<PropertySpec>
+    componentName: ClassName,
+    properties: Sequence<PropertySpec>
   ) {
     val depComponents = typeCollector.collectTypes(this).map {
       ClassName(it.packageName.asString(), it.simpleName.asString())
@@ -104,7 +107,10 @@ class EntryPointGenerator @Inject constructor(
       val name = component.simpleName.replaceFirstChar { it.lowercaseChar() } + "1"
 
       constructorBuilder.addConstructorProperty(
-        typeSpec = this, name = name, type = component, annotations = listOf(
+        typeSpec = this,
+        name = name,
+        type = component,
+        annotations = listOf(
           AnnotationSpec.builder(Component::class).build()
         )
       )

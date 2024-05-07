@@ -19,7 +19,6 @@ dependencies {
   implementation(projects.kotlinDiCompiler)
 }
 
-
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 // Configure Gradle IntelliJ Plugin

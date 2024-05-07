@@ -13,15 +13,19 @@ import org.jetbrains.kotlin.ir.util.properties
 
 fun IrType.replaceArgumentsWithStarProjections(): IrType =
   when (this) {
-    is IrSimpleType -> IrSimpleTypeImpl(
-      classifier,
-      isMarkedNullable(),
-      List(arguments.size) { IrStarProjectionImpl },
-      annotations,
-      abbreviation
-    )
+    is IrSimpleType -> {
+      IrSimpleTypeImpl(
+        classifier,
+        isMarkedNullable(),
+        List(arguments.size) { IrStarProjectionImpl },
+        annotations,
+        abbreviation
+      )
+    }
 
-    else -> this
+    else -> {
+      this
+    }
   }
 
 fun IrPluginContext.irClass(irType: IrType): IrClass? {
