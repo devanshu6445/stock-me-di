@@ -21,7 +21,6 @@ import org.jetbrains.kotlin.ir.util.primaryConstructor
 
 class IrEntryPointTransformer(
     private val context: IrPluginContext,
-    private val messageCollector: MessageCollector
 ) : AbstractTransformerForGenerator(context) {
 
     override val keys: List<GeneratedDeclarationKey>
@@ -40,7 +39,7 @@ class IrEntryPointTransformer(
         declaration: IrConstructor,
     ): IrBody? {
 
-        if(!declaration.parentAsClass.annotations.hasAnnotation(FqNames.EntryPoint))
+        if (!declaration.parentAsClass.annotations.hasAnnotation(FqNames.EntryPoint))
             error("Synthetic constructor should not be generated for non EntryPoint Class.")
 
         val typeArgs = declaration.parentAsClass.primaryConstructor?.typeParameters?.size ?: -1
@@ -91,9 +90,9 @@ class IrEntryPointTransformer(
         }
 
         return context.irFactory.createBlockBody(
-            -1, -1, listOf(
-                parentConstructorCall
-            )
-        )
+            -1, -1
+        ).apply {
+            statements.add(parentConstructorCall)
+        }
     }
 }

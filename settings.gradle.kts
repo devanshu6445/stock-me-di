@@ -21,6 +21,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
+}
 dependencyResolutionManagement {
     // Do RCA and find alternative and elegant approach
     repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
@@ -47,3 +50,4 @@ include(":runtime")
 include(":compiler")
 include(":integration-tests")
 include(":kotlin-di-compiler")
+include("idea-plugin")

@@ -22,6 +22,6 @@ class DiComponentRegistrar : CompilerPluginRegistrar() {
         SyntheticResolveExtension.registerExtension(SyntheticResolver())
 
         FirExtensionRegistrarAdapter.registerExtension(DIFirGenerator(messageCollector))
-        IrGenerationExtension.registerExtension(DiIrGenerator(messageCollector = messageCollector))
+        IrGenerationExtension.registerExtension(DiIrGenerator())
     }
 }
