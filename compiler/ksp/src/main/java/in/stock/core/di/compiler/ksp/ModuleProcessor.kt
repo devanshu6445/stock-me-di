@@ -7,8 +7,11 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.validate
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.asClassName
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.KspResolver
+import `in`.stock.core.di.compiler.core.ProcessingStep
 import `in`.stock.core.di.compiler.core.processor.KspBaseProcessor
 import `in`.stock.core.di.compiler.ksp.data.ComponentGeneratorResult
 import `in`.stock.core.di.compiler.ksp.data.ComponentInfo
@@ -25,28 +28,31 @@ class ModuleProcessor(
   environment: SymbolProcessorEnvironment
 ) : KspBaseProcessor(environment) {
 
-  private var deferred: MutableList<KSClassDeclaration> = mutableListOf()
-
   @Inject
   lateinit var componentGenerator: Generator<ComponentInfo, ComponentGeneratorResult>
 
   private val currentRoundModules = mutableListOf<Pair<ModuleInfo, ModuleProviderResult>>() //todo change to sequence
 
-  private val allGeneratedModule = mutableListOf<Pair<ModuleInfo, ModuleProviderResult>>()
-
-  private val components = mutableListOf<KSClassDeclaration>()
+  private val allGeneratedModule = mutableSetOf<Pair<ModuleInfo, ModuleProviderResult>>()
 
   @Inject
   lateinit var moduleProviderRegistryGenerator: Generator<List<ModuleProviderResult>, Unit>
 
   @Inject
-  lateinit var entryPointGenerator: Generator<Sequence<KSDeclaration>, Unit>
+  lateinit var entryPointGenerator: Generator<KSDeclaration, Unit>
 
   @Inject
   lateinit var typeCollector: TypeCollector
 
   @Inject
-  lateinit var processModule: ProcessModule
+  lateinit var moduleProcessingStep: ProcessingStep<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
+
+  override val annotations: List<ClassName>
+    get() = listOf(
+      Module::class.asClassName(),
+      Component::class.asClassName(),
+      EntryPoint::class.asClassName()
+    )
 
   override fun onCreate(resolver: KspResolver) {
     ProcessorMapper(
@@ -60,54 +66,51 @@ class ModuleProcessor(
     ).injectProcessors()
   }
 
-  override fun onProcessSymbols(resolver: KspResolver): List<KSAnnotated> {
-    currentRoundModules.clear()
-    val previousDeferred = deferred
-    deferred = mutableListOf()
+  override fun processSymbol(resolver: KspResolver, symbol: KSAnnotated, annotation: ClassName): Boolean {
 
-    for (element in previousDeferred + resolver.getSymbols<KSClassDeclaration>(Module::class)) {
-      val isModuleProcessingFailed = runCatching {
-        currentRoundModules.add(processModule.process(element))
-      }.isFailure
-
-      if (isModuleProcessingFailed) {
-        deferred += element
+    val isProcessed = when (annotation.canonicalName) {
+      Module::class.qualifiedName -> {
+        runCatching {
+          currentRoundModules.add(moduleProcessingStep.process(symbol as KSClassDeclaration))
+        }.isSuccess
       }
-    }
 
-    for (component in previousDeferred + resolver.getSymbols<KSClassDeclaration>(Component::class)) {
-      if (component.validate()) {
-        components.add(component)
-      } else {
-        deferred += component
-      }
-    }
-
-    if (currentRoundModules.isEmpty()) {
-      runCatching {
-        components.forEach { component ->
-          componentGenerator.generate(
-            data = ComponentInfo(
-              root = component,
-              modules = allGeneratedModule.map { it.first },
-              modulesProvider = allGeneratedModule.map { it.second }
+      Component::class.qualifiedName -> {
+        if (symbol as? KSClassDeclaration == null) return false
+        if (symbol.validate() && currentRoundModules.isEmpty()) {
+          runCatching {
+            componentGenerator.generate(
+              data = ComponentInfo(
+                root = symbol,
+                modules = allGeneratedModule.map { it.first },
+                modulesProvider = allGeneratedModule.map { it.second }
+              )
             )
-          )
+
+            moduleProviderRegistryGenerator.generate(
+              data = allGeneratedModule.map { it.second }
+            )
+          }.isSuccess // todo check if need to differ the symbol is any one is failed
+        } else {
+          false
         }
       }
 
-      runCatching {
-        moduleProviderRegistryGenerator.generate(
-          data = allGeneratedModule.map { it.second }
-        )
+      EntryPoint::class.qualifiedName -> {
+        entryPointGenerator.generate(symbol as KSClassDeclaration)
+        true
       }
+
+      else -> false
     }
 
     allGeneratedModule.addAll(currentRoundModules)
 
-    entryPointGenerator.generate(resolver.getSymbols<KSDeclaration>(EntryPoint::class))
+    return isProcessed
+  }
 
-    return deferred
+  override fun roundFinished() {
+    currentRoundModules.clear()
   }
 
   class Provider : SymbolProcessorProvider {

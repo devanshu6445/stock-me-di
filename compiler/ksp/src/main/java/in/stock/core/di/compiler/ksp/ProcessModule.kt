@@ -3,6 +3,9 @@ package `in`.stock.core.di.compiler.ksp
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSName
 import `in`.stock.core.di.compiler.core.Generator
+import `in`.stock.core.di.compiler.core.Messenger
+import `in`.stock.core.di.compiler.core.ProcessingStep
+import `in`.stock.core.di.compiler.core.ProcessingStepValidator
 import `in`.stock.core.di.compiler.ksp.data.ModuleInfo
 import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.data.ProvidesInfo
@@ -10,35 +13,27 @@ import `in`.stock.core.di.compiler.ksp.utils.*
 import `in`.stock.core.di.runtime.annotations.InstallIn
 import javax.inject.Inject
 
-interface ProcessModule {
-  fun process(declaration: KSClassDeclaration): Pair<ModuleInfo, ModuleProviderResult>
-}
-
 class ProcessModuleImpl @Inject constructor(
-  private val moduleValidator: ModuleValidator,
+  validator: ProcessingStepValidator<KSClassDeclaration>,
+  messenger: Messenger,
   private val moduleGenerator: Generator<ModuleInfo, Unit>,
-  private val moduleProviderGenerator: Generator<ModuleInfo, ModuleProviderResult>
-) : ProcessModule {
+  private val moduleProviderGenerator: Generator<ModuleInfo, ModuleProviderResult>,
+) : ProcessingStep<KSClassDeclaration, @JvmSuppressWildcards Pair<ModuleInfo, ModuleProviderResult>>(
+  messenger,
+  validator
+) {
 
-  override fun process(declaration: KSClassDeclaration): Pair<ModuleInfo, ModuleProviderResult> {
-    if (moduleValidator.validate(declaration)) {
-      return processModule(declaration)
-    } else {
-      throw IllegalStateException("Module couldn't be validated")
-    }
-  }
-
-  private fun processModule(element: KSClassDeclaration): Pair<ModuleInfo, ModuleProviderResult> {
-    val scope = element.findAnnotation(Scope.canonicalName)
+  override fun processingStep(node: KSClassDeclaration): Pair<ModuleInfo, ModuleProviderResult> {
+    val scope = node.findAnnotation(Scope.canonicalName)
     val providers = mutableListOf<ProvidesInfo>()
 
-    element.getAllFunctions().forEach { provider ->
+    node.getAllFunctions().forEach { provider ->
       if (provider.hasAnnotation(Provides.packageName, Provides.simpleName)) {
         provider.returnType?.also { returnType ->
           providers.add(
             ProvidesInfo(
               functionName = provider.simpleName,
-              moduleClass = element,
+              moduleClass = node,
               scope = scope,
               dependencies = provider.parameters.map { it.type },
               dependencyType = returnType,
@@ -52,9 +47,9 @@ class ProcessModuleImpl @Inject constructor(
     }
 
     val moduleInfo = ModuleInfo(
-      root = element,
+      root = node,
       scope = scope,
-      installInComponent = element.getAnnotationArgument(InstallIn::class.qualifiedName.orEmpty()) as KSClassDeclaration,
+      installInComponent = node.getAnnotationArgument(InstallIn::class.qualifiedName.orEmpty()) as KSClassDeclaration,
       providers = providers
     )
 

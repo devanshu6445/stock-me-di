@@ -4,17 +4,14 @@ import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.validate
 import `in`.stock.core.di.compiler.core.Messenger
+import `in`.stock.core.di.compiler.core.ProcessingStepValidator
 import `in`.stock.core.di.compiler.ksp.utils.Scope
 import `in`.stock.core.di.compiler.ksp.utils.findAnnotation
 import javax.inject.Inject
 
-interface ModuleValidator {
-  fun validate(element: KSClassDeclaration): Boolean
-}
-
-class ModuleValidatorImpl @Inject constructor(
+class ModuleProcessingStepValidatorImpl @Inject constructor(
   private val messenger: Messenger
-) : ModuleValidator {
+) : ProcessingStepValidator<KSClassDeclaration> {
 
   override fun validate(element: KSClassDeclaration): Boolean {
     if (!element.validate()) return false

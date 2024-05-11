@@ -1,14 +1,11 @@
 package `in`.stock.core.di.compiler.ksp.di
 
+import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import dagger.Binds
 import dagger.Module
-import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
-import `in`.stock.core.di.compiler.core.FlexibleCodeGeneratorImpl
-import `in`.stock.core.di.compiler.core.Generator
-import `in`.stock.core.di.compiler.ksp.ModuleValidator
-import `in`.stock.core.di.compiler.ksp.ModuleValidatorImpl
-import `in`.stock.core.di.compiler.ksp.ProcessModule
+import `in`.stock.core.di.compiler.core.*
+import `in`.stock.core.di.compiler.ksp.ModuleProcessingStepValidatorImpl
 import `in`.stock.core.di.compiler.ksp.ProcessModuleImpl
 import `in`.stock.core.di.compiler.ksp.data.*
 import `in`.stock.core.di.compiler.ksp.generators.*
@@ -39,10 +36,10 @@ interface GeneratorsBinder {
   fun bindCodeGenerator(flexibleCodeGeneratorImpl: FlexibleCodeGeneratorImpl): FlexibleCodeGenerator
 
   @Binds
-  fun bindEntryPointGenerator(entryPointGenerator: EntryPointGenerator): Generator<Sequence<KSDeclaration>, Unit>
+  fun bindEntryPointGenerator(entryPointGenerator: EntryPointGenerator): Generator<KSDeclaration, Unit>
 
   @Binds
-  fun bindProcessModule(processModuleImpl: ProcessModuleImpl): ProcessModule
+  fun bindProcessModule(processModuleImpl: ProcessModuleImpl): ProcessingStep<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
 
-  @Binds fun bindModuleValidator(moduleValidatorImpl: ModuleValidatorImpl): ModuleValidator
+  @Binds fun bindModuleValidator(moduleValidatorImpl: ModuleProcessingStepValidatorImpl): ProcessingStepValidator<KSClassDeclaration>
 }

@@ -18,21 +18,19 @@ import javax.inject.Inject
 class EntryPointGenerator @Inject constructor(
   private val typeCollector: TypeCollector,
   private val codeGenerator: FlexibleCodeGenerator,
-) : Generator<@JvmSuppressWildcards Sequence<KSDeclaration>, Unit> {
-  override fun generate(data: Sequence<KSDeclaration>) {
-    data.forEach {
-      when (it) {
-        is KSClassDeclaration -> {
-          it.generateComponentForClass()
-        }
+) : Generator<KSDeclaration, Unit> {
+  override fun generate(data: KSDeclaration) {
+    when (data) {
+      is KSClassDeclaration -> {
+        data.generateComponentForClass()
+      }
 
-        is KSFunctionDeclaration -> {
-          it.generateComponentForFunction()
-        }
+      is KSFunctionDeclaration -> {
+        data.generateComponentForFunction()
+      }
 
-        else -> {
-          throw IllegalArgumentException("This type is not yet supported by @EntryPoint")
-        }
+      else -> {
+        throw IllegalArgumentException("This type is not yet supported by @EntryPoint")
       }
     }
   }
