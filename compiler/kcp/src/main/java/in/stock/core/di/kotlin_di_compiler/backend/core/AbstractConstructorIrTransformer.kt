@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler.core
+package `in`.stock.core.di.kotlin_di_compiler.backend.core
 
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.expressions.IrBody

@@ -2,6 +2,7 @@ package `in`.stock.core.di.compiler.ksp
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getConstructors
+import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
@@ -16,6 +17,7 @@ import `in`.stock.core.di.runtime.annotations.Module
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// todo refactor this to provide different implementation for collecting types for different kotlin elements
 @Singleton
 class TypeCollector @Inject constructor(
   private val resolver: KspResolver,
@@ -48,16 +50,16 @@ class TypeCollector @Inject constructor(
   private fun KSDeclaration.getDependencies(): Sequence<KSDeclaration> {
     val resolveParameters = when (this) {
       is KSClassDeclaration -> {
-        getConstructors().flatMap { it.parameters }
+        getConstructors().flatMap { it.parameters }.map { it.type } + getDeclaredProperties().map { it.type }
       }
       is KSFunctionDeclaration -> {
-        parameters.asSequence()
+        parameters.map { it.type }.asSequence()
       }
       else -> {
         messenger.fatalError(IllegalArgumentException("This type is not supported by @EntryPoint"),this)
       }
     }.map {
-      it.type.resolve().declaration
+      it.resolve().declaration
     }
     return resolveParameters + resolveParameters.flatMap { it.getDependencies() }
   }

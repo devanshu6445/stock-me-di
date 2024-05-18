@@ -1,18 +1,22 @@
-package `in`.stock.core.di.kotlin_di_compiler.core
+package `in`.stock.core.di.kotlin_di_compiler.backend.core
 
 import `in`.stock.core.di.kotlin_di_compiler.builders.IrBlockBodyBuilder
-import `in`.stock.core.di.kotlin_di_compiler.builders.IrBuilderWithScope
 import `in`.stock.core.di.kotlin_di_compiler.builders.IrGeneratorContextBase
 import `in`.stock.core.di.kotlin_di_compiler.builders.Scope
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import org.jetbrains.kotlin.ir.IrBuiltIns
+import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
-import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.declarations.IrDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
+import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
+import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
 
 interface AbstractTransformerForGenerator: IrElementVisitorVoid {
 
@@ -23,7 +27,24 @@ interface AbstractTransformerForGenerator: IrElementVisitorVoid {
 
   val keys: List<GeneratedDeclarationKey>
 
-  fun IrDeclaration.shouldTransform(): Boolean = false
+  val visitBodies: Boolean
+    get() = false
+
+  // default implementation may result in double call to isFromPlugin as other AbstractTransformers are also checking
+  // isFromPlugin
+  fun IrDeclaration.shouldTransform(): Boolean = isFromPlugin(context.afterK2)
+
+  override fun visitElement(element: IrElement) {
+    if (visitBodies) {
+      element.acceptChildrenVoid(this)
+    } else {
+      when (element) {
+        is IrDeclaration,
+        is IrFile,
+        is IrModuleFragment -> element.acceptChildrenVoid(this)
+      }
+    }
+  }
 
   fun IrSymbol.irBlockBody(builder: IrBlockBodyBuilder.() -> Unit): IrBody {
     return IrBlockBodyBuilder(

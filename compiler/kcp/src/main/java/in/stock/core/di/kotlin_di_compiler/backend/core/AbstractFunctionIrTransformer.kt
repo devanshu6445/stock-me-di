@@ -1,8 +1,5 @@
-package `in`.stock.core.di.kotlin_di_compiler.core
+package `in`.stock.core.di.kotlin_di_compiler.backend.core
 
-import `in`.stock.core.di.kotlin_di_compiler.builders.IrBuilderWithScope
-import `in`.stock.core.di.kotlin_di_compiler.builders.IrGeneratorContextBase
-import `in`.stock.core.di.kotlin_di_compiler.builders.Scope
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrBody
 

@@ -11,7 +11,7 @@ fun functionComponentTest(
 }
 
 @EntryPoint
-class EntryPointTest(val dep: Dep) {
+class EntryPointTest {
 
   @Inject
   lateinit var a: Dep

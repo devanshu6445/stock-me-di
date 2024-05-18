@@ -1,10 +1,10 @@
 package `in`.stock.core.di.kotlin_di_compiler
 
+import `in`.stock.core.di.kotlin_di_compiler.backend.core.AbstractFunctionIrTransformer
 import `in`.stock.core.di.kotlin_di_compiler.builders.irGet
 import `in`.stock.core.di.kotlin_di_compiler.builders.irGetField
 import `in`.stock.core.di.kotlin_di_compiler.builders.irReturn
 import `in`.stock.core.di.kotlin_di_compiler.builders.irSetField
-import `in`.stock.core.di.kotlin_di_compiler.core.AbstractFunctionIrTransformer
 import `in`.stock.core.di.kotlin_di_compiler.k2.FirDeclarationGenerator
 import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
 import org.jetbrains.kotlin.GeneratedDeclarationKey

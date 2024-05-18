@@ -1,9 +1,11 @@
 package `in`.stock.core.di.compiler.ksp.generators
 
 import com.google.devtools.ksp.getConstructors
+import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSTypeReference
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toTypeName
 import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
@@ -61,18 +63,9 @@ class EntryPointGenerator @Inject constructor(
       }Component"
     )
 
-    val properties = getConstructors().flatMap { constructor ->
-      constructor.parameters.map { param ->
-        PropertySpec.builder(
-          param.name?.asString().orEmpty() + "1",
-          param.type.toTypeName(),
-          KModifier.ABSTRACT
-        ).build()
-      }
-    }
     generateComponent(
       componentName = componentName,
-      properties = properties
+      properties = extractAllProperties()
     )
   }
 
@@ -86,7 +79,8 @@ class EntryPointGenerator @Inject constructor(
 
     FileSpec.builder(componentName).addType(
       TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
-        .addAnnotation(Component::class).constructorBuilder(depComponents)
+        .addAnnotation(Component::class)
+        .constructorBuilder(depComponents)
         .addProperties(properties.asIterable()).build()
     ).build().writeTo(codeGenerator)
   }
@@ -115,4 +109,39 @@ class EntryPointGenerator @Inject constructor(
 
     primaryConstructor(constructorBuilder.build())
   }
+}
+
+private data class Property(
+  val name: String,
+  val type: KSTypeReference,
+)
+
+private fun KSClassDeclaration.extractAllProperties() = sequence {
+  for (constructor in getConstructors()) {
+    for (parameter in constructor.parameters) {
+      yield(
+        Property(
+          name = parameter.name?.asString() ?: return@sequence,
+          type = parameter.type
+        )
+      )
+    }
+  }
+
+  for (property in getDeclaredProperties()) {
+    yield(
+      Property(
+        name = property.simpleName.asString(),
+        type = property.type
+      )
+    )
+  }
+}.distinctBy {
+  it.type.resolve().declaration.qualifiedName?.asString() ?: return@distinctBy
+}.map {
+  PropertySpec.builder(
+    name = it.name,
+    type = it.type.toTypeName(),
+    KModifier.ABSTRACT
+  ).build()
 }
