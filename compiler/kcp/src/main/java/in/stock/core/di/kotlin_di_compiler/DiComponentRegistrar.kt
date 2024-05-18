@@ -6,9 +6,16 @@ import `in`.stock.core.di.kotlin_di_compiler.k2.DIFirGenerator
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.codegen.ImplementationBodyCodegen
+import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.container.StorageComponentContainer
+import org.jetbrains.kotlin.container.useInstance
+import org.jetbrains.kotlin.descriptors.ModuleDescriptor
+import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
+import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 
 class DiComponentRegistrar : CompilerPluginRegistrar() {
@@ -20,6 +27,16 @@ class DiComponentRegistrar : CompilerPluginRegistrar() {
 //        val enabled = configuration.get(DiCommandLineProcessor.ARG_ENABLED, "true").toBoolean()
 
     SyntheticResolveExtension.registerExtension(SyntheticResolver())
+
+    StorageComponentContainerContributor.registerExtension(object : StorageComponentContainerContributor {
+      override fun registerModuleComponents(
+        container: StorageComponentContainer,
+        platform: TargetPlatform,
+        moduleDescriptor: ModuleDescriptor
+      ) {
+        container.useInstance(InjectChecker())
+      }
+    })
 
     FirExtensionRegistrarAdapter.registerExtension(DIFirGenerator(messageCollector))
     IrGenerationExtension.registerExtension(DiIrGenerator())

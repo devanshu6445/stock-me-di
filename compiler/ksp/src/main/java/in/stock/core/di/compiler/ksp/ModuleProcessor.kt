@@ -97,7 +97,7 @@ class ModuleProcessor(
       }
 
       EntryPoint::class.qualifiedName -> {
-        entryPointGenerator.generate(symbol as KSClassDeclaration)
+        entryPointGenerator.generate(symbol as KSDeclaration)
         true
       }
 

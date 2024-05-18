@@ -8,7 +8,7 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import `in`.stock.core.di.compiler.core.KspResolver
 import `in`.stock.core.di.compiler.core.Messenger
-import `in`.stock.core.di.compiler.core.exceptions.ClassConstructException
+import `in`.stock.core.di.compiler.ksp.exceptions.ClassConstructException
 import `in`.stock.core.di.compiler.ksp.utils.*
 import `in`.stock.core.di.runtime.annotations.AssociatedWith
 import `in`.stock.core.di.runtime.annotations.InstallIn

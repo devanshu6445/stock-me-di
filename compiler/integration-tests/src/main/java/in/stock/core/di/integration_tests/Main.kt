@@ -11,11 +11,9 @@ import me.tatarka.inject.annotations.Provides
 fun main(args: Array<String>) {
   println("Hello Wold!")
 
-  // Try adding program arguments via Run/Debug configuration.
-  // Learn more about running applications: https://www.jetbrains.cop-m/help/idea/running-applications.html.
-  println("Program arguments: ${args.joinToString()}")
-  println(B(component = BComponent::class.create()).ab.toString())
-  println("L")
+  val entryPoint = EntryPointTest(component = EntryPointTestComponent::class.create())
+
+  println(entryPoint.a)
 }
 
 @Inject
@@ -34,4 +32,15 @@ object Module {
 
   @Provides
   fun provide() = C()
+}
+
+
+class AB(val b: A) {
+
+  @`in`.stock.core.di.runtime.annotations.Inject
+  private lateinit var a : A
+
+  fun b() {
+    a.toString()
+  }
 }

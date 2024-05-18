@@ -18,6 +18,13 @@ kotlin {
     freeCompilerArgs.add(
         "-Xplugin=${project(":compiler:kcp").projectDir}/build/libs/kcp-1.0.0.jar"
     )
+
+    freeCompilerArgs.addAll(
+      listOf(
+        "-Xphases-to-dump-after=ValidateIrAfterLowering",
+        "-Xdump-directory=${buildDir}/ir-dump/",
+      )
+    )
   }
 }
 

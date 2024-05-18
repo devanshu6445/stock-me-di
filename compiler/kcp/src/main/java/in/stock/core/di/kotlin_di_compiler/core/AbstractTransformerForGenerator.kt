@@ -1,50 +1,41 @@
 package `in`.stock.core.di.kotlin_di_compiler.core
 
+import `in`.stock.core.di.kotlin_di_compiler.builders.IrBlockBodyBuilder
+import `in`.stock.core.di.kotlin_di_compiler.builders.IrBuilderWithScope
+import `in`.stock.core.di.kotlin_di_compiler.builders.IrGeneratorContextBase
+import `in`.stock.core.di.kotlin_di_compiler.builders.Scope
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
-import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.IrBuiltIns
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
-import org.jetbrains.kotlin.ir.declarations.IrConstructor
-import org.jetbrains.kotlin.ir.declarations.IrDeclaration
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
-import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrBody
-import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
+import org.jetbrains.kotlin.ir.symbols.IrSymbol
+import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
 
-abstract class AbstractTransformerForGenerator(private val context: IrPluginContext) : IrElementTransformerVoid() {
+interface AbstractTransformerForGenerator: IrElementVisitorVoid {
 
-  protected val irBuiltIns = context.irBuiltIns
+  val context: IrPluginContext
 
-  abstract val keys: List<GeneratedDeclarationKey>
+  val irBuiltIns: IrBuiltIns
+    get() = context.irBuiltIns
 
-  abstract fun generateBodyForFunction(declaration: IrSimpleFunction): IrBody?
+  val keys: List<GeneratedDeclarationKey>
 
-  abstract fun generateBodyForConstructor(declaration: IrConstructor): IrBody?
+  fun IrDeclaration.shouldTransform(): Boolean = false
 
-  override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
-    if (!declaration.isFromPlugin(context.afterK2)) {
-      return super.visitSimpleFunction(declaration)
-    }
-
-    require(declaration.body == null)
-    declaration.body = generateBodyForFunction(declaration)
-
-    return declaration
-  }
-
-  override fun visitConstructor(declaration: IrConstructor): IrStatement {
-    if (!declaration.isFromPlugin(context.afterK2)) {
-      return super.visitConstructor(declaration)
-    }
-    require(declaration.body == null)
-
-    declaration.body = generateBodyForConstructor(declaration)
-    return declaration
+  fun IrSymbol.irBlockBody(builder: IrBlockBodyBuilder.() -> Unit): IrBody {
+    return IrBlockBodyBuilder(
+      context = IrGeneratorContextBase(irBuiltIns),
+      scope = Scope(this),
+      startOffset = -1,
+      endOffset = -1
+    ).blockBody(builder)
   }
 
   @OptIn(ObsoleteDescriptorBasedAPI::class)
-  private fun IrDeclaration.isFromPlugin(afterK2: Boolean): Boolean {
+  fun IrDeclaration.isFromPlugin(afterK2: Boolean): Boolean {
     val origin = origin
     return if (afterK2) {
       origin is IrDeclarationOrigin.GeneratedByPlugin && keys.any { it == origin.pluginKey }
