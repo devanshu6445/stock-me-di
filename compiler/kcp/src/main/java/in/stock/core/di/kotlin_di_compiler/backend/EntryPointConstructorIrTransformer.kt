@@ -1,9 +1,6 @@
 package `in`.stock.core.di.kotlin_di_compiler.backend
 
 import `in`.stock.core.di.kotlin_di_compiler.backend.core.AbstractConstructorIrTransformer
-import `in`.stock.core.di.kotlin_di_compiler.builders.irDelegatingConstructorCall
-import `in`.stock.core.di.kotlin_di_compiler.builders.irGet
-import `in`.stock.core.di.kotlin_di_compiler.builders.irSetField
 import `in`.stock.core.di.kotlin_di_compiler.k2.FirDeclarationGenerator
 import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
 import `in`.stock.core.di.kotlin_di_compiler.utils.irClass
@@ -11,6 +8,9 @@ import `in`.stock.core.di.kotlin_di_compiler.utils.irProperties
 import `in`.stock.core.di.kotlin_di_compiler.utils.typesOfTypeParameters
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.builders.irDelegatingConstructorCall
+import org.jetbrains.kotlin.ir.builders.irGet
+import org.jetbrains.kotlin.ir.builders.irSetField
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl

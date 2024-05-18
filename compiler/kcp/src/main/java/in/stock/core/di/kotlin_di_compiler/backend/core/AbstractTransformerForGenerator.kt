@@ -1,14 +1,14 @@
 package `in`.stock.core.di.kotlin_di_compiler.backend.core
 
-import `in`.stock.core.di.kotlin_di_compiler.builders.IrBlockBodyBuilder
-import `in`.stock.core.di.kotlin_di_compiler.builders.IrGeneratorContextBase
-import `in`.stock.core.di.kotlin_di_compiler.builders.Scope
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import org.jetbrains.kotlin.ir.IrBuiltIns
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
+import org.jetbrains.kotlin.ir.builders.IrBlockBodyBuilder
+import org.jetbrains.kotlin.ir.builders.IrGeneratorContextBase
+import org.jetbrains.kotlin.ir.builders.Scope
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFile

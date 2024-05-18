@@ -1,14 +1,14 @@
-package `in`.stock.core.di.kotlin_di_compiler
+package `in`.stock.core.di.kotlin_di_compiler.backend
 
 import `in`.stock.core.di.kotlin_di_compiler.backend.core.AbstractFunctionIrTransformer
-import `in`.stock.core.di.kotlin_di_compiler.builders.irGet
-import `in`.stock.core.di.kotlin_di_compiler.builders.irGetField
-import `in`.stock.core.di.kotlin_di_compiler.builders.irReturn
-import `in`.stock.core.di.kotlin_di_compiler.builders.irSetField
 import `in`.stock.core.di.kotlin_di_compiler.k2.FirDeclarationGenerator
 import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.builders.irGet
+import org.jetbrains.kotlin.ir.builders.irGetField
+import org.jetbrains.kotlin.ir.builders.irReturn
+import org.jetbrains.kotlin.ir.builders.irSetField
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.util.hasAnnotation

@@ -6,8 +6,6 @@ import `in`.stock.core.di.kotlin_di_compiler.k2.DIFirGenerator
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.codegen.ImplementationBodyCodegen
-import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.container.StorageComponentContainer
@@ -28,6 +26,7 @@ class DiComponentRegistrar : CompilerPluginRegistrar() {
 
     SyntheticResolveExtension.registerExtension(SyntheticResolver())
 
+    // todo not used now
     StorageComponentContainerContributor.registerExtension(object : StorageComponentContainerContributor {
       override fun registerModuleComponents(
         container: StorageComponentContainer,

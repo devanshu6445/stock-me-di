@@ -6,6 +6,7 @@ import `in`.stock.core.di.kotlin_di_compiler.backend.core.AbstractPropertyIrTran
 import `in`.stock.core.di.kotlin_di_compiler.k2.FirDeclarationGenerator
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
@@ -15,9 +16,14 @@ class EntryPointIrGenerator(
   override val context: IrPluginContext,
   private val entryPointConstructorIrTransformer: AbstractConstructorIrTransformer,
   private val injectPropertyIrTransformer: AbstractPropertyIrTransformer,
-  private val injectPropertyGetterSetterIrTransformer: AbstractFunctionIrTransformer
+  private val injectPropertyGetterSetterIrTransformer: AbstractFunctionIrTransformer,
+  private val injectIrPropertyGenerator: InjectIrPropertyGenerator
 ) :
   AbstractConstructorIrTransformer, AbstractPropertyIrTransformer, AbstractFunctionIrTransformer {
+
+  override val keys: List<GeneratedDeclarationKey>
+    get() = listOf(FirDeclarationGenerator.Key)
+
   override fun IrProperty.transformProperty() = with(injectPropertyIrTransformer) {
     transformProperty()
   }
@@ -25,9 +31,11 @@ class EntryPointIrGenerator(
   override fun generateBodyForConstructor(declaration: IrConstructor): IrBody? =
     entryPointConstructorIrTransformer.generateBodyForConstructor(declaration)
 
-  override val keys: List<GeneratedDeclarationKey>
-    get() = listOf(FirDeclarationGenerator.Key)
-
   override fun generateBodyForFunction(declaration: IrSimpleFunction): IrBody? =
     injectPropertyGetterSetterIrTransformer.generateBodyForFunction(declaration)
+
+  override fun visitClass(declaration: IrClass) {
+    injectIrPropertyGenerator.visitClass(declaration)
+    super<AbstractFunctionIrTransformer>.visitClass(declaration)
+  }
 }

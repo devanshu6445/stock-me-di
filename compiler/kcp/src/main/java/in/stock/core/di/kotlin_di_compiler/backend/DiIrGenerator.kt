@@ -1,6 +1,5 @@
 package `in`.stock.core.di.kotlin_di_compiler.backend
 
-import `in`.stock.core.di.kotlin_di_compiler.InjectPropertyGetterSetterIrTransformer
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
@@ -15,7 +14,8 @@ open class DiIrGenerator : IrGenerationExtension {
         context = pluginContext,
         entryPointConstructorIrTransformer = EntryPointConstructorIrTransformer(context = pluginContext),
         injectPropertyIrTransformer = InjectPropertyIrTransformer(context = pluginContext),
-        injectPropertyGetterSetterIrTransformer = InjectPropertyGetterSetterIrTransformer(context = pluginContext)
+        injectPropertyGetterSetterIrTransformer = InjectPropertyGetterSetterIrTransformer(context = pluginContext),
+        injectIrPropertyGenerator = InjectIrPropertyGenerator(context = pluginContext)
       )
     )
   }
