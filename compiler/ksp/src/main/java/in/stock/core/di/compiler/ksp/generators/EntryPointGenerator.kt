@@ -12,6 +12,7 @@ import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.writeTo
 import `in`.stock.core.di.compiler.ksp.TypeCollector
+import `in`.stock.core.di.compiler.ksp.utils.LazyName
 import `in`.stock.core.di.compiler.ksp.utils.addConstructorProperty
 import `in`.stock.core.di.compiler.ksp.utils.capitalize
 import `in`.stock.core.di.runtime.annotations.Component
@@ -71,7 +72,7 @@ class EntryPointGenerator @Inject constructor(
 
   private fun KSDeclaration.generateComponent(
     componentName: ClassName,
-    properties: Sequence<PropertySpec>
+    properties: Sequence<PropertySpec>,
   ) {
     val depComponents = typeCollector.collectTypes(this).map {
       ClassName(it.packageName.asString(), it.simpleName.asString())
@@ -95,6 +96,8 @@ class EntryPointGenerator @Inject constructor(
     parentComponent.forEach { component ->
 
       // todo some suffix to make the name different than type name
+      // workaround for conflicting declaration when inheriting the class
+      // can overcome by adding override to the child class params
       val name = component.simpleName.replaceFirstChar { it.lowercaseChar() } + "1"
 
       constructorBuilder.addConstructorProperty(
@@ -132,12 +135,12 @@ private fun KSClassDeclaration.extractAllProperties() = sequence {
     yield(
       Property(
         name = property.simpleName.asString(),
-        type = property.type
+        type = if (property.type.resolve().declaration.qualifiedName?.asString() == LazyName) property.type.resolve().arguments.first().type!! else property.type
       )
     )
   }
 }.distinctBy {
-  it.type.resolve().declaration.qualifiedName?.asString() ?: return@distinctBy
+  it.type.resolve().declaration.qualifiedName?.asString()
 }.map {
   PropertySpec.builder(
     name = it.name,

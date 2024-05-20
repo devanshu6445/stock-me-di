@@ -4,28 +4,24 @@ import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import org.jetbrains.kotlin.ir.IrBuiltIns
-import org.jetbrains.kotlin.ir.IrElement
+import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.builders.IrBlockBodyBuilder
 import org.jetbrains.kotlin.ir.builders.IrGeneratorContextBase
 import org.jetbrains.kotlin.ir.builders.Scope
-import org.jetbrains.kotlin.ir.declarations.IrDeclaration
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
-import org.jetbrains.kotlin.ir.declarations.IrFile
-import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
-import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
-import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
+import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 
-interface AbstractTransformerForGenerator: IrElementVisitorVoid {
+abstract class AbstractTransformerForGenerator : IrElementTransformerVoid() {
 
-  val context: IrPluginContext
+  abstract val context: IrPluginContext
 
   val irBuiltIns: IrBuiltIns
     get() = context.irBuiltIns
 
-  val keys: List<GeneratedDeclarationKey>
+  abstract val keys: List<GeneratedDeclarationKey>
 
   val visitBodies: Boolean
     get() = false
@@ -34,16 +30,40 @@ interface AbstractTransformerForGenerator: IrElementVisitorVoid {
   // isFromPlugin
   fun IrDeclaration.shouldTransform(): Boolean = isFromPlugin(context.afterK2)
 
-  override fun visitElement(element: IrElement) {
-    if (visitBodies) {
-      element.acceptChildrenVoid(this)
-    } else {
-      when (element) {
-        is IrDeclaration,
-        is IrFile,
-        is IrModuleFragment -> element.acceptChildrenVoid(this)
-      }
+  abstract fun generateBodyForFunction(declaration: IrSimpleFunction): IrBody?
+
+  override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
+    if (!declaration.isFromPlugin(context.afterK2) || !declaration.shouldTransform()) {
+      return super.visitSimpleFunction(declaration)
     }
+
+    //require(declaration.body == null)
+    if (declaration.body == null) {
+      declaration.body = generateBodyForFunction(declaration)
+    }
+    return super.visitSimpleFunction(declaration)
+  }
+
+  abstract fun IrProperty.transformProperty()
+
+  override fun visitProperty(declaration: IrProperty): IrStatement {
+    if (!declaration.isFromPlugin(afterK2 = context.afterK2) || !declaration.shouldTransform()) {
+      return super.visitProperty(declaration)
+    }
+    declaration.transformProperty()
+    return super.visitProperty(declaration)
+  }
+
+  abstract fun generateBodyForConstructor(declaration: IrConstructor): IrBody?
+
+  override fun visitConstructor(declaration: IrConstructor): IrStatement {
+    if (!declaration.isFromPlugin(context.afterK2) || !declaration.shouldTransform()) {
+      return super.visitConstructor(declaration)
+    }
+    require(declaration.body == null)
+
+    declaration.body = generateBodyForConstructor(declaration)
+    return super.visitConstructor(declaration)
   }
 
   fun IrSymbol.irBlockBody(builder: IrBlockBodyBuilder.() -> Unit): IrBody {

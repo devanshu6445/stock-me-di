@@ -15,4 +15,7 @@ class EntryPointTest {
 
   @Inject
   lateinit var a: Dep
+
+  @Inject
+  lateinit var aLazy: Lazy<B>
 }

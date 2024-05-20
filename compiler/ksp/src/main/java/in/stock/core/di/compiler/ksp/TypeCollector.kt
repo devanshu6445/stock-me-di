@@ -54,7 +54,14 @@ class TypeCollector @Inject constructor(
           it.hasAnnotation(
             `in`.stock.core.di.runtime.annotations.Inject::class
           )
-        }.map { it.type }
+        }.map {
+          if (it.type.resolve().declaration.qualifiedName?.asString() == "kotlin.Lazy") {
+            it.type.resolve().arguments.first().type
+              ?: messenger.fatalError(IllegalStateException("Generic type information not present for Lazy"), it)
+          } else {
+            it.type
+          }
+        }
       }
 
       is KSFunctionDeclaration -> {
