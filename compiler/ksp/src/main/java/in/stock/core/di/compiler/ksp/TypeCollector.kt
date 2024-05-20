@@ -50,13 +50,19 @@ class TypeCollector @Inject constructor(
   private fun KSDeclaration.getDependencies(): Sequence<KSDeclaration> {
     val resolveParameters = when (this) {
       is KSClassDeclaration -> {
-        getConstructors().flatMap { it.parameters }.map { it.type } + getDeclaredProperties().map { it.type }
+        getConstructors().flatMap { it.parameters }.map { it.type } + getDeclaredProperties().filter {
+          it.hasAnnotation(
+            `in`.stock.core.di.runtime.annotations.Inject::class
+          )
+        }.map { it.type }
       }
+
       is KSFunctionDeclaration -> {
         parameters.map { it.type }.asSequence()
       }
+
       else -> {
-        messenger.fatalError(IllegalArgumentException("This type is not supported by @EntryPoint"),this)
+        messenger.fatalError(IllegalArgumentException("This type is not supported by @EntryPoint"), this)
       }
     }.map {
       it.resolve().declaration
@@ -102,7 +108,11 @@ class TypeCollector @Inject constructor(
               }
 
               else -> {
-                messenger.fatalError(ClassConstructException("Please mark the class with @Inject or provide it through @Provides"),it)
+                // todo improve logging information
+                messenger.fatalError(
+                  ClassConstructException("Please mark the class with @Inject or provide it through @Provides"),
+                  it
+                )
               }
             }
           }

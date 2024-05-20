@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+
 plugins {
   alias(libs.plugins.org.jetbrains.kotlin.jvm)
   alias(libs.plugins.ksp)
@@ -23,11 +25,11 @@ kotlin {
   }
 }
 
-//// always run a clean build, because after applying compiler plugin
-//// ksp generated classes are not resolved todo need to resolve the issue
-//afterEvaluate {
-//  tasks.named("kspKotlin").dependsOn("clean")
-//}
+// always run a clean build, because after applying compiler plugin
+// ksp generated classes are not resolved todo need to resolve the issue
+afterEvaluate {
+  tasks.named("kspKotlin").dependsOn("clean")
+}
 
 dependencies {
   implementation(projects.runtime)

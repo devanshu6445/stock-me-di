@@ -11,9 +11,7 @@ import org.jetbrains.kotlin.ir.builders.irReturn
 import org.jetbrains.kotlin.ir.builders.irSetField
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrBody
-import org.jetbrains.kotlin.ir.util.hasAnnotation
-import org.jetbrains.kotlin.ir.util.isGetter
-import org.jetbrains.kotlin.ir.util.isSetter
+import org.jetbrains.kotlin.ir.util.*
 
 class InjectPropertyGetterSetterIrTransformer(
   override val context: IrPluginContext
@@ -47,6 +45,20 @@ class InjectPropertyGetterSetterIrTransformer(
           }
 
           else -> throw UnsupportedOperationException("Can't generate setter for other than component")
+        }
+      }
+
+      declaration.name.asString().contains("Builder") -> {
+        val builderType = declaration.parentAsClass.properties.first { it.getter?.returnType == declaration.returnType }
+
+        declaration.symbol.irBlockBody {
+          +irReturn(
+            irGet(
+              type = builderType.getter?.returnType!!,
+              receiver = irGet(declaration.parentAsClass.thisReceiver!!),
+              getterSymbol = builderType.getter?.symbol!!
+            )
+          )
         }
       }
 

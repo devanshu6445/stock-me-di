@@ -1,8 +1,10 @@
 package `in`.stock.core.di.kotlin_di_compiler.utils
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.expressions.IrGetField
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrField
+import org.jetbrains.kotlin.ir.declarations.IrProperty
+import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrReturn
 import org.jetbrains.kotlin.ir.expressions.IrSetField
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
@@ -50,18 +52,18 @@ fun IrSimpleFunction.getSetterField(): IrField? {
   return statement.symbol.owner
 }
 
-//// This declaration accesses IrDeclarationContainer.declarations, which is marked with this opt-in
-//fun IrClass.getPropertyGetter(name: String): IrSimpleFunctionSymbol? =
-//  getPropertyDeclaration(name)?.getter?.symbol
-//    ?: getSimpleFunction("<get-$name>").also { assert(it?.owner?.correspondingPropertySymbol?.owner?.name?.asString() == name) }
-//
-//private fun IrClass.getPropertyDeclaration(name: String): IrProperty? {
-//  val properties = declarations.filterIsInstanceAnd<IrProperty> { it.name.asString() == name }
-//  if (properties.size > 1) {
-//    error(
-//      "More than one property with name $name in class $fqNameWhenAvailable:\n" +
-//              properties.joinToString("\n", transform = IrProperty::render)
-//    )
-//  }
-//  return properties.firstOrNull()
-//}
+// This declaration accesses IrDeclarationContainer.declarations, which is marked with this opt-in
+fun IrClass.getPropertyGetter(name: String): IrSimpleFunctionSymbol? =
+  getPropertyDeclaration(name)?.getter?.symbol
+    ?: getSimpleFunction("<get-$name>").also { assert(it?.owner?.correspondingPropertySymbol?.owner?.name?.asString() == name) }
+
+private fun IrClass.getPropertyDeclaration(name: String): IrProperty? {
+  val properties = declarations.filterIsInstanceAnd<IrProperty> { it.name.asString() == name }
+  if (properties.size > 1) {
+    error(
+      "More than one property with name $name in class $fqNameWhenAvailable:\n" +
+              properties.joinToString("\n", transform = IrProperty::render)
+    )
+  }
+  return properties.firstOrNull()
+}

@@ -2,7 +2,6 @@ package `in`.stock.core.di.integration_tests
 
 import `in`.stock.core.di.runtime.Singleton
 import `in`.stock.core.di.runtime.SingletonComponent
-import `in`.stock.core.di.runtime.annotations.EntryPoint
 import `in`.stock.core.di.runtime.annotations.InstallIn
 import `in`.stock.core.di.runtime.annotations.Module
 import me.tatarka.inject.annotations.Inject
@@ -13,15 +12,12 @@ fun main(args: Array<String>) {
 
   val entryPoint = EntryPointTest(component = EntryPointTestComponent::class.create())
 
-  println(entryPoint.a)
+  println(entryPoint::class.java.declaredFields.first { it.name == "aDelegate" }.get(entryPoint))
 }
 
 @Inject
 @Singleton
 class A
-
-@EntryPoint
-class B(val ab: A)
 
 class C
 
@@ -32,15 +28,4 @@ object Module {
 
   @Provides
   fun provide() = C()
-}
-
-
-class AB(val b: A) {
-
-  @`in`.stock.core.di.runtime.annotations.Inject
-  private lateinit var a : A
-
-  fun b() {
-    a.toString()
-  }
 }
