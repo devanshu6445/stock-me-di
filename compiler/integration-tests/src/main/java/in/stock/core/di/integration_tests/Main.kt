@@ -18,21 +18,3 @@ fun main(args: Array<String>) {
 
   println(entryPoint.component.aLazy)
 }
-
-@Inject
-@Singleton
-class A
-
-class C
-
-@Module
-@InstallIn(SingletonComponent::class)
-@Singleton
-object Module {
-
-  @Provides
-  fun provide() = C()
-}
-
-@Inject
-class B

@@ -7,15 +7,18 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.writeTo
 import `in`.stock.core.di.compiler.ksp.TypeCollector
 import `in`.stock.core.di.compiler.ksp.utils.LazyName
+import `in`.stock.core.di.compiler.ksp.utils.Provides
 import `in`.stock.core.di.compiler.ksp.utils.addConstructorProperty
 import `in`.stock.core.di.compiler.ksp.utils.capitalize
 import `in`.stock.core.di.runtime.annotations.Component
+import `in`.stock.core.di.runtime.annotations.EntryPoint
 import javax.inject.Inject
 
 class EntryPointGenerator @Inject constructor(
@@ -64,15 +67,24 @@ class EntryPointGenerator @Inject constructor(
       }Component"
     )
 
+    // only provide this class as argument if the injection is not through the constrcutor
+    // and this class doesn't have an rimary constructor
+    // todo can remove the check of constructor injection as the dependency can be provided via secondary constrcutor if primary constructor doesn't exist
+    val canProvideThisClassAsArgument =
+      annotations.first { it.annotationType.resolve().declaration.qualifiedName?.asString() == EntryPoint::class.qualifiedName }
+        .arguments.first { it.name?.asString() == "initializer" }.value != "constructor" && primaryConstructor == null
+
     generateComponent(
       componentName = componentName,
-      properties = extractAllProperties()
+      properties = extractAllProperties(),
+      arguments = if (canProvideThisClassAsArgument) listOf(this.toClassName()) else listOf()
     )
   }
 
   private fun KSDeclaration.generateComponent(
     componentName: ClassName,
     properties: Sequence<PropertySpec>,
+    arguments: List<ClassName> = emptyList()
   ) {
     val depComponents = typeCollector.collectTypes(this).map {
       ClassName(it.packageName.asString(), it.simpleName.asString())
@@ -81,13 +93,14 @@ class EntryPointGenerator @Inject constructor(
     FileSpec.builder(componentName).addType(
       TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
         .addAnnotation(Component::class)
-        .constructorBuilder(depComponents)
+        .constructorBuilder(depComponents, arguments)
         .addProperties(properties.asIterable()).build()
     ).build().writeTo(codeGenerator)
   }
 
   private fun TypeSpec.Builder.constructorBuilder(
     parentComponent: Sequence<ClassName>,
+    arguments: List<ClassName>
   ) = apply {
     if (parentComponent.count() == 0) return@apply
 
@@ -108,6 +121,19 @@ class EntryPointGenerator @Inject constructor(
           AnnotationSpec.builder(Component::class).build()
         )
       )
+
+      arguments.forEach { arg ->
+        constructorBuilder.addConstructorProperty(
+          typeSpec = this,
+          name = arg.simpleName,
+          type = arg,
+          annotations = listOf(
+            AnnotationSpec.builder(Provides)
+              .useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
+              .build()
+          )
+        )
+      }
     }
 
     primaryConstructor(constructorBuilder.build())

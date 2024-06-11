@@ -39,7 +39,16 @@ open class SyntheticResolver : SyntheticResolveExtension {
     result: MutableCollection<ClassConstructorDescriptor>
   ) {
     if (thisDescriptor.annotations.hasAnnotation(FqNames.EntryPoint)) {
-      generateComponentConstructor(thisDescriptor, result)
+
+      val entryPointAnnotation = thisDescriptor.annotations.findAnnotation(FqNames.EntryPoint)!!
+      when(entryPointAnnotation.allValueArguments[Name.identifier("initializer")]?.value) {
+        "constructor", null -> {
+          generateComponentConstructor(thisDescriptor, result)
+        }
+        else -> {
+          // todo add support for component initialization other than constructor
+        }
+      }
     }
   }
 

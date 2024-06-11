@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
 
+// todo refactor it using builder pattern for generation
 class EntryPointIrGenerator(
   override val context: IrPluginContext,
 ) : AbstractTransformerForGenerator() {
@@ -298,8 +299,6 @@ class EntryPointIrGenerator(
         when {
           declaration.isGetter -> {
             declaration.body = declaration.symbol.irBlockBody {
-              val parentClass = declaration.parentAsClass
-
               val component = declaration.parentAsClass.properties.first { it.name.asString().contains("component") }
               declaration.body = declaration.symbol.irBlockBody {
                 +irReturn(
