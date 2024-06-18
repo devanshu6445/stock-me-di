@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.Variance
 
+// todo refactor it using builder pattern for generation
 class EntryPointIrGenerator(
   override val context: IrPluginContext,
 ) : AbstractTransformerForGenerator() {
@@ -114,7 +115,7 @@ class EntryPointIrGenerator(
 
   override fun generateBodyForConstructor(declaration: IrConstructor): IrBody? {
     if (!declaration.parentAsClass.annotations.hasAnnotation(FqNames.EntryPoint)) {
-      error("Synthetic constructor should not be generated for non EntryPoint Class.")
+      error("Synthetic constructor body should not be generated for non EntryPoint Class.")
     }
 
     val constructor = declaration.parentAsClass.primaryConstructor ?: return null
@@ -222,75 +223,76 @@ class EntryPointIrGenerator(
     }
   }
 
-  override fun visitClass(declaration: IrClass): IrStatement {
-    if (!declaration.hasAnnotation(FqNames.EntryPoint))
-      return super.visitClass(declaration)
-
-    val properties = declaration.properties.filter { it.annotations.hasAnnotation(FqNames.Inject) }.toList()
-
-    val lazyType = context.referenceClass(ClassId(FqName("kotlin"), Name.identifier("Lazy")))!!
-
-    for (props in properties.filter { it.hasAnnotation(FqNames.Inject) }) {
-      declaration.addProperty {
-        name = Name.identifier(props.name.asString() + "Delegate")
-        modality = Modality.FINAL
-      }.apply {
-        addBackingField {
-          type = lazyType.makeTypeProjection(
-            type = props.getter?.returnType!!,
-            variance = Variance.INVARIANT
-          )
-        }.apply {
-          val lazyPropertyCreatorFunction = context.referenceFunctions(
-            callableId = CallableId(
-              packageName = FqName("kotlin"),
-              callableName = Name.identifier("lazy")
-            )
-          ).first()
-
-          initializer = context.irFactory.createExpressionBody(
-            startOffset = -1,
-            endOffset = -1,
-            expression = IrCallImpl(
-              startOffset = -1,
-              endOffset = -1,
-              type = lazyPropertyCreatorFunction.owner.returnType,
-              symbol = lazyPropertyCreatorFunction,
-              typeArgumentsCount = lazyPropertyCreatorFunction.owner.typeParameters.size,
-              valueArgumentsCount = lazyPropertyCreatorFunction.owner.valueParameters.size
-            ).apply {
-
-              putTypeArgument(
-                0,
-                type
-              )
-
-              putValueArgument(
-                0,
-                context.irLambdaExpression(
-                  startOffset,
-                  endOffset,
-                  props.getter?.returnType!!
-                ) {
-                  it.body = it.symbol.irBlockBody {
-                    +irReturn(
-                      irGetField(
-                        receiver = irGet(declaration.thisReceiver!!),
-                        field = props.backingField!!
-                      )
-                    )
-                  }
-                }
-              )
-            }
-          )
-        }
-        addDefaultGetter(declaration, irBuiltIns)
-      }
-    }
-
-    return super.visitClass(declaration)
-  }
+	// for generating LazyDelegate for every injectable property
+//  override fun visitClass(declaration: IrClass): IrStatement {
+//    if (!declaration.hasAnnotation(FqNames.EntryPoint))
+//      return super.visitClass(declaration)
+//
+//    val properties = declaration.properties.filter { it.annotations.hasAnnotation(FqNames.Inject) }.toList()
+//
+//    val lazyType = context.referenceClass(ClassId(FqName("kotlin"), Name.identifier("Lazy")))!!
+//
+//    for (props in properties.filter { it.hasAnnotation(FqNames.Inject) }) {
+//      declaration.addProperty {
+//        name = Name.identifier(props.name.asString() + "Delegate")
+//        modality = Modality.FINAL
+//      }.apply {
+//        addBackingField {
+//          type = lazyType.makeTypeProjection(
+//            type = props.getter?.returnType!!,
+//            variance = Variance.INVARIANT
+//          )
+//        }.apply {
+//          val lazyPropertyCreatorFunction = context.referenceFunctions(
+//            callableId = CallableId(
+//              packageName = FqName("kotlin"),
+//              callableName = Name.identifier("lazy")
+//            )
+//          ).first()
+//
+//          initializer = context.irFactory.createExpressionBody(
+//            startOffset = -1,
+//            endOffset = -1,
+//            expression = IrCallImpl(
+//              startOffset = -1,
+//              endOffset = -1,
+//              type = lazyPropertyCreatorFunction.owner.returnType,
+//              symbol = lazyPropertyCreatorFunction,
+//              typeArgumentsCount = lazyPropertyCreatorFunction.owner.typeParameters.size,
+//              valueArgumentsCount = lazyPropertyCreatorFunction.owner.valueParameters.size
+//            ).apply {
+//
+//              putTypeArgument(
+//                0,
+//                type
+//              )
+//
+//              putValueArgument(
+//                0,
+//                context.irLambdaExpression(
+//                  startOffset,
+//                  endOffset,
+//                  props.getter?.returnType!!
+//                ) {
+//                  it.body = it.symbol.irBlockBody {
+//                    +irReturn(
+//                      irGetField(
+//                        receiver = irGet(declaration.thisReceiver!!),
+//                        field = props.backingField!!
+//                      )
+//                    )
+//                  }
+//                }
+//              )
+//            }
+//          )
+//        }
+//        addDefaultGetter(declaration, irBuiltIns)
+//      }
+//    }
+//
+//    return super.visitClass(declaration)
+//  }
 
   override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
     declaration.correspondingPropertySymbol?.let { property ->
@@ -298,8 +300,6 @@ class EntryPointIrGenerator(
         when {
           declaration.isGetter -> {
             declaration.body = declaration.symbol.irBlockBody {
-              val parentClass = declaration.parentAsClass
-
               val component = declaration.parentAsClass.properties.first { it.name.asString().contains("component") }
               declaration.body = declaration.symbol.irBlockBody {
                 +irReturn(

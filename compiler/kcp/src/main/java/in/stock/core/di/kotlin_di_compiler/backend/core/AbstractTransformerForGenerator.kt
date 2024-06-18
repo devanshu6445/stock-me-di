@@ -28,7 +28,7 @@ abstract class AbstractTransformerForGenerator : IrElementTransformerVoid() {
 
   // default implementation may result in double call to isFromPlugin as other AbstractTransformers are also checking
   // isFromPlugin
-  fun IrDeclaration.shouldTransform(): Boolean = isFromPlugin(context.afterK2)
+  protected fun IrDeclaration.shouldTransform(): Boolean = isFromPlugin(context.afterK2)
 
   abstract fun generateBodyForFunction(declaration: IrSimpleFunction): IrBody?
 
