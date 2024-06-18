@@ -16,7 +16,7 @@ kotlin {
 }
 
 dependencies {
-  implementation(projects.kotlinDiCompiler)
+  implementation(projects.compiler.kcp)
 }
 
 // Configure Gradle IntelliJ Plugin

@@ -4,14 +4,25 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kmp.convention)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.stock.me.publish)
+    `maven-publish`
 }
 
-stockMePublish {
-    group = "in.stock.me"
-    publishingName = "di-runtime"
-    version = "1.0.0"
-    isSnapshot = true
+group = "in.stock.me"
+
+//stockMePublish {
+//    group = "in.stock.me"
+//    publishingName = "di-runtime"
+//    version = "1.0.0"
+//    isSnapshot = true
+//}
+
+publishing {
+    publications {
+        withType<MavenPublication> {
+            artifactId = "di-runtime" + artifactId.replace(project.name,"")
+            version = "1.0.0-SNAPSHOT"
+        }
+    }
 }
 
 targets {
