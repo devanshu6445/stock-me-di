@@ -1,15 +1,28 @@
 version: 2.1
 jobs:
   lint:
-    working_directory: ~/code
     environment:
-      JVM_OPTS: -Xmx4G
+      _JAVA_OPTIONS: "-Xmx4g"
+      GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
     docker:
       - image: cimg/openjdk:17.0.9
     steps:
       - checkout
-      - run: ls
-      - run: gradle detekt --stacktrace
+      - restore_cache:
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: v1-gradle-cache-{{ checksum "build.gradle.kts" }}
+      - run:
+          name: Lint
+          command: gradle detekt
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: v1-gradle-cache-{{ checksum "build.gradle.kts" }}
 workflows:
   version: 2
   build:
