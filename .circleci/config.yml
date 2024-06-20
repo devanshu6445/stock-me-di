@@ -1,0 +1,17 @@
+version: 2.1
+jobs:
+  lint:
+    working_directory: ~/code
+    environment:
+      JVM_OPTS: -Xmx4G
+    docker:
+      - image: cimg/openjdk:17.0.9
+    steps:
+      - checkout
+      - run: ls
+      - run: gradle detekt --stacktrace
+workflows:
+  version: 2
+  build:
+    jobs:
+      - lint
