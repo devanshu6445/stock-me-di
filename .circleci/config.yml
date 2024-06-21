@@ -32,5 +32,6 @@ workflows:
   build:
     jobs:
       - lint:
+          type: approval
           context:
             - maven-repo
