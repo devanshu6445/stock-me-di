@@ -14,11 +14,10 @@ pluginManagement {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
 				} catch (e: java.io.FileNotFoundException) {
 					java.util.Properties().apply {
-						put(usernameConst, System.getenv(usernameConst).trim())
-						put(token, System.getenv(token).trim())
-
-						logger.warn("DevanshuTag" + System.getenv(usernameConst).trim())
-						logger.warn("DevanshuTag" + System.getenv(token).trim())
+						put(usernameConst, System.getProperty(usernameConst))
+						put(token, System.getProperty(token))
+						logger.warn("DevanshuTag" + System.getProperty(usernameConst))
+						logger.warn("DevanshuTag" + System.getProperty(token))
 					}
 				}
 			}
@@ -54,10 +53,10 @@ dependencyResolutionManagement {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
 				} catch (e: java.io.FileNotFoundException) {
 					java.util.Properties().apply {
-						put(usernameConst, System.getenv(usernameConst))
-						put(token, System.getenv(token))
-						logger.warn("DevanshuTag" + System.getenv(usernameConst))
-						logger.warn("DevanshuTag" + System.getenv(token))
+						put(usernameConst, System.getProperty(usernameConst))
+						put(token, System.getProperty(token))
+						logger.warn("DevanshuTag" + System.getProperty(usernameConst))
+						logger.warn("DevanshuTag" + System.getProperty(token))
 					}
 				}
 			}

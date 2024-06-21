@@ -18,7 +18,7 @@ jobs:
           command: echo "$REPO_USERNAME $TOKEN"
       - run:
           name: Lint
-          command: gradle detekt
+          command: gradle detekt -DREPO_USERNAME=$REPO_USERNAME -DTOKEN=$TOKEN
       - save_cache:
           paths:
             - ~/.gradle/wrapper
@@ -31,10 +31,6 @@ workflows:
   version: 2
   build:
     jobs:
-      - hold:
-          type: approval
       - lint:
-          requires:
-            - hold
           context:
             - maven-repo
