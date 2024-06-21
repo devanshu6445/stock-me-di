@@ -7,8 +7,8 @@ pluginManagement {
 			url =
 				java.net.URI.create("https://maven.pkg.jetbrains.space/stockme/p/main/stock-me-android")
 
-			val usernameConst = "spaceUsername"
-			val token = "spaceToken"
+			val usernameConst = "REPO_USERNAME"
+			val token = "TOKEN"
 			val properties = java.util.Properties().apply {
 				try {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
