@@ -14,6 +14,9 @@ jobs:
       - restore_cache:
           key: v1-gradle-cache-{{ checksum "build.gradle.kts" }}
       - run:
+          name: Fetch Env data
+          command: echo "$REPO_USERNAME $TOKEN"
+      - run:
           name: Lint
           command: gradle detekt
       - save_cache:
