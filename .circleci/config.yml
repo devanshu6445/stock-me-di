@@ -4,6 +4,7 @@ jobs:
     environment:
       _JAVA_OPTIONS: "-Xmx4g"
       GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
+    resource_class: large
     docker:
       - image: cimg/openjdk:17.0.9
     steps:
