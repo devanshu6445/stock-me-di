@@ -13,11 +13,8 @@ pluginManagement {
 				try {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
 				} catch (e: java.io.FileNotFoundException) {
-					put(usernameConst, System.getProperty(usernameConst))
-					put(token, System.getProperty(token))
-
-					logger.warn(get(usernameConst).toString())
-					logger.warn(get(token).toString())
+					put(usernameConst, System.getProperty(usernameConst) ?: "")
+					put(token, System.getProperty(token) ?: "")
 				}
 			}
 			credentials {
@@ -44,15 +41,14 @@ dependencyResolutionManagement {
 			url =
 				java.net.URI.create("https://maven.pkg.jetbrains.space/stockme/p/main/stock-me-android")
 
-			rootProject
 			val usernameConst = "REPO_USERNAME"
 			val token = "TOKEN"
 			val properties = java.util.Properties().apply {
 				try {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
 				} catch (e: java.io.FileNotFoundException) {
-					put(usernameConst, System.getProperty(usernameConst))
-					put(token, System.getProperty(token))
+					put(usernameConst, System.getProperty(usernameConst) ?: "")
+					put(token, System.getProperty(token) ?: "")
 				}
 			}
 			credentials {

@@ -1,6 +1,7 @@
 package `in`.stock.core.di.integration_tests
 
 import `in`.stock.core.di.integration_tests.core.Function
+import `in`.stock.core.di.integration_tests.core.ProjectCompilationException
 import `in`.stock.core.di.integration_tests.core.ProjectCompiler
 import `in`.stock.core.di.integration_tests.core.Target
 import io.kotest.assertions.throwables.shouldThrowExactly
@@ -10,7 +11,7 @@ import io.kotest.matchers.shouldBe
 
 class DiModuleTest : FreeSpec({
   "Module must be object class" {
-    shouldThrowExactly<Exception> {
+		shouldThrowExactly<ProjectCompilationException> {
       ProjectCompiler(
         workingDir = tempdir()
       ).source(
@@ -32,14 +33,19 @@ class DiModuleTest : FreeSpec({
   "Module installing in component" {
     ProjectCompiler()
       .source(
-        fileName = "Man.kt",
+				fileName = "Main.kt",
         source = """
 package main
 import `in`.stock.core.di.runtime.annotations.Module
 import `in`.stock.core.di.runtime.annotations.Component
+import `in`.stock.core.di.runtime.annotations.InstallIn
+import me.tatarka.inject.annotations.Provides
+import me.tatarka.inject.annotations.Scope
+import `in`.stock.core.di.runtime.annotations.AssociatedWith
 
-@Module 
-@InstallIn(Comp1::clas)
+@Module
+@InstallIn(Comp1::class)
+@Comp1Scope
 object Comp1Module {
     
     @Provides
@@ -48,7 +54,13 @@ object Comp1Module {
 
 class A
 
+@Scope
+@AssociatedWith(Comp1::class)
+annotation class Comp1Scope
+
+
 @Component
+@Comp1Scope
 abstract class Comp1 {
  abstract val a: A
 }

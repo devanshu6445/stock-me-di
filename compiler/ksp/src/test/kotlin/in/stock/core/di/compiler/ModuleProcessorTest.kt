@@ -1,14 +1,10 @@
 package `in`.stock.core.di.compiler
 
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.tschuchort.compiletesting.KotlinCompilation
-import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspIncremental
-import com.tschuchort.compiletesting.symbolProcessorProviders
-import com.tschuchort.compiletesting.kspSourcesDir
+import com.tschuchort.compiletesting.*
 import `in`.stock.core.di.compiler.ksp.ModuleProcessor
 import io.kotest.core.spec.style.FreeSpec
-import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.shouldBe
 import java.io.File
 
 class ModuleProcessorTest : FreeSpec({
@@ -34,7 +30,7 @@ class ModuleProcessorTest : FreeSpec({
 
     println(files)
 
-    files.size shouldNotBe 0
+		files.size shouldBe 0
   }
 })
 

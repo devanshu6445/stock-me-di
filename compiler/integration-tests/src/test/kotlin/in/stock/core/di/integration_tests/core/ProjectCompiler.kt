@@ -5,7 +5,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
-import `in`.stock.core.di.compiler.ModuleProcessor
+import `in`.stock.core.di.compiler.ksp.ModuleProcessor
 import me.tatarka.inject.compiler.ksp.InjectProcessorProvider
 import org.intellij.lang.annotations.Language
 import java.io.File
@@ -66,7 +66,7 @@ class ProjectCompiler(
   fun compile(): TestCompilationResult {
     compileDependencies()
 
-    // First generate generate code by kspCompilation
+		// First generate code by kspCompilation
     val kspCompilationResult = kspCompilation.compile()
 
     if (kspCompilationResult.exitCode != KotlinCompilation.ExitCode.OK) {
