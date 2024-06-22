@@ -1,46 +1,33 @@
-import `in`.stock.tools.buildSrc.kspKmp
-
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kmp.convention)
+  alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.ksp)
     `maven-publish`
 }
 
 group = "in.stock.me"
-
-// stockMePublish {
-//    group = "in.stock.me"
-//    publishingName = "di-runtime"
-//    version = "1.0.0"
-//    isSnapshot = true
-// }
+version = "1.0.0-SNAPSHOT"
 
 publishing {
     publications {
         withType<MavenPublication> {
           artifactId = "di-runtime" + artifactId.replace(project.name, "")
-            version = "1.0.0-SNAPSHOT"
         }
     }
 }
 
-targets {
-    setupAndroidTarget()
-    setupIosTarget()
-    setupDesktopTarget()
-
-    commonMain {
-        dependencies {
-            implementation(libs.kotlin.inject.runtime)
-        }
-    }
+kotlin {
+  linuxArm64()
+  linuxX64()
+  macosX64()
+  macosArm64()
+  iosArm64()
+  iosX64()
+  iosSimulatorArm64()
+  jvm()
 }
 
 dependencies {
-    kspKmp(libs.kotlin.inject.compiler)
-}
-
-android {
-    namespace = "in.stock.core.di.runtime"
+  kotlin.targets.all {
+    add("ksp${this.name}", libs.kotlin.inject.compiler)
+  }
 }
