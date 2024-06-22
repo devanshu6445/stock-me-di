@@ -13,8 +13,8 @@ pluginManagement {
 				try {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
 				} catch (e: java.io.FileNotFoundException) {
-					put(usernameConst, System.getProperty(usernameConst) ?: "")
-					put(token, System.getProperty(token) ?: "")
+					put(usernameConst, System.getenv(usernameConst) ?: "")
+					put(token, System.getenv(token) ?: "")
 				}
 			}
 			credentials {
@@ -47,8 +47,8 @@ dependencyResolutionManagement {
 				try {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
 				} catch (e: java.io.FileNotFoundException) {
-					put(usernameConst, System.getProperty(usernameConst) ?: "")
-					put(token, System.getProperty(token) ?: "")
+					put(usernameConst, System.getenv(usernameConst) ?: "")
+					put(token, System.getenv(token) ?: "")
 				}
 			}
 			credentials {

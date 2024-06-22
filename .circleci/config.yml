@@ -15,7 +15,7 @@ jobs:
           key: v1-gradle-cache-{{ checksum "build.gradle.kts" }}
       - run:
           name: Running lint checks
-          command: gradle detekt -DREPO_USERNAME=$REPO_USERNAME -DTOKEN=$TOKEN -DREPO_PUBLISH_USERNAME=$REPO_PUBLISH_USERNAME -DREPO_PUBLISH_TOKEN=$REPO_PUBLISH_TOKEN
+          command: gradle detekt
       - run:
           name: Running Unit Tests
           command: gradle check --continue
