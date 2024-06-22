@@ -1,8 +1,8 @@
-package `in`.stock.core.di.kotlin_di_compiler
+package `in`.stock.core.di.kcp
 
-import `in`.stock.core.di.kotlin_di_compiler.backend.DiIrGenerator
-import `in`.stock.core.di.kotlin_di_compiler.k1.SyntheticResolver
-import `in`.stock.core.di.kotlin_di_compiler.k2.DIFirGenerator
+import `in`.stock.core.di.kcp.backend.DiIrGenerator
+import `in`.stock.core.di.kcp.k1.SyntheticResolver
+import `in`.stock.core.di.kcp.k2.DIFirGenerator
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector

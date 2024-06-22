@@ -1,3 +1,3 @@
-package `in`.stock.core.di.kotlin_di_compiler.utils
+package `in`.stock.core.di.kcp.utils
 
 fun<T> List<T>.asSequence() = Sequence { this.listIterator() }

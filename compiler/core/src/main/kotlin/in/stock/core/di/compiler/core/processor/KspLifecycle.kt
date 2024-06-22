@@ -1,7 +1,6 @@
 package `in`.stock.core.di.compiler.core.processor
 
 import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSNode
 import com.squareup.kotlinpoet.ClassName
 import `in`.stock.core.di.compiler.core.KspResolver
 

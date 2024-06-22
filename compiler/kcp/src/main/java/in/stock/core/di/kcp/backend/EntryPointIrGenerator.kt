@@ -1,17 +1,13 @@
-package `in`.stock.core.di.kotlin_di_compiler.backend
+package `in`.stock.core.di.kcp.backend
 
-import `in`.stock.core.di.kotlin_di_compiler.backend.core.AbstractTransformerForGenerator
-import `in`.stock.core.di.kotlin_di_compiler.k2.FirDeclarationGenerator
-import `in`.stock.core.di.kotlin_di_compiler.utils.*
+import `in`.stock.core.di.kcp.backend.core.AbstractTransformerForGenerator
+import `in`.stock.core.di.kcp.k2.FirDeclarationGenerator
+import `in`.stock.core.di.kcp.utils.*
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.addBackingField
-import org.jetbrains.kotlin.ir.builders.declarations.addDefaultGetter
-import org.jetbrains.kotlin.ir.builders.declarations.addProperty
-import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
@@ -23,10 +19,8 @@ import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.typeOrFail
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.CallableId
-import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.types.Variance
 
 // todo refactor it using builder pattern for generation
 class EntryPointIrGenerator(
@@ -50,7 +44,9 @@ class EntryPointIrGenerator(
             generateComponentGetter(declaration)
           }
 
-          else -> throw UnsupportedOperationException("Can't generate getter for other than component")
+					else -> {
+						throw UnsupportedOperationException("Can't generate getter for other than component")
+					}
         }
       }
 
@@ -60,7 +56,9 @@ class EntryPointIrGenerator(
             generateComponentSetter(declaration)
           }
 
-          else -> throw UnsupportedOperationException("Can't generate setter for other than component")
+					else -> {
+						throw UnsupportedOperationException("Can't generate setter for other than component")
+					}
         }
       }
 
@@ -158,7 +156,9 @@ class EntryPointIrGenerator(
       // set the component field with the component property of the secondary constructor
       +irSetField(
         receiver = irGet(declaration.parentAsClass.thisReceiver!!),
-        field = declaration.parentAsClass.properties.first { it.isFromPlugin(this@EntryPointIrGenerator.context.afterK2) }.backingField!!,
+				field = declaration.parentAsClass.properties.first {
+					it.isFromPlugin(this@EntryPointIrGenerator.context.afterK2)
+				}.backingField!!,
         value = irGet(declaration.valueParameters.first())
       )
 
@@ -187,7 +187,9 @@ class EntryPointIrGenerator(
             value = irCall(
               lazyPropertyCreatorFunction
             ).apply {
-              putValueArgument(0, this@EntryPointIrGenerator.context.irLambdaExpression(
+							putValueArgument(
+								0,
+								this@EntryPointIrGenerator.context.irLambdaExpression(
                 startOffset,
                 endOffset,
                 propertyTypeWithoutLazy!!
@@ -201,7 +203,8 @@ class EntryPointIrGenerator(
                     )
                   )
                 }
-              })
+								}
+							)
             }
           )
         } else {
@@ -315,7 +318,6 @@ class EntryPointIrGenerator(
 
           declaration.isSetter -> {
             declaration.body = declaration.symbol.irBlockBody {
-
             }
           }
         }

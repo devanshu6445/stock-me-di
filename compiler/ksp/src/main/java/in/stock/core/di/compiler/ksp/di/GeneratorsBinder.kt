@@ -13,33 +13,38 @@ import `in`.stock.core.di.compiler.ksp.generators.*
 @Module
 interface GeneratorsBinder {
 
-  @Binds
-  fun bindModuleGenerator(moduleGenerator: ModuleGenerator): Generator<ModuleInfo, Unit>
+	@Binds
+	fun bindModuleGenerator(moduleGenerator: ModuleGenerator): Generator<ModuleInfo, Unit>
 
-  @Binds
-  fun providerGenerator(providerGenerator: ProviderGenerator): Generator<ProvidesInfo, Unit>
+	@Binds
+	fun providerGenerator(providerGenerator: ProviderGenerator): Generator<ProvidesInfo, Unit>
 
-  @Binds
-  fun bindComponentGenerator(componentGenerator: ComponentGenerator): Generator<ComponentInfo, ComponentGeneratorResult>
+	@Binds
+	fun bindComponentGenerator(componentGenerator: ComponentGenerator): Generator<ComponentInfo, ComponentGeneratorResult>
 
-  @Binds
-  fun bindModuleProviderGenerator(
-    moduleProviderGenerator: ModuleProviderGenerator
-  ): Generator<ModuleInfo, ModuleProviderResult>
+	@Binds
+	fun bindModuleProviderGenerator(
+		moduleProviderGenerator: ModuleProviderGenerator
+	): Generator<ModuleInfo, ModuleProviderResult>
 
-  @Binds
-  fun bindModuleProviderRegistryGenerator(
-    moduleProviderRegistryGenerator: ModuleProviderRegistryGenerator
-  ): Generator<List<ModuleProviderResult>, Unit>
+	@Binds
+	fun bindModuleProviderRegistryGenerator(
+		moduleProviderRegistryGenerator: ModuleProviderRegistryGenerator
+	): Generator<List<ModuleProviderResult>, Unit>
 
-  @Binds
-  fun bindCodeGenerator(flexibleCodeGeneratorImpl: FlexibleCodeGeneratorImpl): FlexibleCodeGenerator
+	@Binds
+	fun bindCodeGenerator(flexibleCodeGeneratorImpl: FlexibleCodeGeneratorImpl): FlexibleCodeGenerator
 
-  @Binds
-  fun bindEntryPointGenerator(entryPointGenerator: EntryPointGenerator): Generator<KSDeclaration, Unit>
+	@Binds
+	fun bindEntryPointGenerator(entryPointGenerator: EntryPointGenerator): Generator<KSDeclaration, Unit>
 
-  @Binds
-  fun bindProcessModule(processModuleImpl: ProcessModuleImpl): ProcessingStep<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
+	@Binds
+	fun bindProcessModule(
+		processModuleImpl: ProcessModuleImpl
+	): ProcessingStep<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
 
-  @Binds fun bindModuleValidator(moduleValidatorImpl: ModuleProcessingStepValidatorImpl): ProcessingStepValidator<KSClassDeclaration>
+	@Binds
+	fun bindModuleValidator(
+		moduleValidatorImpl: ModuleProcessingStepValidatorImpl
+	): ProcessingStepValidator<KSClassDeclaration>
 }

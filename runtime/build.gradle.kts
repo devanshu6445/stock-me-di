@@ -9,17 +9,17 @@ plugins {
 
 group = "in.stock.me"
 
-//stockMePublish {
+// stockMePublish {
 //    group = "in.stock.me"
 //    publishingName = "di-runtime"
 //    version = "1.0.0"
 //    isSnapshot = true
-//}
+// }
 
 publishing {
     publications {
         withType<MavenPublication> {
-            artifactId = "di-runtime" + artifactId.replace(project.name,"")
+          artifactId = "di-runtime" + artifactId.replace(project.name, "")
             version = "1.0.0-SNAPSHOT"
         }
     }
