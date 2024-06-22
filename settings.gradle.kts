@@ -13,12 +13,11 @@ pluginManagement {
 				try {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
 				} catch (e: java.io.FileNotFoundException) {
-					java.util.Properties().apply {
-						put(usernameConst, System.getProperty(usernameConst))
-						put(token, System.getProperty(token))
-						logger.warn("DevanshuTag" + System.getProperty(usernameConst))
-						logger.warn("DevanshuTag" + System.getProperty(token))
-					}
+					put(usernameConst, System.getProperty(usernameConst))
+					put(token, System.getProperty(token))
+
+					logger.warn(get(usernameConst).toString())
+					logger.warn(get(token).toString())
 				}
 			}
 			credentials {
@@ -52,12 +51,8 @@ dependencyResolutionManagement {
 				try {
 					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
 				} catch (e: java.io.FileNotFoundException) {
-					java.util.Properties().apply {
-						put(usernameConst, System.getProperty(usernameConst))
-						put(token, System.getProperty(token))
-						logger.warn("DevanshuTag" + System.getProperty(usernameConst))
-						logger.warn("DevanshuTag" + System.getProperty(token))
-					}
+					put(usernameConst, System.getProperty(usernameConst))
+					put(token, System.getProperty(token))
 				}
 			}
 			credentials {
