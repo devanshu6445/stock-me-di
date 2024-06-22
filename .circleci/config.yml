@@ -14,11 +14,14 @@ jobs:
       - restore_cache:
           key: v1-gradle-cache-{{ checksum "build.gradle.kts" }}
       - run:
-          name: Run lint checks
+          name: Running lint checks
           command: gradle detekt -DREPO_USERNAME=$REPO_USERNAME -DTOKEN=$TOKEN -DREPO_PUBLISH_USERNAME=$REPO_PUBLISH_USERNAME -DREPO_PUBLISH_TOKEN=$REPO_PUBLISH_TOKEN
       - run:
-          name: Run Unit Tests
-          command: gradle che
+          name: Running Unit Tests
+          command: gradle check --continue
+      - run:
+          name: Running Integration Tests
+          command: gradle :compiler:integration-tests:compileKotlin
       - save_cache:
           paths:
             - ~/.gradle/wrapper
