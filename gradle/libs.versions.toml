@@ -13,7 +13,7 @@ di-runtime = "1.0.0-SNAPSHOT"
 di-compiler = "1.0.0-SNAPSHOT"
 dagger = "2.48"
 kmp-convention = "1.0.0-SNAPSHOT"
-stockMeLinter = "1.0.0-SNAPSHOT"
+stockMeLinter = "1.0.0"
 
 [libraries]
 # Kotlin inject
