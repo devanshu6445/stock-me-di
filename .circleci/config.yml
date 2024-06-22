@@ -18,7 +18,7 @@ jobs:
           command: echo "$REPO_USERNAME $TOKEN"
       - run:
           name: Lint
-          command: gradle detekt -DREPO_USERNAME=$REPO_USERNAME -DTOKEN=$TOKEN
+          command: gradle detekt -DREPO_USERNAME=$REPO_USERNAME -DTOKEN=$TOKEN -DREPO_PUBLISH_USERNAME=$REPO_PUBLISH_USERNAME -DREPO_PUBLISH_TOKEN=$REPO_PUBLISH_TOKEN
       - save_cache:
           paths:
             - ~/.gradle/wrapper
