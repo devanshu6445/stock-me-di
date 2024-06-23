@@ -2,6 +2,7 @@ import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.net.URI
 import java.util.*
 
@@ -21,8 +22,14 @@ publishing {
       url = URI.create("https://maven.pkg.jetbrains.space/stockme/p/main/stock-me-android")
 
       credentials {
+        // todo commonize this logic
         Properties().apply {
-          load(FileInputStream(File("${rootProject.rootDir.absolutePath}/local.properties")))
+          try {
+            load(FileInputStream(File("${rootProject.rootDir.absolutePath}/local.properties")))
+          } catch (e: FileNotFoundException) {
+            put("REPO_USERNAME", System.getenv("REPO_USERNAME").toString())
+            put("TOKEN", System.getenv("TOKEN").toString())
+          }
 
           username = get("REPO_USERNAME") as String
           password = get("TOKEN") as String
@@ -81,4 +88,3 @@ tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach
 tasks.named("sourcesJar") {
   dependsOn("kspCommonMainKotlinMetadata")
 }
-
