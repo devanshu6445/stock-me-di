@@ -16,10 +16,7 @@ jobs:
       - restore_cache:
           key: v1-gradle-cache-{{ .Environment.CACHE_VERSION }}-{{ checksum "gradle/libs.versions.toml" }}
       - run:
-          name: Running lint checks
-          command: gradle detekt
-      - run:
-          name: Running Tests
+          name: Running Lint checks and Tests
           command: gradle check --continue
       - gradle/collect_test_results:
           test_results_path: build/test-results
