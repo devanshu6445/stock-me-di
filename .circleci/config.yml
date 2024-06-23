@@ -1,10 +1,12 @@
 version: 2.1
+orbs:
+  gradle: circleci/gradle@3.0.0
 jobs:
   lint:
     environment:
       _JAVA_OPTIONS: "-Xmx4g"
       GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
-    resource_class: small
+    resource_class: medium
     docker:
       - image: cimg/openjdk:17.0.9
     steps:
@@ -17,11 +19,11 @@ jobs:
           name: Running lint checks
           command: gradle detekt
       - run:
-          name: Running Unit Tests
+          name: Running Tests
           command: gradle check --continue
-      - run:
-          name: Running Integration Tests
-          command: gradle :compiler:integration-tests:compileKotlin
+      - gradle/collect_test_results:
+          test_results_path: build/test-results
+          reports_path: build/reports
       - save_cache:
           paths:
             - ~/.gradle/wrapper
