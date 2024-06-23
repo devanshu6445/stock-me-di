@@ -10,6 +10,7 @@
   <ID>UnusedPrivateProperty:FqNames.kt$FqNames$private const val KotlinInject = "$KotlinInjectAnnotationPackageName.Inject"</ID>
     <ID>UnusedPrivateProperty:TestComponent.kt$TestComponent$@Component singletonComponent: SingletonComponent</ID>
     <ID>UnusedPrivateProperty:TestComponent.kt$TestComponent$dep3: Dep3</ID>
+  <ID>UnusedPrivateProperty:settings.gradle.kts$val libs by registering { from(files("../gradle/libs.versions.toml")) }</ID>
     <ID>UtilityClassWithPublicConstructor:SingletonComponent.kt$SingletonComponent</ID>
   </CurrentIssues>
 </SmellBaseline>

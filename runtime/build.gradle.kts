@@ -9,6 +9,7 @@ import java.util.*
 plugins {
   alias(libs.plugins.kotlinMultiplatform)
   alias(libs.plugins.ksp)
+  id("stock.me.di.merge-tests")
   `maven-publish`
 }
 

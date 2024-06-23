@@ -7,6 +7,7 @@ plugins {
   alias(libs.plugins.org.jetbrains.kotlin.jvm)
   `maven-publish`
   alias(libs.plugins.ksp)
+  id("stock.me.di.merge-tests")
 }
 
 group = "in.stock.me"

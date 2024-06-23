@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 plugins {
   alias(libs.plugins.org.jetbrains.kotlin.jvm)
   `maven-publish`
+  id("stock.me.di.merge-tests")
 }
 
 group = "in.stock.me"

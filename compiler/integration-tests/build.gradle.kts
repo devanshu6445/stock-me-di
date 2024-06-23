@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.ksp)
   application
   id("com.bennyhuo.kotlin.ir.printer") version "1.9.20-1.0.2"
+  id("stock.me.di.merge-tests")
 }
 
 tasks.withType<Test> {
