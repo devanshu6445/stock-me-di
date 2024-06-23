@@ -1,6 +1,6 @@
-package `in`.stock.core.di.kotlin_di_compiler.k2
+package `in`.stock.core.di.kcp.k2
 
-import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
+import `in`.stock.core.di.kcp.utils.FqNames
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector

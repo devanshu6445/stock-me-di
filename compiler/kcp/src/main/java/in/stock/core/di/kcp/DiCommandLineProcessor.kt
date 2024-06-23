@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler
+package `in`.stock.core.di.kcp
 
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption

@@ -4,7 +4,10 @@
   <CurrentIssues>
     <ID>BracesOnWhenStatements:FirDeclarationGenerator.kt$FirDeclarationGenerator$-&gt;</ID>
     <ID>BracesOnWhenStatements:TypeCollector.kt$TypeCollector$-&gt;</ID>
+  <ID>MaxLineLength:EntryPointGenerator.kt$EntryPointGenerator$// todo can remove the check of constructor injection as the dependency can be provided via secondary constrcutor if primary constructor doesn't exist</ID>
     <ID>PrintStackTrace:TestCompilationResult.kt$TestCompilationResult$t</ID>
+<ID>UnusedPrivateMember:KspResolver.kt$KspResolver$private fun Resolver.getSymbols(className: ClassName)</ID>
+  <ID>UnusedPrivateProperty:FqNames.kt$FqNames$private const val KotlinInject = "$KotlinInjectAnnotationPackageName.Inject"</ID>
     <ID>UnusedPrivateProperty:TestComponent.kt$TestComponent$@Component singletonComponent: SingletonComponent</ID>
     <ID>UnusedPrivateProperty:TestComponent.kt$TestComponent$dep3: Dep3</ID>
     <ID>UtilityClassWithPublicConstructor:SingletonComponent.kt$SingletonComponent</ID>

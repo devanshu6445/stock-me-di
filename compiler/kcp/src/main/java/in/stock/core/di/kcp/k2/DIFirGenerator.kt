@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler.k2
+package `in`.stock.core.di.kcp.k2
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar

@@ -7,11 +7,11 @@ abstract class ProcessingStep<Node : KSNode, Result>(
   protected open val messenger: Messenger,
   private val validator: ProcessingStepValidator<Node>
 ) : ProcessingStepValidator<Node> by validator {
-  protected abstract fun processingStep(node: Node): Result
+	protected abstract fun step(node: Node): Result
 
   fun process(node: Node): Result {
     if (validate(element = node)) {
-      return processingStep(node)
+			return step(node)
     } else {
       throw ValidationException(message = "This node couldn't be validated", node = node)
     }

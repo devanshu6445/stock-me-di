@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler.utils
+package `in`.stock.core.di.kcp.utils
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrClass
@@ -55,7 +55,9 @@ fun IrSimpleFunction.getSetterField(): IrField? {
 // This declaration accesses IrDeclarationContainer.declarations, which is marked with this opt-in
 fun IrClass.getPropertyGetter(name: String): IrSimpleFunctionSymbol? =
   getPropertyDeclaration(name)?.getter?.symbol
-    ?: getSimpleFunction("<get-$name>").also { assert(it?.owner?.correspondingPropertySymbol?.owner?.name?.asString() == name) }
+		?: getSimpleFunction("<get-$name>").also {
+			assert(it?.owner?.correspondingPropertySymbol?.owner?.name?.asString() == name)
+		}
 
 private fun IrClass.getPropertyDeclaration(name: String): IrProperty? {
   val properties = declarations.filterIsInstanceAnd<IrProperty> { it.name.asString() == name }

@@ -19,7 +19,7 @@ kotlin {
     freeCompilerArgs.addAll(
       listOf(
         "-Xphases-to-dump-after=ValidateIrAfterLowering",
-        "-Xdump-directory=${buildDir}/ir-dump/",
+        "-Xdump-directory=$buildDir/ir-dump/",
       )
     )
   }

@@ -1,5 +1,5 @@
 package `in`.stock.core.di.integration_tests.core
 
-enum class Target {
-  KSP
+sealed interface Target {
+	data object KSP : Target
 }

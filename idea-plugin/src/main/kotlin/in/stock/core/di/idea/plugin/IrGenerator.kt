@@ -1,5 +1,5 @@
 package `in`.stock.core.di.idea.plugin
 
-import `in`.stock.core.di.kotlin_di_compiler.backend.DiIrGenerator
+import `in`.stock.core.di.kcp.backend.DiIrGenerator
 
 class IrGenerator : DiIrGenerator()

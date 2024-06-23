@@ -22,155 +22,161 @@ import `in`.stock.core.di.runtime.annotations.EntryPoint
 import javax.inject.Inject
 
 class EntryPointGenerator @Inject constructor(
-  private val typeCollector: TypeCollector,
-  private val codeGenerator: FlexibleCodeGenerator,
+	private val typeCollector: TypeCollector,
+	private val codeGenerator: FlexibleCodeGenerator,
 ) : Generator<KSDeclaration, Unit> {
-  override fun generate(data: KSDeclaration) {
-    when (data) {
-      is KSClassDeclaration -> {
-        data.generateComponentForClass()
-      }
+	override fun generate(data: KSDeclaration) {
+		when (data) {
+			is KSClassDeclaration -> {
+				data.generateComponentForClass()
+			}
 
-      is KSFunctionDeclaration -> {
-        data.generateComponentForFunction()
-      }
+			is KSFunctionDeclaration -> {
+				data.generateComponentForFunction()
+			}
 
-      else -> {
-        throw IllegalArgumentException("This type is not yet supported by @EntryPoint")
-      }
-    }
-  }
+			else -> {
+				throw IllegalArgumentException("This type is not yet supported by @EntryPoint")
+			}
+		}
+	}
 
-  private fun KSFunctionDeclaration.generateComponentForFunction() {
-    val properties = parameters.map {
-      PropertySpec.builder(
-        it.name?.asString().orEmpty(),
-        it.type.toTypeName(),
-        KModifier.ABSTRACT
-      ).build()
-    }
+	private fun KSFunctionDeclaration.generateComponentForFunction() {
+		val properties = parameters.map {
+			PropertySpec.builder(
+				it.name?.asString().orEmpty(),
+				it.type.toTypeName(),
+				KModifier.ABSTRACT
+			).build()
+		}
 
-    generateComponent(
-      componentName = ClassName(
-        packageName.asString(),
-        "${simpleName.asString().capitalize()}Component"
-      ),
-      properties = properties.asSequence() // todo check
-    )
-  }
+		generateComponent(
+			componentName = ClassName(
+				packageName.asString(),
+				"${simpleName.asString().capitalize()}Component"
+			),
+			properties = properties.asSequence() // todo check
+		)
+	}
 
-  private fun KSClassDeclaration.generateComponentForClass() {
-    val componentName = ClassName(
-      packageName.asString(),
-      "${
-        simpleName.asString().capitalize()
-      }Component"
-    )
+	private fun KSClassDeclaration.generateComponentForClass() {
+		val componentName = ClassName(
+			packageName.asString(),
+			"${
+				simpleName.asString().capitalize()
+			}Component"
+		)
 
-    // only provide this class as argument if the injection is not through the constrcutor
-    // and this class doesn't have an rimary constructor
-    // todo can remove the check of constructor injection as the dependency can be provided via secondary constrcutor if primary constructor doesn't exist
-    val canProvideThisClassAsArgument =
-      annotations.first { it.annotationType.resolve().declaration.qualifiedName?.asString() == EntryPoint::class.qualifiedName }
-        .arguments.first { it.name?.asString() == "initializer" }.value != "constructor" && primaryConstructor == null
+		// only provide this class as argument if the injection is not through the constrcutor
+		// and this class doesn't have an rimary constructor
+		// todo can remove the check of constructor injection as the dependency can be provided via secondary constrcutor if primary constructor doesn't exist
+		val canProvideThisClassAsArgument =
+			annotations.first {
+				it.annotationType.resolve().declaration.qualifiedName?.asString() == EntryPoint::class.qualifiedName
+			}
+				.arguments.first { it.name?.asString() == "initializer" }.value != "constructor" && primaryConstructor == null
 
-    generateComponent(
-      componentName = componentName,
-      properties = extractAllProperties(),
-      arguments = if (canProvideThisClassAsArgument) listOf(this.toClassName()) else listOf()
-    )
-  }
+		generateComponent(
+			componentName = componentName,
+			properties = extractAllProperties(),
+			arguments = if (canProvideThisClassAsArgument) listOf(this.toClassName()) else listOf()
+		)
+	}
 
-  private fun KSDeclaration.generateComponent(
-    componentName: ClassName,
-    properties: Sequence<PropertySpec>,
-    arguments: List<ClassName> = emptyList()
-  ) {
-    val depComponents = typeCollector.collectTypes(this).map {
-      ClassName(it.packageName.asString(), it.simpleName.asString())
-    }
+	private fun KSDeclaration.generateComponent(
+		componentName: ClassName,
+		properties: Sequence<PropertySpec>,
+		arguments: List<ClassName> = emptyList()
+	) {
+		val depComponents = typeCollector.collectTypes(this).map {
+			ClassName(it.packageName.asString(), it.simpleName.asString())
+		}
 
-    FileSpec.builder(componentName).addType(
-      TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
-        .addAnnotation(Component::class)
-        .constructorBuilder(depComponents, arguments)
-        .addProperties(properties.asIterable()).build()
-    ).build().writeTo(codeGenerator)
-  }
+		FileSpec.builder(componentName).addType(
+			TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
+				.addAnnotation(Component::class)
+				.constructorBuilder(depComponents, arguments)
+				.addProperties(properties.asIterable()).build()
+		).build().writeTo(codeGenerator)
+	}
 
-  private fun TypeSpec.Builder.constructorBuilder(
-    parentComponent: Sequence<ClassName>,
-    arguments: List<ClassName>
-  ) = apply {
-    if (parentComponent.count() == 0) return@apply
+	private fun TypeSpec.Builder.constructorBuilder(
+		parentComponent: Sequence<ClassName>,
+		arguments: List<ClassName>
+	) = apply {
+		if (parentComponent.count() == 0) return@apply
 
-    val constructorBuilder = FunSpec.constructorBuilder()
+		val constructorBuilder = FunSpec.constructorBuilder()
 
-    parentComponent.forEach { component ->
+		parentComponent.forEach { component ->
 
-      // todo some suffix to make the name different than type name
-      // workaround for conflicting declaration when inheriting the class
-      // can overcome by adding override to the child class params
-      val name = component.simpleName.replaceFirstChar { it.lowercaseChar() } + "1"
+			// todo some suffix to make the name different than type name
+			// workaround for conflicting declaration when inheriting the class
+			// can overcome by adding override to the child class params
+			val name = component.simpleName.replaceFirstChar { it.lowercaseChar() } + "1"
 
-      constructorBuilder.addConstructorProperty(
-        typeSpec = this,
-        name = name,
-        type = component,
-        annotations = listOf(
-          AnnotationSpec.builder(Component::class).build()
-        )
-      )
+			constructorBuilder.addConstructorProperty(
+				typeSpec = this,
+				name = name,
+				type = component,
+				annotations = listOf(
+					AnnotationSpec.builder(Component::class).build()
+				)
+			)
 
-      arguments.forEach { arg ->
-        constructorBuilder.addConstructorProperty(
-          typeSpec = this,
-          name = arg.simpleName,
-          type = arg,
-          annotations = listOf(
-            AnnotationSpec.builder(Provides)
-              .useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
-              .build()
-          )
-        )
-      }
-    }
+			arguments.forEach { arg ->
+				constructorBuilder.addConstructorProperty(
+					typeSpec = this,
+					name = arg.simpleName,
+					type = arg,
+					annotations = listOf(
+						AnnotationSpec.builder(Provides)
+							.useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
+							.build()
+					)
+				)
+			}
+		}
 
-    primaryConstructor(constructorBuilder.build())
-  }
+		primaryConstructor(constructorBuilder.build())
+	}
 }
 
 private data class Property(
-  val name: String,
-  val type: KSTypeReference,
+	val name: String,
+	val type: KSTypeReference,
 )
 
 private fun KSClassDeclaration.extractAllProperties() = sequence {
-  for (constructor in getConstructors()) {
-    for (parameter in constructor.parameters) {
-      yield(
-        Property(
-          name = parameter.name?.asString() ?: return@sequence,
-          type = parameter.type
-        )
-      )
-    }
-  }
+	for (constructor in getConstructors()) {
+		for (parameter in constructor.parameters) {
+			yield(
+				Property(
+					name = parameter.name?.asString() ?: return@sequence,
+					type = parameter.type
+				)
+			)
+		}
+	}
 
-  for (property in getDeclaredProperties()) {
-    yield(
-      Property(
-        name = property.simpleName.asString(),
-        type = if (property.type.resolve().declaration.qualifiedName?.asString() == LazyName) property.type.resolve().arguments.first().type!! else property.type
-      )
-    )
-  }
+	for (property in getDeclaredProperties()) {
+		yield(
+			Property(
+				name = property.simpleName.asString(),
+				type = if (property.type.resolve().declaration.qualifiedName?.asString() == LazyName) {
+					property.type.resolve().arguments.first().type!!
+				} else {
+					property.type
+				}
+			)
+		)
+	}
 }.distinctBy {
-  it.type.resolve().declaration.qualifiedName?.asString()
+	it.type.resolve().declaration.qualifiedName?.asString()
 }.map {
-  PropertySpec.builder(
-    name = it.name,
-    type = it.type.toTypeName(),
-    KModifier.ABSTRACT
-  ).build()
+	PropertySpec.builder(
+		name = it.name,
+		type = it.type.toTypeName(),
+		KModifier.ABSTRACT
+	).build()
 }

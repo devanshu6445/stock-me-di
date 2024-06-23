@@ -31,7 +31,7 @@ class ModuleProcessor(
   @Inject
   lateinit var componentGenerator: Generator<ComponentInfo, ComponentGeneratorResult>
 
-  private val currentRoundModules = mutableListOf<Pair<ModuleInfo, ModuleProviderResult>>() //todo change to sequence
+	private val currentRoundModules = mutableListOf<Pair<ModuleInfo, ModuleProviderResult>>() // todo change to sequence
 
   private val allGeneratedModule = mutableSetOf<Pair<ModuleInfo, ModuleProviderResult>>()
 
@@ -67,7 +67,6 @@ class ModuleProcessor(
   }
 
   override fun processSymbol(resolver: KspResolver, symbol: KSAnnotated, annotation: ClassName): Boolean {
-
     val isProcessed = when (annotation.canonicalName) {
       Module::class.qualifiedName -> {
         runCatching {
@@ -101,7 +100,9 @@ class ModuleProcessor(
         true
       }
 
-      else -> false
+			else -> {
+				false
+			}
     }
 
     allGeneratedModule.addAll(currentRoundModules)

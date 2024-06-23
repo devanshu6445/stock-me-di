@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler.utils
+package `in`.stock.core.di.kcp.utils
 
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName

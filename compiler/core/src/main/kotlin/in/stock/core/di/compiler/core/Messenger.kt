@@ -21,7 +21,7 @@ class MessengerImpl @Inject constructor(
   }
 
   override fun fatalError(e: Throwable, symbol: KSNode?): Nothing {
-    kspLogger.error(e.message.orEmpty(),symbol)
+		kspLogger.error(e.message.orEmpty(), symbol)
     throw e
   }
 }

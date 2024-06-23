@@ -1,6 +1,6 @@
-package `in`.stock.core.di.kotlin_di_compiler
+package `in`.stock.core.di.kcp
 
-import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
+import `in`.stock.core.di.kcp.utils.FqNames
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.psi.KtDeclaration
@@ -16,7 +16,5 @@ class InjectChecker : DeclarationChecker {
   ) {
     if (descriptor !is PropertyDescriptor) return
     if (!descriptor.annotations.hasAnnotation(FqNames.Inject)) return
-
-
   }
 }

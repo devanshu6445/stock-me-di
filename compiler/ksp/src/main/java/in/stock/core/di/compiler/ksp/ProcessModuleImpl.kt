@@ -23,7 +23,7 @@ class ProcessModuleImpl @Inject constructor(
   validator
 ) {
 
-  override fun processingStep(node: KSClassDeclaration): Pair<ModuleInfo, ModuleProviderResult> {
+	override fun step(node: KSClassDeclaration): Pair<ModuleInfo, ModuleProviderResult> {
     val scope = node.findAnnotation(Scope.canonicalName)
     val providers = mutableListOf<ProvidesInfo>()
 

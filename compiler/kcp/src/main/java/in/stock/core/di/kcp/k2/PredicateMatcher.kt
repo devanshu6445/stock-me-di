@@ -1,6 +1,6 @@
-package `in`.stock.core.di.kotlin_di_compiler.k2
+package `in`.stock.core.di.kcp.k2
 
-import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
+import `in`.stock.core.di.kcp.utils.FqNames
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
 import org.jetbrains.kotlin.fir.extensions.utils.AbstractSimpleClassPredicateMatchingService

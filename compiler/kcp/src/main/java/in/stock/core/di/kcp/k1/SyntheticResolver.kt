@@ -1,6 +1,6 @@
-package `in`.stock.core.di.kotlin_di_compiler.k1
+package `in`.stock.core.di.kcp.k1
 
-import `in`.stock.core.di.kotlin_di_compiler.utils.FqNames
+import `in`.stock.core.di.kcp.utils.FqNames
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.*
@@ -8,7 +8,6 @@ import org.jetbrains.kotlin.js.descriptorUtils.hasPrimaryConstructor
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
@@ -39,9 +38,8 @@ open class SyntheticResolver : SyntheticResolveExtension {
     result: MutableCollection<ClassConstructorDescriptor>
   ) {
     if (thisDescriptor.annotations.hasAnnotation(FqNames.EntryPoint)) {
-
       val entryPointAnnotation = thisDescriptor.annotations.findAnnotation(FqNames.EntryPoint)!!
-      when(entryPointAnnotation.allValueArguments[Name.identifier("initializer")]?.value) {
+			when (entryPointAnnotation.allValueArguments[Name.identifier("initializer")]?.value) {
         "constructor", null -> {
           generateComponentConstructor(thisDescriptor, result)
         }
@@ -179,20 +177,5 @@ open class SyntheticResolver : SyntheticResolveExtension {
     propertyDescriptor.initialize(propertyGetter, propertySetter, backingField, null)
 
     return propertyDescriptor
-  }
-
-  private fun ClassDescriptor.flatMapAnnotatedClassProperty(
-    flatMap: (property: PropertyDescriptor) -> List<Name>
-  ): List<Name> {
-    val members = defaultType.memberScope
-    val variables = members.getVariableNames()
-    return variables.flatMap { variable ->
-      val property = kotlin.runCatching { DescriptorUtils.getPropertyByName(members, variable) }.getOrNull()
-      if (property?.annotations?.hasAnnotation(FqNames.Inject) == true) {
-        flatMap(property)
-      } else {
-        emptyList()
-      }
-    }
   }
 }

@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler.backend
+package `in`.stock.core.di.kcp.backend
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.builders.IrBlockBodyBuilder

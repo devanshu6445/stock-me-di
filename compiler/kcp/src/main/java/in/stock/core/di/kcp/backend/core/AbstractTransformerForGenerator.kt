@@ -1,4 +1,4 @@
-package `in`.stock.core.di.kotlin_di_compiler.backend.core
+package `in`.stock.core.di.kcp.backend.core
 
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -37,7 +37,7 @@ abstract class AbstractTransformerForGenerator : IrElementTransformerVoid() {
       return super.visitSimpleFunction(declaration)
     }
 
-    //require(declaration.body == null)
+		// require(declaration.body == null)
     if (declaration.body == null) {
       declaration.body = generateBodyForFunction(declaration)
     }

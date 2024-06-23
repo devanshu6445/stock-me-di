@@ -1,0 +1,41 @@
+version: 2.1
+orbs:
+  gradle: circleci/gradle@3.0.0
+jobs:
+  lint:
+    environment:
+      _JAVA_OPTIONS: "-Xmx4g"
+      GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
+    resource_class: medium
+    docker:
+      - image: cimg/openjdk:17.0.9
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-gradle-wrapper-{{ .Environment.CACHE_VERSION }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: v1-gradle-cache-{{ .Environment.CACHE_VERSION }}-{{ checksum "gradle/libs.versions.toml" }}
+      - run:
+          name: Running lint checks
+          command: gradle detekt
+      - run:
+          name: Running Tests
+          command: gradle check --continue
+      - gradle/collect_test_results:
+          test_results_path: build/test-results
+          reports_path: build/reports
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: v1-gradle-wrapper-{{ .Environment.CACHE_VERSION }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: v1-gradle-cache-{{ .Environment.CACHE_VERSION }}-{{ checksum "gradle/libs.versions.toml" }}
+workflows:
+  version: 2
+  build:
+    jobs:
+      - lint:
+          context:
+            - maven-repo

@@ -1,46 +1,90 @@
-import `in`.stock.tools.buildSrc.kspKmp
+import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.net.URI
+import java.util.*
 
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kmp.convention)
-    alias(libs.plugins.ksp)
-    `maven-publish`
+  alias(libs.plugins.kotlinMultiplatform)
+  alias(libs.plugins.ksp)
+  `maven-publish`
 }
 
 group = "in.stock.me"
-
-//stockMePublish {
-//    group = "in.stock.me"
-//    publishingName = "di-runtime"
-//    version = "1.0.0"
-//    isSnapshot = true
-//}
+version = "1.0.0-SNAPSHOT"
 
 publishing {
-    publications {
-        withType<MavenPublication> {
-            artifactId = "di-runtime" + artifactId.replace(project.name,"")
-            version = "1.0.0-SNAPSHOT"
+
+  repositories {
+    maven {
+      url = URI.create("https://maven.pkg.jetbrains.space/stockme/p/main/stock-me-android")
+
+      credentials {
+        // todo commonize this logic
+        Properties().apply {
+          try {
+            load(FileInputStream(File("${rootProject.rootDir.absolutePath}/local.properties")))
+          } catch (e: FileNotFoundException) {
+            put("REPO_USERNAME", System.getenv("REPO_USERNAME").toString())
+            put("TOKEN", System.getenv("TOKEN").toString())
+          }
+
+          username = get("REPO_USERNAME") as String
+          password = get("TOKEN") as String
         }
+      }
     }
+  }
+  publications {
+    withType<MavenPublication> {
+      artifactId = "di-runtime" + artifactId.replace(project.name, "")
+    }
+  }
 }
 
-targets {
-    setupAndroidTarget()
-    setupIosTarget()
-    setupDesktopTarget()
+kotlin {
+  applyDefaultHierarchyTemplate()
 
+  linuxArm64()
+  linuxX64()
+  macosX64()
+  macosArm64()
+  iosArm64()
+  iosX64()
+  iosSimulatorArm64()
+  jvm()
+
+  sourceSets {
     commonMain {
-        dependencies {
-            implementation(libs.kotlin.inject.runtime)
-        }
+      dependencies {
+        implementation(libs.kotlin.inject.runtime)
+      }
     }
+  }
+
+  jvmToolchain(17)
 }
 
 dependencies {
-    kspKmp(libs.kotlin.inject.compiler)
+  kotlin.targets.filterIsInstance<KotlinNativeTarget>().forEach {
+    add("ksp${it.name.capitalized()}", libs.kotlin.inject.compiler)
+  }
+
+  kotlin.targets.filterIsInstance<KotlinJvmTarget>().forEach {
+    add("ksp${it.name.capitalized()}", libs.kotlin.inject.compiler)
+  }
+
+  kspCommonMainMetadata(libs.kotlin.inject.compiler)
 }
 
-android {
-    namespace = "in.stock.core.di.runtime"
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {
+  if (name != "kspCommonMainKotlinMetadata") {
+    dependsOn("kspCommonMainKotlinMetadata")
+  }
+}
+
+tasks.named("sourcesJar") {
+  dependsOn("kspCommonMainKotlinMetadata")
 }
