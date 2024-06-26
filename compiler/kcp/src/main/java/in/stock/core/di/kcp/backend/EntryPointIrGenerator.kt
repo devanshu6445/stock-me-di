@@ -5,7 +5,6 @@ import `in`.stock.core.di.kcp.k2.FirDeclarationGenerator
 import `in`.stock.core.di.kcp.utils.*
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.addBackingField
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
@@ -224,113 +223,5 @@ class EntryPointIrGenerator(
         }
       }
     }
-  }
-
-	// for generating LazyDelegate for every injectable property
-//  override fun visitClass(declaration: IrClass): IrStatement {
-//    if (!declaration.hasAnnotation(FqNames.EntryPoint))
-//      return super.visitClass(declaration)
-//
-//    val properties = declaration.properties.filter { it.annotations.hasAnnotation(FqNames.Inject) }.toList()
-//
-//    val lazyType = context.referenceClass(ClassId(FqName("kotlin"), Name.identifier("Lazy")))!!
-//
-//    for (props in properties.filter { it.hasAnnotation(FqNames.Inject) }) {
-//      declaration.addProperty {
-//        name = Name.identifier(props.name.asString() + "Delegate")
-//        modality = Modality.FINAL
-//      }.apply {
-//        addBackingField {
-//          type = lazyType.makeTypeProjection(
-//            type = props.getter?.returnType!!,
-//            variance = Variance.INVARIANT
-//          )
-//        }.apply {
-//          val lazyPropertyCreatorFunction = context.referenceFunctions(
-//            callableId = CallableId(
-//              packageName = FqName("kotlin"),
-//              callableName = Name.identifier("lazy")
-//            )
-//          ).first()
-//
-//          initializer = context.irFactory.createExpressionBody(
-//            startOffset = -1,
-//            endOffset = -1,
-//            expression = IrCallImpl(
-//              startOffset = -1,
-//              endOffset = -1,
-//              type = lazyPropertyCreatorFunction.owner.returnType,
-//              symbol = lazyPropertyCreatorFunction,
-//              typeArgumentsCount = lazyPropertyCreatorFunction.owner.typeParameters.size,
-//              valueArgumentsCount = lazyPropertyCreatorFunction.owner.valueParameters.size
-//            ).apply {
-//
-//              putTypeArgument(
-//                0,
-//                type
-//              )
-//
-//              putValueArgument(
-//                0,
-//                context.irLambdaExpression(
-//                  startOffset,
-//                  endOffset,
-//                  props.getter?.returnType!!
-//                ) {
-//                  it.body = it.symbol.irBlockBody {
-//                    +irReturn(
-//                      irGetField(
-//                        receiver = irGet(declaration.thisReceiver!!),
-//                        field = props.backingField!!
-//                      )
-//                    )
-//                  }
-//                }
-//              )
-//            }
-//          )
-//        }
-//        addDefaultGetter(declaration, irBuiltIns)
-//      }
-//    }
-//
-//    return super.visitClass(declaration)
-//  }
-
-  override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
-    declaration.correspondingPropertySymbol?.let { property ->
-      if (property.owner.hasAnnotation(FqNames.Inject)) {
-        when {
-          declaration.isGetter -> {
-            declaration.body = declaration.symbol.irBlockBody {
-              val component = declaration.parentAsClass.properties.first { it.name.asString().contains("component") }
-              declaration.body = declaration.symbol.irBlockBody {
-                +irReturn(
-                  irGet(
-                    type = declaration.returnType,
-                    receiver = irGet(declaration.parentAsClass.thisReceiver!!),
-                    getterSymbol = component.getter?.symbol!!
-                  )
-                )
-              }
-            }
-          }
-
-          declaration.isSetter -> {
-            declaration.body = declaration.symbol.irBlockBody {
-            }
-          }
-        }
-      }
-    }
-    return super.visitSimpleFunction(declaration)
-  }
-
-  override fun visitProperty(declaration: IrProperty): IrStatement {
-    if (declaration.hasAnnotation(FqNames.Inject)) {
-      declaration.getter?.body = null
-      declaration.setter?.body = null
-    }
-    return super.visitProperty(declaration)
   }
 }

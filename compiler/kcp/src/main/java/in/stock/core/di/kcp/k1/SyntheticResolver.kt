@@ -52,7 +52,8 @@ open class SyntheticResolver : SyntheticResolveExtension {
 
   private fun generateComponentConstructor(
     classDescriptor: ClassDescriptor,
-    result: MutableCollection<ClassConstructorDescriptor>
+
+		result: MutableCollection<ClassConstructorDescriptor>
   ) {
     val componentClass = classDescriptor.classId?.let {
       classDescriptor.module.findClassAcrossModuleDependencies(

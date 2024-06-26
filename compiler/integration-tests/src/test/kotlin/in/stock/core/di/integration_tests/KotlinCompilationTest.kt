@@ -1,19 +1,15 @@
 package `in`.stock.core.di.integration_tests
 
-import `in`.stock.core.di.integration_tests.core.Function
-import `in`.stock.core.di.integration_tests.core.ProjectCompiler
-import `in`.stock.core.di.integration_tests.core.Target
+import `in`.stock.core.di.compiler.core.test.Function
+import `in`.stock.core.di.compiler.core.test.ProjectCompiler
 import io.kotest.core.spec.style.FreeSpec
 
 class KotlinCompilationTest : FreeSpec({
 
   "Multi-module compilation test" {
-    val subProject = ProjectCompiler(
-      target = Target.KSP,
-    )
+    val subProject = ProjectCompiler()
 
     val mainProject = ProjectCompiler(
-      target = Target.KSP,
       dependencies = listOf(subProject)
     )
 
@@ -43,7 +39,7 @@ class KotlinCompilationTest : FreeSpec({
             """.trimIndent()
     )
 
-    mainProject.compile().runJvm(
+    mainProject.compile().runStaticFunction(
       function = Function(
         className = "com.dev.MainKt",
         functionName = "main",

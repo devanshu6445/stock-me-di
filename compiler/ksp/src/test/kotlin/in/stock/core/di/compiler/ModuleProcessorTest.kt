@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCompilerApi::class)
+
 package `in`.stock.core.di.compiler
 
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
@@ -5,6 +7,7 @@ import com.tschuchort.compiletesting.*
 import `in`.stock.core.di.compiler.ksp.ModuleProcessor
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 
 class ModuleProcessorTest : FreeSpec({

@@ -42,6 +42,7 @@ dependencies {
   testImplementation(projects.compiler.ksp)
   testImplementation(libs.ksp.testing)
   testImplementation(libs.koTest)
+  testImplementation(projects.compiler.core)
 
   kotlinCompilerPluginClasspath(projects.compiler.kcp)
 }

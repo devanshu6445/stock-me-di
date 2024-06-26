@@ -12,3 +12,12 @@ class EntryPointTest {
   @Inject
   lateinit var aLazy: Lazy<B>
 }
+
+@EntryPoint
+class PrimaryConstructorEntryPoint(
+	val dep: Dep
+) {
+
+	@Inject
+	lateinit var b: Lazy<B>
+}

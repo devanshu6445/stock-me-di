@@ -1,6 +1,9 @@
-package `in`.stock.core.di.integration_tests.core
+@file:OptIn(ExperimentalCompilerApi::class)
+
+package `in`.stock.core.di.compiler.core.test
 
 import com.tschuchort.compiletesting.KotlinCompilation
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 import java.net.URLClassLoader
 import javax.tools.Diagnostic
@@ -14,32 +17,38 @@ class TestCompilationResult(
 
   fun output(kind: Diagnostic.Kind): String = result.messages.filterByKind(kind)
 
-  fun runJvm(function: Function) {
+	private fun loadClass(className: String, block: Class<*>.() -> Unit) {
     val classLoader = URLClassLoader(
       compiledSource.map { it.toURI().toURL() }.toTypedArray(),
       this.javaClass.classLoader
     )
 
-    val entryClass = classLoader.loadClass(function.className)
+		val entryClass = classLoader.loadClass(className)
 
-    val entryFunction = entryClass.declaredMethods.singleOrNull {
-      it.name == function.functionName && it.parameterCount == function.args.size
-    }
+		entryClass.block()
+	}
 
-    check(entryFunction != null) {
-      "Cannot find method '${function.functionName}' in '${function.className}' with ${function.args.size} parameters."
-    }
+	fun runStaticFunction(function: Function) {
+		loadClass(function.className) {
+			val entryFunction = declaredMethods.singleOrNull {
+				it.name == function.functionName && it.parameterCount == function.args.size
+			}
 
-    val args = entryFunction.parameterTypes.zip(function.args) { type, arg ->
-      type.valueOf(arg)
-    }.toTypedArray()
+			check(entryFunction != null) {
+				"Cannot find method '${function.functionName}' in '${function.className}' with ${function.args.size} parameters."
+			}
 
-    try {
-      entryFunction.invoke(null, *args)
-    } catch (t: Throwable) {
-      t.printStackTrace()
-    }
-  }
+			val args = entryFunction.parameterTypes.zip(function.args) { type, arg ->
+				type.valueOf(arg)
+			}.toTypedArray()
+
+			try {
+				entryFunction.invoke(null, *args)
+			} catch (t: Throwable) {
+				t.printStackTrace()
+			}
+		}
+	}
 }
 
 data class Function(

@@ -1,4 +1,4 @@
-package `in`.stock.core.di.integration_tests.core
+package `in`.stock.core.di.compiler.core.test
 
 import java.io.File
 import javax.tools.Diagnostic

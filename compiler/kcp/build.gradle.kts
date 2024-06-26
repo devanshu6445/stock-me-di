@@ -9,12 +9,6 @@ plugins {
 group = "in.stock.me"
 version = "1.0.0"
 
-// stockMePublish {
-//    group = "in.stock.me"
-//    publishingName = "di-kotlin-compiler"
-//    version = "1.0.0"
-// }
-
 publishing {
   publications {
     create("Maven", MavenPublication::class.java) {
@@ -34,6 +28,15 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
   }
 }
 
+tasks.withType<Test>().configureEach {
+  useJUnitPlatform()
+}
+
 dependencies {
   compileOnly(libs.kotlinCompilerEmbeddable)
+  testImplementation(projects.compiler.core)
+  testImplementation(libs.ksp.testing)
+  testImplementation(libs.koTest)
+  testImplementation(projects.compiler.ksp)
+  testImplementation(libs.kotlin.inject.compiler)
 }

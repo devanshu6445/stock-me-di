@@ -12,6 +12,7 @@ dependencies {
   api(libs.dagger)
   api(libs.kotlin.poet)
   ksp(libs.dagger.compiler)
+  implementation(libs.ksp.testing)
 }
 
 tasks.withType<Test> {

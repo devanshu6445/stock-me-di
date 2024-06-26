@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.kmp.convention) apply false
@@ -34,3 +36,7 @@ val checkApple: Task by tasks.creating
 
 check.finalizedBy(testReport, copyTestResults)
 checkApple.finalizedBy(testReportApple, copyTestResultsApple)
+
+tasks.withType<Detekt> {
+    exclude("**/testData/**")
+}
