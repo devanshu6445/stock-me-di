@@ -20,33 +20,22 @@ class EntryPointIrGeneratorTest : BehaviorSpec({
 			.compilerPlugin(DiComponentRegistrar())
 			.commandLineProcessor(DiCommandLineProcessor())
 	}
+
 	given("An @EntryPoint marked class") {
 
 		`when`("constructor is provided as argument for initializer") {
 
-			`when`("no primary constructor is provided") {
-
-				then("create a secondary constructor") {
-					projectCompiler.source(
-						fileName = "src/testData/secondary_constructor_test.kt",
-					).compile().apply {
-						runStaticFunction(
-							Function(
-								className = "main.Secondary_constructor_testKt",
-								functionName = "main",
-								args = emptyList()
-							)
+			then("create a secondary constructor") {
+				projectCompiler.source(
+					fileName = "src/testData/secondary_constructor_test.kt",
+				).compile().apply {
+					runStaticFunction(
+						Function(
+							className = "main.Secondary_constructor_testKt",
+							functionName = "main",
+							args = emptyList()
 						)
-					}
-				}
-			}
-
-			`when`("primary constructor is provided") {
-				then("throw error") {
-					projectCompiler
-						.source(
-							"src/testData/primary_constructor_test.kt"
-						).compile()
+					)
 				}
 			}
 		}

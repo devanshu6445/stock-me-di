@@ -67,8 +67,8 @@ class EntryPointGenerator @Inject constructor(
 			}Component"
 		)
 
-		// only provide this class as argument if the injection is not through the constrcutor
-		// and this class doesn't have an rimary constructor
+		// only provide this class as argument if the injection is not through the constructor
+		// and this class doesn't have an primary constructor
 		// todo can remove the check of constructor injection as the dependency can be provided via secondary constrcutor if primary constructor doesn't exist
 		val canProvideThisClassAsArgument =
 			annotations.first {
