@@ -7,8 +7,6 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 
-const val CompilerPluginId = "stock-me-di-compiler"
-
 @OptIn(ExperimentalCompilerApi::class)
 class DiCommandLineProcessor : CommandLineProcessor {
   override val pluginId: String
