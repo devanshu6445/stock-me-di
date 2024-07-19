@@ -7,30 +7,22 @@ import `in`.stock.core.di.runtime.annotations.Inject
 class EntryPointTest : ParentEntryPoint() {
 
   @Inject
-  lateinit var a: Dep
-
-  @Inject
   lateinit var aLazy: Lazy<B>
 
 	override fun onCreate() {
 		super.onCreate()
 
-		println(component)
+		println(a)
 	}
 }
 
 abstract class ParentEntryPoint {
+
+	@Inject
+	lateinit var a: Dep
 
 	open fun onCreate() {
 
 	}
 }
 
-@EntryPoint
-class PrimaryConstructorEntryPoint(
-	val dep: Dep
-) {
-
-	@Inject
-	lateinit var b: Lazy<B>
-}

@@ -2,7 +2,6 @@ package `in`.stock.core.di.compiler.ksp
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getConstructors
-import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
@@ -50,7 +49,7 @@ class TypeCollector @Inject constructor(
   private fun KSDeclaration.getDependencies(): Sequence<KSDeclaration> {
     val resolveParameters = when (this) {
       is KSClassDeclaration -> {
-        getConstructors().flatMap { it.parameters }.map { it.type } + getDeclaredProperties().filter {
+				getConstructors().flatMap { it.parameters }.map { it.type } + getAllProperties().filter {
           it.hasAnnotation(
             `in`.stock.core.di.runtime.annotations.Inject::class
           )

@@ -1,16 +1,17 @@
 package `in`.stock.core.di.kcp.backend
 
 import `in`.stock.core.di.kcp.backend.core.AbstractTransformerForGenerator
+import `in`.stock.core.di.kcp.backend.core.Origin
 import `in`.stock.core.di.kcp.k2.FirDeclarationGenerator
 import `in`.stock.core.di.kcp.utils.*
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.addBackingField
 import org.jetbrains.kotlin.ir.builders.declarations.addFunction
-import org.jetbrains.kotlin.ir.builders.declarations.addValueParameter
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.expressions.IrConst
@@ -161,9 +162,9 @@ class EntryPointIrGenerator(
 
 			// assign all the injectable properties
 			propertyAssignment(
-				declaration = declaration,
-				componentClassSymbol = componentClassSymbol,
-				componentParameter = componentParameter
+				declaration,
+				componentClassSymbol,
+				componentGetter = declaration.parentAsClass.properties.first { it.name == Name.identifier("component") }.getter!!
 			)
 		}
 	}
@@ -181,7 +182,8 @@ class EntryPointIrGenerator(
 	private fun IrBlockBodyBuilder.propertyAssignment(
 		declaration: IrFunction,
 		componentClassSymbol: IrClassSymbol,
-		componentParameter: IrValueParameter
+		componentGetter: IrFunction,
+		receiver: IrValueParameter = declaration.parentAsClass.thisReceiver!!
 	) {
 		for (property in declaration.parentAsClass.properties.filter { it.annotations.hasAnnotation(FqNames.Inject) }) {
 			val propertyType = property.getter?.returnType
@@ -203,7 +205,7 @@ class EntryPointIrGenerator(
 				).first()
 
 				+irSetField(
-					receiver = irGet(componentParameter),
+					receiver = irGet(receiver),
 					field = property.backingField!!,
 					value = irCall(
 						lazyPropertyCreatorFunction
@@ -219,7 +221,11 @@ class EntryPointIrGenerator(
 									+irReturn(
 										irGet(
 											type = propField.getter?.returnType!!,
-											receiver = irGet(componentParameter),
+											receiver = irGet(
+												type = componentGetter.returnType,
+												receiver = irGet(receiver),
+												getterSymbol = componentGetter.symbol
+											),
 											getterSymbol = propField.getter?.symbol!!
 										)
 									)
@@ -231,13 +237,15 @@ class EntryPointIrGenerator(
 			} else {
 				// set the values of all the @Inject annotated fields
 				+irSetField(
-					receiver = irGet(declaration.dispatchReceiverParameter!!),
-					field = property.backingField!!,
+					receiver = irGet(receiver),
+					field = if (property.isFakeOverride) property.overriddenSymbols
+						.first().owner.backingField!! else property.backingField!!,
 					value = irGet(
 						type = propField.getter?.returnType!!,
 						receiver = irGet(
 							type = componentClassSymbol.owner.defaultType,
-							variable = componentParameter
+							receiver = irGet(receiver),
+							getterSymbol = componentGetter.symbol
 						),
 						getterSymbol = propField.getter?.symbol!!
 					)
@@ -250,7 +258,10 @@ class EntryPointIrGenerator(
 		return try {
 			// check if class is to be injected
 			val injectableClass = declaration.parentAsClass.let { clazz ->
-				if (clazz.hasAnnotation(FqNames.EntryPoint)) clazz else throw Exception("Class not injectable")
+				if (clazz.hasAnnotation(FqNames.EntryPoint))
+					clazz
+				else
+					return super.visitSimpleFunction(declaration)
 			}
 
 			// get all the arguments
@@ -291,28 +302,37 @@ class EntryPointIrGenerator(
 		}
 	}
 
-	private fun generatePropertyAssigningFunction(declaration: IrClass) {
-		declaration.addFunction(
-			name = "assignInjectableProperties",
-			returnType = context.irBuiltIns.unitType
+	private fun generatePropertyAssigningFunction(declaration: IrClass): IrFunction {
+		val existingFunction = declaration.functions.firstOrNull { it.name.asString() == "assignInjectableProperties" }
+		if (existingFunction != null) {
+			return existingFunction
+		}
+
+		val generatedFunction = declaration.addFunction(
+			name = ASSIGN_INJECTABLE_PROPERTIES,
+			returnType = context.irBuiltIns.unitType,
+			visibility = DescriptorVisibilities.PRIVATE,
+			origin = Origin
 		).apply {
 			val componentType = declaration.properties.first { it.name == Name.identifier("component") }
 
 			body = symbol.irBlockBody {
-
-				addValueParameter(
-					name = "component",
-					type = componentType.getter?.returnType!!,
-				)
 
 				propertyAssignment(
 					declaration = this@apply,
 					componentClassSymbol = this@EntryPointIrGenerator.context.irClass(
 						componentType.getter?.returnType!!
 					)?.symbol!!,
-					componentParameter = valueParameters.first()
+					componentGetter = componentType.getter!!,
+					receiver = dispatchReceiverParameter!!
 				)
 			}
 		}
+
+		return generatedFunction
+	}
+
+	companion object {
+		const val ASSIGN_INJECTABLE_PROPERTIES = "assignInjectableProperties"
 	}
 }

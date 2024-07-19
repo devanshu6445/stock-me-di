@@ -1,11 +1,7 @@
 package `in`.stock.core.di.compiler.ksp.generators
 
 import com.google.devtools.ksp.getConstructors
-import com.google.devtools.ksp.getDeclaredProperties
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSDeclaration
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSTypeReference
+import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
@@ -74,7 +70,7 @@ class EntryPointGenerator @Inject constructor(
 			annotations.first {
 				it.annotationType.resolve().declaration.qualifiedName?.asString() == EntryPoint::class.qualifiedName
 			}
-				.arguments.first { it.name?.asString() == "initializer" }.value != "constructor" && primaryConstructor == null
+				.arguments.first { it.name?.asString() == "initializer" }.value != "constructor" && (primaryConstructor == null || primaryConstructor?.origin == Origin.SYNTHETIC)
 
 		generateComponent(
 			componentName = componentName,
@@ -127,7 +123,7 @@ class EntryPointGenerator @Inject constructor(
 			arguments.forEach { arg ->
 				constructorBuilder.addConstructorProperty(
 					typeSpec = this,
-					name = arg.simpleName,
+					name = arg.simpleName.replaceFirstChar { char -> char.lowercaseChar() } + "1",
 					type = arg,
 					annotations = listOf(
 						AnnotationSpec.builder(Provides)
@@ -159,7 +155,7 @@ private fun KSClassDeclaration.extractAllProperties() = sequence {
 		}
 	}
 
-	for (property in getDeclaredProperties()) {
+	for (property in getAllProperties()) {
 		yield(
 			Property(
 				name = property.simpleName.asString(),
