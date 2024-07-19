@@ -69,8 +69,9 @@ class EntryPointGenerator @Inject constructor(
 		val canProvideThisClassAsArgument =
 			annotations.first {
 				it.annotationType.resolve().declaration.qualifiedName?.asString() == EntryPoint::class.qualifiedName
-			}
-				.arguments.first { it.name?.asString() == "initializer" }.value != "constructor" && (primaryConstructor == null || primaryConstructor?.origin == Origin.SYNTHETIC)
+			}.arguments.first {
+				it.name?.asString() == "initializer"
+			}.value != "constructor" && (primaryConstructor == null || primaryConstructor?.origin == Origin.SYNTHETIC)
 
 		generateComponent(
 			componentName = componentName,

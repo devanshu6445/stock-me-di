@@ -238,8 +238,12 @@ class EntryPointIrGenerator(
 				// set the values of all the @Inject annotated fields
 				+irSetField(
 					receiver = irGet(receiver),
-					field = if (property.isFakeOverride) property.overriddenSymbols
-						.first().owner.backingField!! else property.backingField!!,
+					field = if (property.isFakeOverride) {
+						property.overriddenSymbols
+							.first().owner.backingField!!
+					} else {
+						property.backingField!!
+					},
 					value = irGet(
 						type = propField.getter?.returnType!!,
 						receiver = irGet(
@@ -258,10 +262,11 @@ class EntryPointIrGenerator(
 		return try {
 			// check if class is to be injected
 			val injectableClass = declaration.parentAsClass.let { clazz ->
-				if (clazz.hasAnnotation(FqNames.EntryPoint))
+				if (clazz.hasAnnotation(FqNames.EntryPoint)) {
 					clazz
-				else
+				} else {
 					return super.visitSimpleFunction(declaration)
+				}
 			}
 
 			// get all the arguments
@@ -287,7 +292,8 @@ class EntryPointIrGenerator(
 				declaration.transformChildren(
 					FunctionInitializerTransformer(
 						context = context
-					), FunctionInitializerTransformer.Params(
+					),
+					FunctionInitializerTransformer.Params(
 						isSuperCalledFirst = isSuperCalledFirst,
 						componentField = componentProperty.backingField!!,
 						parentFunction = declaration
@@ -317,7 +323,6 @@ class EntryPointIrGenerator(
 			val componentType = declaration.properties.first { it.name == Name.identifier("component") }
 
 			body = symbol.irBlockBody {
-
 				propertyAssignment(
 					declaration = this@apply,
 					componentClassSymbol = this@EntryPointIrGenerator.context.irClass(

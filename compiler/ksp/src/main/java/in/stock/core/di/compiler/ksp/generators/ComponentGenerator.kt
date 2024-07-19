@@ -76,7 +76,13 @@ class ComponentGenerator @Inject constructor(
 						ParameterSpec.builder(it.simpleName.replaceFirstChar { char -> char.lowercaseChar() }, it)
 							.defaultValue(
 								CodeBlock.of(
-									"%T${if (it.canonicalName == SingletonComponent::class.qualifiedName) ".getInstance()" else "::class.create()"}",
+									"%T${
+										if (it.canonicalName == SingletonComponent::class.qualifiedName) {
+											".getInstance()"
+										} else {
+											"::class.create()"
+										}
+									}",
 									it,
 								)
 							)

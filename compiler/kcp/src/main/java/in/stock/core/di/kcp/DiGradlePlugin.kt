@@ -32,7 +32,6 @@ class DiGradlePlugin : KotlinCompilerPluginSupportPlugin {
 					dependencyNotation = "in.stock.me:di-compiler:1.0.0",
 					project = target
 				)
-
 			} else {
 				add("ksp", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.1")
 				add("ksp", "in.stock.me:di-compiler:1.0.0")

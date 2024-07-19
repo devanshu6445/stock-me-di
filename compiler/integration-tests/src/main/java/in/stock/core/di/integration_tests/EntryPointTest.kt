@@ -6,8 +6,8 @@ import `in`.stock.core.di.runtime.annotations.Inject
 @EntryPoint(initializer = "onCreate", isSuperCalledFirst = true)
 class EntryPointTest : ParentEntryPoint() {
 
-  @Inject
-  lateinit var aLazy: Lazy<B>
+	@Inject
+	lateinit var aLazy: Lazy<B>
 
 	override fun onCreate() {
 		super.onCreate()
@@ -22,7 +22,5 @@ abstract class ParentEntryPoint {
 	lateinit var a: Dep
 
 	open fun onCreate() {
-
 	}
 }
-
