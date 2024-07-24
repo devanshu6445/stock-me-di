@@ -4,7 +4,9 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import dagger.Binds
 import dagger.Module
-import `in`.stock.core.di.compiler.core.*
+import `in`.stock.core.di.compiler.core.Generator
+import `in`.stock.core.di.compiler.core.ProcessingStepValidator
+import `in`.stock.core.di.compiler.core.XProcessingStep
 import `in`.stock.core.di.compiler.ksp.ModuleProcessingStepValidatorImpl
 import `in`.stock.core.di.compiler.ksp.ProcessModuleImpl
 import `in`.stock.core.di.compiler.ksp.data.*
@@ -33,15 +35,12 @@ interface GeneratorsBinder {
 	): Generator<List<ModuleProviderResult>, Unit>
 
 	@Binds
-	fun bindCodeGenerator(flexibleCodeGeneratorImpl: FlexibleCodeGeneratorImpl): FlexibleCodeGenerator
-
-	@Binds
 	fun bindEntryPointGenerator(entryPointGenerator: EntryPointGenerator): Generator<KSDeclaration, Unit>
 
 	@Binds
 	fun bindProcessModule(
 		processModuleImpl: ProcessModuleImpl
-	): ProcessingStep<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
+	): XProcessingStep<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
 
 	@Binds
 	fun bindModuleValidator(

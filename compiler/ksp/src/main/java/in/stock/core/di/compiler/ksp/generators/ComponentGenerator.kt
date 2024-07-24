@@ -3,9 +3,9 @@ package `in`.stock.core.di.compiler.ksp.generators
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
 import com.squareup.kotlinpoet.ksp.toClassName
-import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
 import `in`.stock.core.di.compiler.core.Generator
-import `in`.stock.core.di.compiler.core.writeTo
+import `in`.stock.core.di.compiler.core.XCodeGenerator
+import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.data.ComponentGeneratorResult
 import `in`.stock.core.di.compiler.ksp.data.ComponentInfo
 import `in`.stock.core.di.compiler.ksp.utils.COMPONENT
@@ -17,7 +17,7 @@ import javax.inject.Inject
 import kotlin.reflect.KClass
 
 class ComponentGenerator @Inject constructor(
-	private val codeGenerator: FlexibleCodeGenerator,
+	private val xCodeGenerator: XCodeGenerator,
 ) :
 	Generator<ComponentInfo, ComponentGeneratorResult> {
 	override fun generate(data: ComponentInfo): ComponentGeneratorResult {
@@ -55,7 +55,7 @@ class ComponentGenerator @Inject constructor(
 				componentType = data.root.toClassName(),
 				generatedComponent = data.generatedName
 			)
-			.build().writeTo(codeGenerator)
+			.build().writeTo(xCodeGenerator)
 
 		return ComponentGeneratorResult(name = name)
 	}

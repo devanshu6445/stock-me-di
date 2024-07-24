@@ -3,7 +3,7 @@ package `in`.stock.core.di.integration_tests
 import `in`.stock.core.di.compiler.core.test.Function
 import `in`.stock.core.di.compiler.core.test.ProjectCompilationException
 import `in`.stock.core.di.compiler.core.test.ProjectCompiler
-import `in`.stock.core.di.compiler.ksp.ModuleProcessor
+import `in`.stock.core.di.compiler.ksp.DIProcessor
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.engine.spec.tempdir
@@ -15,7 +15,7 @@ class DiModuleTest : FreeSpec({
 		shouldThrowExactly<ProjectCompilationException> {
 			ProjectCompiler(
 				workingDir = tempdir()
-			).symbolProcessor(ModuleProcessor.Provider())
+			).symbolProcessor(DIProcessor.Provider())
 				.symbolProcessor(InjectProcessorProvider())
 				.source(
 					fileName = "Main.kt",
@@ -33,7 +33,7 @@ class DiModuleTest : FreeSpec({
 
 	"Module installing in component" {
 		ProjectCompiler()
-			.symbolProcessor(ModuleProcessor.Provider())
+			.symbolProcessor(DIProcessor.Provider())
 			.symbolProcessor(InjectProcessorProvider())
 			.source(
 				fileName = "Main.kt",
@@ -73,13 +73,13 @@ class DiModuleTest : FreeSpec({
 
 	"Multi-gradle-module di module installation" {
 		val subProject = ProjectCompiler()
-			.symbolProcessor(ModuleProcessor.Provider())
+			.symbolProcessor(DIProcessor.Provider())
 			.symbolProcessor(InjectProcessorProvider())
 
 		val mainProject = ProjectCompiler(
 			dependencies = listOf(subProject)
 		)
-			.symbolProcessor(ModuleProcessor.Provider())
+			.symbolProcessor(DIProcessor.Provider())
 			.symbolProcessor(InjectProcessorProvider())
 
 		subProject.source(

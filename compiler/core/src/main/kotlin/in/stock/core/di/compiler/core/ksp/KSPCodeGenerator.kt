@@ -1,17 +1,16 @@
-package `in`.stock.core.di.compiler.core
+package `in`.stock.core.di.compiler.core.ksp
 
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
+import `in`.stock.core.di.compiler.core.XCodeGenerator
 import java.io.File
 import java.io.OutputStream
 import javax.inject.Inject
 
-interface FlexibleCodeGenerator : CodeGenerator
-
-class FlexibleCodeGeneratorImpl @Inject constructor(private val delegate: CodeGenerator) :
-  FlexibleCodeGenerator {
+class KSPCodeGenerator @Inject constructor(private val delegate: CodeGenerator) :
+	XCodeGenerator {
   override val generatedFile: Collection<File>
     get() = delegate.generatedFile
 

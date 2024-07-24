@@ -5,21 +5,21 @@ import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
 import `in`.stock.core.di.compiler.core.Generator
-import `in`.stock.core.di.compiler.core.writeTo
+import `in`.stock.core.di.compiler.core.XCodeGenerator
+import `in`.stock.core.di.compiler.core.XResolver
+import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.TypeCollector
-import `in`.stock.core.di.compiler.ksp.utils.LazyName
-import `in`.stock.core.di.compiler.ksp.utils.Provides
-import `in`.stock.core.di.compiler.ksp.utils.addConstructorProperty
-import `in`.stock.core.di.compiler.ksp.utils.capitalize
+import `in`.stock.core.di.compiler.ksp.utils.*
+import `in`.stock.core.di.runtime.annotations.AssociatedWith
 import `in`.stock.core.di.runtime.annotations.Component
 import `in`.stock.core.di.runtime.annotations.EntryPoint
 import javax.inject.Inject
 
 class EntryPointGenerator @Inject constructor(
 	private val typeCollector: TypeCollector,
-	private val codeGenerator: FlexibleCodeGenerator,
+	private val xCodeGenerator: XCodeGenerator,
+	private val xResolver: XResolver
 ) : Generator<KSDeclaration, Unit> {
 	override fun generate(data: KSDeclaration) {
 		when (data) {
@@ -85,16 +85,37 @@ class EntryPointGenerator @Inject constructor(
 		properties: Sequence<PropertySpec>,
 		arguments: List<ClassName> = emptyList()
 	) {
+		val entryPointSpecificProviders = typeCollector.collectEntryPointProviders(this)
+
 		val depComponents = typeCollector.collectTypes(this).map {
 			ClassName(it.packageName.asString(), it.simpleName.asString())
-		}
+		}.filter { it.canonicalName != qualifiedName?.asString() }
+
+		val entryPointScope = xResolver.getSymbolsWithClassAnnotation(
+			Scope.packageName,
+			Scope.simpleName
+		)
+			.firstOrNull {
+				it.hasAnnotation(AssociatedWith::class) &&
+					(it.getAnnotationNonNull(AssociatedWith::class).arguments.first().value as KSType)
+						.declaration.qualifiedName?.asString() == this.qualifiedName?.asString()
+			}
 
 		FileSpec.builder(componentName).addType(
 			TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
 				.addAnnotation(Component::class)
+				.apply {
+					if (entryPointScope != null) {
+						addAnnotation(
+							AnnotationSpec.builder((entryPointScope).toClassName())
+								.build()
+						)
+					}
+				}
+				.addSuperinterfaces(entryPointSpecificProviders.map { it.toClassName() }.toList())
 				.constructorBuilder(depComponents, arguments)
 				.addProperties(properties.asIterable()).build()
-		).build().writeTo(codeGenerator)
+		).build().writeTo(xCodeGenerator)
 	}
 
 	private fun TypeSpec.Builder.constructorBuilder(
@@ -120,19 +141,19 @@ class EntryPointGenerator @Inject constructor(
 					AnnotationSpec.builder(Component::class).build()
 				)
 			)
+		}
 
-			arguments.forEach { arg ->
-				constructorBuilder.addConstructorProperty(
-					typeSpec = this,
-					name = arg.simpleName.replaceFirstChar { char -> char.lowercaseChar() } + "1",
-					type = arg,
-					annotations = listOf(
-						AnnotationSpec.builder(Provides)
-							.useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
-							.build()
-					)
+		arguments.forEach { arg ->
+			constructorBuilder.addConstructorProperty(
+				typeSpec = this,
+				name = arg.simpleName.replaceFirstChar { char -> char.lowercaseChar() } + "1",
+				type = arg,
+				annotations = listOf(
+					AnnotationSpec.builder(Provides)
+						.useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
+						.build()
 				)
-			}
+			)
 		}
 
 		primaryConstructor(constructorBuilder.build())
@@ -157,6 +178,11 @@ private fun KSClassDeclaration.extractAllProperties() = sequence {
 	}
 
 	for (property in getAllProperties()) {
+		// only yield properties which needs to be injected
+		if (!property.hasAnnotation(`in`.stock.core.di.runtime.annotations.Inject::class)) {
+			continue
+		}
+
 		yield(
 			Property(
 				name = property.simpleName.asString(),

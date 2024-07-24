@@ -4,8 +4,8 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSName
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.Messenger
-import `in`.stock.core.di.compiler.core.ProcessingStep
 import `in`.stock.core.di.compiler.core.ProcessingStepValidator
+import `in`.stock.core.di.compiler.core.XProcessingStep
 import `in`.stock.core.di.compiler.ksp.data.ModuleInfo
 import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.data.ProvidesInfo
@@ -18,7 +18,7 @@ class ProcessModuleImpl @Inject constructor(
   messenger: Messenger,
   private val moduleGenerator: Generator<ModuleInfo, Unit>,
   private val moduleProviderGenerator: Generator<ModuleInfo, ModuleProviderResult>,
-) : ProcessingStep<KSClassDeclaration, @JvmSuppressWildcards Pair<ModuleInfo, ModuleProviderResult>>(
+) : XProcessingStep<KSClassDeclaration, @JvmSuppressWildcards Pair<ModuleInfo, ModuleProviderResult>>(
   messenger,
   validator
 ) {

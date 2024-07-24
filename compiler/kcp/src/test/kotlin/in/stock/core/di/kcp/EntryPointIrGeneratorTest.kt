@@ -2,7 +2,7 @@ package `in`.stock.core.di.kcp
 
 import `in`.stock.core.di.compiler.core.test.Function
 import `in`.stock.core.di.compiler.core.test.ProjectCompiler
-import `in`.stock.core.di.compiler.ksp.ModuleProcessor
+import `in`.stock.core.di.compiler.ksp.DIProcessor
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.engine.spec.tempdir
 import me.tatarka.inject.compiler.ksp.InjectProcessorProvider
@@ -15,7 +15,7 @@ class EntryPointIrGeneratorTest : BehaviorSpec({
 		projectCompiler = ProjectCompiler(
 			workingDir = tempdir()
 		)
-			.symbolProcessor(ModuleProcessor.Provider())
+			.symbolProcessor(DIProcessor.Provider())
 			.symbolProcessor(InjectProcessorProvider())
 			.compilerPlugin(DiComponentRegistrar())
 			.commandLineProcessor(DiCommandLineProcessor())

@@ -4,16 +4,16 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
 import `in`.stock.core.di.compiler.core.Generator
-import `in`.stock.core.di.compiler.core.writeTo
+import `in`.stock.core.di.compiler.core.XCodeGenerator
+import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.utils.ModuleProviderRegistry
 import `in`.stock.core.di.runtime.annotations.internals.Registry
 import javax.inject.Inject
 
 class ModuleProviderRegistryGenerator @Inject constructor(
-  private val codeGenerator: FlexibleCodeGenerator
+	private val xCodeGenerator: XCodeGenerator
 ) : Generator<List<@JvmSuppressWildcards ModuleProviderResult>, Unit> {
 
   override fun generate(data: List<ModuleProviderResult>) {
@@ -32,6 +32,6 @@ class ModuleProviderRegistryGenerator @Inject constructor(
           .addProperties(properties)
           .build()
       )
-      .build().writeTo(codeGenerator)
+			.build().writeTo(xCodeGenerator)
   }
 }

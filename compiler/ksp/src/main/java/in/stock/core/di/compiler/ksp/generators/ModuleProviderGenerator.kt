@@ -3,9 +3,9 @@ package `in`.stock.core.di.compiler.ksp.generators
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
-import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
 import `in`.stock.core.di.compiler.core.Generator
-import `in`.stock.core.di.compiler.core.writeTo
+import `in`.stock.core.di.compiler.core.XCodeGenerator
+import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.data.ModuleInfo
 import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.data.ProvidesInfo
@@ -14,7 +14,7 @@ import `in`.stock.core.di.runtime.annotations.internals.ModuleProvider
 import javax.inject.Inject
 
 class ModuleProviderGenerator @Inject constructor(
-  private val codeGenerator: FlexibleCodeGenerator,
+	private val xCodeGenerator: XCodeGenerator,
 ) : Generator<ModuleInfo, ModuleProviderResult> {
   override fun generate(data: ModuleInfo): ModuleProviderResult {
     val moduleName = data.root.toClassName().let {
@@ -27,7 +27,7 @@ class ModuleProviderGenerator @Inject constructor(
         installInComponent = data.installInComponent
       )
       .build()
-      .writeTo(codeGenerator)
+			.writeTo(xCodeGenerator)
 
     return ModuleProviderResult(
       name = moduleName,

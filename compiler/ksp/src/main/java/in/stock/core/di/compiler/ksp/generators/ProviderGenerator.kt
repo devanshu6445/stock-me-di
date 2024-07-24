@@ -8,16 +8,16 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import `in`.stock.core.di.compiler.core.FlexibleCodeGenerator
 import `in`.stock.core.di.compiler.core.Generator
-import `in`.stock.core.di.compiler.core.writeTo
+import `in`.stock.core.di.compiler.core.XCodeGenerator
+import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.data.ProvidesInfo
 import `in`.stock.core.di.compiler.ksp.utils.INJECT
 import `in`.stock.core.di.runtime.components.Provider
 import javax.inject.Inject
 
 class ProviderGenerator @Inject constructor(
-  private val codeGenerator: FlexibleCodeGenerator
+	private val xCodeGenerator: XCodeGenerator
 ) : Generator<ProvidesInfo, Unit> {
   override fun generate(data: ProvidesInfo) {
     val resolvedDepType = data.resolvedDepType
@@ -48,7 +48,7 @@ class ProviderGenerator @Inject constructor(
           binderFunctionName = data.functionName.getShortName(),
           dependenciesName = data.parametersName
         ).build()
-    ).build().writeTo(codeGenerator)
+		).build().writeTo(xCodeGenerator)
   }
 
   private fun TypeSpec.Builder.constructorBuilder(

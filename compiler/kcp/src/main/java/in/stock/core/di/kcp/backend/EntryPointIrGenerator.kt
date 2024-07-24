@@ -337,6 +337,25 @@ class EntryPointIrGenerator(
 		return generatedFunction
 	}
 
+// 	override fun visitClass(declaration: IrClass): IrStatement {
+// 		if (declaration.hasAnnotation(FqNames.EntryPoint)) {
+// 			declaration.superTypes = listOf(
+// 				irBuiltIns.anyType
+// 			)
+// 		}
+// 		return super.visitClass(declaration)
+// 	}
+//
+// 	override fun visitConstructor(declaration: IrConstructor): IrStatement {
+// 		if (declaration.parentAsClass.hasAnnotation(FqNames.EntryPoint)
+// 			&& declaration.isPrimary && declaration.valueParameters.isEmpty()) {
+// 			declaration.body = declaration.symbol.irBlockBody {
+// 				+irDelegatingConstructorCall(irBuiltIns.anyType.classOrNull?.owner?.primaryConstructor!!)
+// 			}
+// 		}
+// 		return super.visitConstructor(declaration)
+// 	}
+
 	companion object {
 		const val ASSIGN_INJECTABLE_PROPERTIES = "assignInjectableProperties"
 	}
