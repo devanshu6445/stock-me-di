@@ -19,6 +19,7 @@ data class ComponentInfo(
     root.primaryConstructor?.parameters ?: listOf()
   }
 
+	// todo can use partition for `parentComponents` and `dependencies`
   val parentComponents by lazy {
     constructorParameters.filter { it.hasAnnotation(Component::class) }
       .map { it.type.resolve().toClassName() }
@@ -32,6 +33,8 @@ data class ComponentInfo(
   val providersToImplement by lazy {
     val parentComponents = parentComponents.map { it.canonicalName }
     modulesProvider.filter {
+			// check whether this Module Provider is installed/created for any of the parent components or
+			// for this component(For which we are generating this component) itself
       val installIn = it.installingComponent.toClassName().canonicalName
       parentComponents.contains(installIn) || root.qualifiedName?.asString() == installIn
     }.map { it.name }

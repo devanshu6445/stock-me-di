@@ -76,9 +76,17 @@ class TypeCollector @Inject constructor(
 	}
 
 	private fun KSDeclaration.getComponents(): Sequence<KSClassDeclaration> {
-		val types = getDependencies().distinctBy { it.qualifiedName?.asString() }
+		// todo review this code
+		val providersDependencies = collectEntryPointProviders(this).flatMap {
+			it.getAllFunctions()
+				.flatMap { func -> func.extensionReceiver?.resolve()?.declaration?.getDependencies() ?: emptySequence() }
+		}.filterNot {
+			it.qualifiedName?.asString() == resolver.builtIns.anyType.declaration.qualifiedName?.asString()
+		}
 
-		val components = sequence {
+		val types = getDependencies().distinctBy { it.qualifiedName?.asString() } + providersDependencies
+
+		return sequence {
 			types.forEach {
 				messenger.warn("${it.qualifiedName?.asString()}", it)
 				when (it) {
@@ -130,9 +138,14 @@ class TypeCollector @Inject constructor(
 				}
 			}
 		}
-
-		return components
 	}
+
+// 	private fun findProviderRelatedTo(type: KSDeclaration): Sequence<KSClassDeclaration> {
+// 		return sequence {
+// 			resolver.getAllModuleProviders()
+// 				.associateBy { it.qualifiedName?.asString() }
+// 		}
+// 	}
 
 	fun collectEntryPointProviders(type: KSDeclaration): Sequence<KSClassDeclaration> {
 		return sequence {

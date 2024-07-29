@@ -19,8 +19,12 @@ annotation class TestScope
 
 @Component
 @NewScope
-abstract class NewComponent {
+abstract class NewComponent(
+	@Component val singletonComponent: SingletonComponent
+) {
   abstract val dep3: Dep3
+
+	abstract val dep: Dep
 }
 
 @Scope

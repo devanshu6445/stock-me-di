@@ -1,11 +1,10 @@
-package `in`.stock.core.di.compiler.ksp
+package `in`.stock.core.di.compiler.ksp.steps
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSName
 import `in`.stock.core.di.compiler.core.Generator
-import `in`.stock.core.di.compiler.core.Messenger
 import `in`.stock.core.di.compiler.core.ProcessingStepValidator
-import `in`.stock.core.di.compiler.core.XProcessingStep
+import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.ksp.data.ModuleInfo
 import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.data.ProvidesInfo
@@ -13,13 +12,11 @@ import `in`.stock.core.di.compiler.ksp.utils.*
 import `in`.stock.core.di.runtime.annotations.InstallIn
 import javax.inject.Inject
 
-class ProcessModuleImpl @Inject constructor(
+class ModuleProcessingStep @Inject constructor(
   validator: ProcessingStepValidator<KSClassDeclaration>,
-  messenger: Messenger,
   private val moduleGenerator: Generator<ModuleInfo, Unit>,
   private val moduleProviderGenerator: Generator<ModuleInfo, ModuleProviderResult>,
-) : XProcessingStep<KSClassDeclaration, @JvmSuppressWildcards Pair<ModuleInfo, ModuleProviderResult>>(
-  messenger,
+) : XProcessingStepVoid<KSClassDeclaration, @JvmSuppressWildcards Pair<ModuleInfo, ModuleProviderResult>>(
   validator
 ) {
 

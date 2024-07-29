@@ -6,11 +6,11 @@ import dagger.Binds
 import dagger.Module
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.ProcessingStepValidator
-import `in`.stock.core.di.compiler.core.XProcessingStep
-import `in`.stock.core.di.compiler.ksp.ModuleProcessingStepValidatorImpl
-import `in`.stock.core.di.compiler.ksp.ProcessModuleImpl
+import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.ksp.data.*
 import `in`.stock.core.di.compiler.ksp.generators.*
+import `in`.stock.core.di.compiler.ksp.steps.ModuleProcessingStep
+import `in`.stock.core.di.compiler.ksp.validators.ModuleValidator
 
 @Module
 interface GeneratorsBinder {
@@ -39,11 +39,11 @@ interface GeneratorsBinder {
 
 	@Binds
 	fun bindProcessModule(
-		processModuleImpl: ProcessModuleImpl
-	): XProcessingStep<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
+		moduleProcessingStep: ModuleProcessingStep
+	): XProcessingStepVoid<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
 
 	@Binds
 	fun bindModuleValidator(
-		moduleValidatorImpl: ModuleProcessingStepValidatorImpl
+		moduleValidatorImpl: ModuleValidator
 	): ProcessingStepValidator<KSClassDeclaration>
 }

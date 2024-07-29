@@ -27,6 +27,11 @@ object Module1 {
 @NewScope
 object Module2 {
 
+	// todo uncomment to break a test case
+	// https://develope.youtrack.cloud/issue/DI-3/
+// 	@Provides
+// 	fun bind() = Dep()
+
   @Provides
   fun bind(dep: Dep): Dep2 {
     return Dep2(dep = dep)

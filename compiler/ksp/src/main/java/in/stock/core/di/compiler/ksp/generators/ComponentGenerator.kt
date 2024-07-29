@@ -33,7 +33,7 @@ class ComponentGenerator @Inject constructor(
 							CodeBlock.of(
 								format = "%N",
 								ParameterSpec(
-									name = it.simpleName.replaceFirstChar { char -> char.lowercaseChar() },
+									name = it.simpleName.replaceFirstChar { char -> char.lowercaseChar() } + "2",
 									type = it
 								)
 							)
@@ -123,8 +123,10 @@ class ComponentGenerator @Inject constructor(
 		val constructorBuilder = FunSpec.constructorBuilder()
 
 		parentComponent.forEach { component ->
-			val name = component.simpleName.replaceFirstChar { it.lowercaseChar() }
+			// todo Can look into using NameAllocator to allocate non-collision names
+			val name = component.simpleName.replaceFirstChar { it.lowercaseChar() } + "2"
 
+			// adding the parameter as with val due to val check in kotlin-inject library
 			constructorBuilder.addConstructorProperty(
 				typeSpec = this,
 				name = name,
@@ -134,7 +136,7 @@ class ComponentGenerator @Inject constructor(
 		}
 
 		dependencies.forEach { dependency ->
-			val name = dependency.simpleName.replaceFirstChar { it.lowercaseChar() }
+			val name = dependency.simpleName.replaceFirstChar { it.lowercaseChar() } + "2"
 
 			constructorBuilder.addConstructorProperty(
 				typeSpec = this,

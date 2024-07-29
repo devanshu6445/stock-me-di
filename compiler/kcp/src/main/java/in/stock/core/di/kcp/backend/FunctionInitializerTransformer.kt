@@ -16,7 +16,10 @@ import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrStatementContainer
+import org.jetbrains.kotlin.ir.types.IrSimpleType
+import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.getClass
+import org.jetbrains.kotlin.ir.types.typeOrNull
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.packageFqName
 import org.jetbrains.kotlin.ir.util.parentAsClass
@@ -45,7 +48,11 @@ class FunctionInitializerTransformer(private val context: IrPluginContext) :
 						packageName = data.parentFunction.parentAsClass.packageFqName!!,
 						callableName = Name.identifier("create")
 					)
-				).first()
+				)
+					.first {
+						(it.owner.extensionReceiverParameter?.type as IrSimpleType)
+							.arguments.first().typeOrNull?.classFqName == data.componentField.type.classFqName
+					}
 
 				+irSetField(
 					receiver = irGet(data.parentFunction.dispatchReceiverParameter!!),

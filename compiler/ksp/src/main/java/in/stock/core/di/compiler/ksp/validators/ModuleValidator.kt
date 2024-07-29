@@ -1,4 +1,4 @@
-package `in`.stock.core.di.compiler.ksp
+package `in`.stock.core.di.compiler.ksp.validators
 
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -9,7 +9,7 @@ import `in`.stock.core.di.compiler.ksp.utils.Scope
 import `in`.stock.core.di.compiler.ksp.utils.findAnnotation
 import javax.inject.Inject
 
-class ModuleProcessingStepValidatorImpl @Inject constructor(
+class ModuleValidator @Inject constructor(
   private val messenger: Messenger
 ) : ProcessingStepValidator<KSClassDeclaration> {
 

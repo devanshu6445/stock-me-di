@@ -6,10 +6,10 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
-import com.google.devtools.ksp.validate
 import `in`.stock.core.di.compiler.core.Generator
-import `in`.stock.core.di.compiler.core.XProcessingStep
+import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.core.XRoundEnv
+import `in`.stock.core.di.compiler.core.exceptions.ValidationException
 import `in`.stock.core.di.compiler.core.ksp.KspBaseProcessor
 import `in`.stock.core.di.compiler.ksp.data.ComponentGeneratorResult
 import `in`.stock.core.di.compiler.ksp.data.ComponentInfo
@@ -17,40 +17,38 @@ import `in`.stock.core.di.compiler.ksp.data.ModuleInfo
 import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.di.DaggerCompilerComponent
 import `in`.stock.core.di.compiler.ksp.di.ProcessorMapper
+import `in`.stock.core.di.compiler.ksp.steps.ComponentProcessingStep
 import `in`.stock.core.di.runtime.annotations.Component
 import `in`.stock.core.di.runtime.annotations.EntryPoint
 import `in`.stock.core.di.runtime.annotations.Module
 import javax.inject.Inject
 
 class DIProcessor(
-  environment: SymbolProcessorEnvironment
+	environment: SymbolProcessorEnvironment
 ) : KspBaseProcessor(environment) {
 
-  @Inject
-  lateinit var componentGenerator: Generator<ComponentInfo, ComponentGeneratorResult>
+	@Inject
+	lateinit var componentGenerator: Generator<ComponentInfo, ComponentGeneratorResult>
 
 	private val currentRoundModules = mutableListOf<Pair<ModuleInfo, ModuleProviderResult>>() // todo change to sequence
 
-  private val allGeneratedModule = mutableSetOf<Pair<ModuleInfo, ModuleProviderResult>>()
+	private val allGeneratedModule = mutableSetOf<Pair<ModuleInfo, ModuleProviderResult>>()
 
-  @Inject
-  lateinit var moduleProviderRegistryGenerator: Generator<List<ModuleProviderResult>, Unit>
+	@Inject
+	lateinit var entryPointGenerator: Generator<KSDeclaration, Unit>
 
-  @Inject
-  lateinit var entryPointGenerator: Generator<KSDeclaration, Unit>
+	@Inject
+	lateinit var moduleProcessingStep: XProcessingStepVoid<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
 
-  @Inject
-  lateinit var typeCollector: TypeCollector
-
-  @Inject
-	lateinit var moduleProcessingStep: XProcessingStep<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
+	@Inject
+	lateinit var componentProcessingStep: ComponentProcessingStep
 
 	override val annotations: List<String>
-    get() = listOf(
+		get() = listOf(
 			Module::class.qualifiedName.orEmpty(),
 			Component::class.qualifiedName.orEmpty(),
 			EntryPoint::class.qualifiedName.orEmpty()
-    )
+		)
 
 	override fun preRound(xRoundEnv: XRoundEnv) {
 		ProcessorMapper(
@@ -71,21 +69,20 @@ class DIProcessor(
 
 			Component::class.qualifiedName -> {
 				if (symbol as? KSClassDeclaration == null) return false
-				if (symbol.validate() && currentRoundModules.isEmpty()) {
-					runCatching {
-						componentGenerator.generate(
-							data = ComponentInfo(
-								root = symbol,
-								modules = allGeneratedModule.map { it.first },
-								modulesProvider = allGeneratedModule.map { it.second }
-							)
-						)
 
-						moduleProviderRegistryGenerator.generate(
-							data = allGeneratedModule.map { it.second }
+				try {
+					componentProcessingStep.process(
+						node = symbol,
+						data = ComponentProcessingStep.Params(
+							generatedModules = allGeneratedModule.toList()
 						)
-					}.isSuccess // todo check if need to differ the symbol is any one is failed
-				} else {
+					)
+					true
+				} catch (e: ValidationException) {
+					xEnv.messenger.error(e.message.toString(), symbol)
+					false
+				} catch (e: Exception) {
+					// todo check if need to differ the symbol is any one is failed
 					false
 				}
 			}
@@ -104,19 +101,20 @@ class DIProcessor(
 			}
 		}
 
+		allGeneratedModule.addAll(currentRoundModules)
+
 		return isProcessed
 	}
 
 	override fun postRound(xRoundEnv: XRoundEnv) {
-		allGeneratedModule.addAll(currentRoundModules)
 		currentRoundModules.clear()
 	}
 
-  class Provider : SymbolProcessorProvider {
-    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
+	class Provider : SymbolProcessorProvider {
+		override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
 			return DIProcessor(
-        environment = environment,
-      )
-    }
-  }
+				environment = environment,
+			)
+		}
+	}
 }
