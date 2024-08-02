@@ -8,7 +8,10 @@ import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.ksp.data.ModuleInfo
 import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.data.ProvidesInfo
-import `in`.stock.core.di.compiler.ksp.utils.*
+import `in`.stock.core.di.compiler.ksp.utils.Provides
+import `in`.stock.core.di.compiler.ksp.utils.findScope
+import `in`.stock.core.di.compiler.ksp.utils.getAnnotationArgument
+import `in`.stock.core.di.compiler.ksp.utils.hasAnnotation
 import `in`.stock.core.di.runtime.annotations.InstallIn
 import javax.inject.Inject
 
@@ -21,7 +24,7 @@ class ModuleProcessingStep @Inject constructor(
 ) {
 
 	override fun step(node: KSClassDeclaration): Pair<ModuleInfo, ModuleProviderResult> {
-    val scope = node.findAnnotation(Scope.canonicalName)
+		val scope = node.findScope()
     val providers = mutableListOf<ProvidesInfo>()
 
     node.getAllFunctions().forEach { provider ->

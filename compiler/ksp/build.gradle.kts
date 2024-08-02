@@ -54,6 +54,7 @@ dependencies {
   implementation(libs.di.runtime)
   ksp(libs.dagger.compiler)
   implementation("in.stock.me:di-core:${project.version}")
+  implementation(libs.adriankuta.tree.structure)
 
   testImplementation(libs.ksp.testing)
   testImplementation(libs.koTest)

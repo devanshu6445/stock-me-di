@@ -5,8 +5,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.validate
 import `in`.stock.core.di.compiler.core.Messenger
 import `in`.stock.core.di.compiler.core.ProcessingStepValidator
-import `in`.stock.core.di.compiler.ksp.utils.Scope
-import `in`.stock.core.di.compiler.ksp.utils.findAnnotation
+import `in`.stock.core.di.compiler.ksp.utils.findScope
 import javax.inject.Inject
 
 class ModuleValidator @Inject constructor(
@@ -25,7 +24,7 @@ class ModuleValidator @Inject constructor(
 
   private fun KSClassDeclaration.hasScope(): Boolean {
     return runCatching {
-      findAnnotation(Scope.canonicalName)
+			findScope()
     }.isSuccess
   }
 }

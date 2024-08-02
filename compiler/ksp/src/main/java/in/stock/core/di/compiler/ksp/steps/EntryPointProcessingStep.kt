@@ -1,34 +1,36 @@
-package `in`.stock.core.di.compiler.ksp.generators
+package `in`.stock.core.di.compiler.ksp.steps
 
 import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.XCodeGenerator
+import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.core.XResolver
 import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.TypeCollector
 import `in`.stock.core.di.compiler.ksp.utils.*
+import `in`.stock.core.di.compiler.ksp.validators.EntryPointValidator
 import `in`.stock.core.di.runtime.annotations.AssociatedWith
 import `in`.stock.core.di.runtime.annotations.Component
 import `in`.stock.core.di.runtime.annotations.EntryPoint
 import javax.inject.Inject
 
-class EntryPointGenerator @Inject constructor(
+class EntryPointProcessingStep @Inject constructor(
 	private val typeCollector: TypeCollector,
 	private val xCodeGenerator: XCodeGenerator,
-	private val xResolver: XResolver
-) : Generator<KSDeclaration, Unit> {
-	override fun generate(data: KSDeclaration) {
-		when (data) {
+	private val xResolver: XResolver,
+	entryPointValidator: EntryPointValidator
+) : XProcessingStepVoid<KSDeclaration, Unit>(entryPointValidator) {
+	override fun step(node: KSDeclaration) {
+		when (node) {
 			is KSClassDeclaration -> {
-				data.generateComponentForClass()
+				node.generateComponentForClass()
 			}
 
 			is KSFunctionDeclaration -> {
-				data.generateComponentForFunction()
+				node.generateComponentForFunction()
 			}
 
 			else -> {
@@ -39,7 +41,7 @@ class EntryPointGenerator @Inject constructor(
 
 	private fun KSFunctionDeclaration.generateComponentForFunction() {
 		val properties = parameters.map {
-			PropertySpec.builder(
+			PropertySpec.Companion.builder(
 				it.name?.asString().orEmpty(),
 				it.type.toTypeName(),
 				KModifier.ABSTRACT
@@ -65,7 +67,8 @@ class EntryPointGenerator @Inject constructor(
 
 		// only provide this class as argument if the injection is not through the constructor
 		// and this class doesn't have an primary constructor
-		// todo can remove the check of constructor injection as the dependency can be provided via secondary constrcutor if primary constructor doesn't exist
+		// todo can remove the check of constructor injection as the dependency can be provided via secondary constructor
+		//  if primary constructor doesn't exist
 		val canProvideThisClassAsArgument =
 			annotations.first {
 				it.annotationType.resolve().declaration.qualifiedName?.asString() == EntryPoint::class.qualifiedName
@@ -85,11 +88,11 @@ class EntryPointGenerator @Inject constructor(
 		properties: Sequence<PropertySpec>,
 		arguments: List<ClassName> = emptyList()
 	) {
-		val entryPointSpecificProviders = typeCollector.collectEntryPointProviders(this)
+		val requiredData = typeCollector.findRequiredComponents(this)
+		val entryPointSpecificProviders = typeCollector.findModuleProvidersByModule(requiredData.second)
 
-		val depComponents = typeCollector.collectTypes(this).map {
-			ClassName(it.packageName.asString(), it.simpleName.asString())
-		}.filter { it.canonicalName != qualifiedName?.asString() }
+		val depComponents = requiredData.first
+			.map { ClassName(it.packageName.asString(), it.simpleName.asString()) }
 
 		val entryPointScope = xResolver.getSymbolsWithClassAnnotation(
 			Scope.packageName,
@@ -107,7 +110,7 @@ class EntryPointGenerator @Inject constructor(
 				.apply {
 					if (entryPointScope != null) {
 						addAnnotation(
-							AnnotationSpec.builder((entryPointScope).toClassName())
+							AnnotationSpec.Companion.builder((entryPointScope).toClassName())
 								.build()
 						)
 					}

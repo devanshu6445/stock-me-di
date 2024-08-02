@@ -242,7 +242,7 @@ exceptions:
   PrintStackTrace:
     active: true
   RethrowCaughtException:
-    active: true
+    active: false
   ReturnFromFinally:
     active: true
     ignoreLabeled: false

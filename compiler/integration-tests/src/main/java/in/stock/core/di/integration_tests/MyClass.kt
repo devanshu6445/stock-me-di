@@ -56,7 +56,7 @@ class Dep2(private val dep: Dep) {
 class Dep3 {
   private val a: Dep
     get() = TestComponent::class.create(
-      dep3 = this
+			singletonComponent2 = SingletonComponent.getInstance()
     ).dep
 
   override fun toString(): String {

@@ -6,13 +6,10 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
-import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.core.XRoundEnv
 import `in`.stock.core.di.compiler.core.exceptions.ValidationException
 import `in`.stock.core.di.compiler.core.ksp.KspBaseProcessor
-import `in`.stock.core.di.compiler.ksp.data.ComponentGeneratorResult
-import `in`.stock.core.di.compiler.ksp.data.ComponentInfo
 import `in`.stock.core.di.compiler.ksp.data.ModuleInfo
 import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.di.DaggerCompilerComponent
@@ -27,15 +24,12 @@ class DIProcessor(
 	environment: SymbolProcessorEnvironment
 ) : KspBaseProcessor(environment) {
 
-	@Inject
-	lateinit var componentGenerator: Generator<ComponentInfo, ComponentGeneratorResult>
-
 	private val currentRoundModules = mutableListOf<Pair<ModuleInfo, ModuleProviderResult>>() // todo change to sequence
 
 	private val allGeneratedModule = mutableSetOf<Pair<ModuleInfo, ModuleProviderResult>>()
 
 	@Inject
-	lateinit var entryPointGenerator: Generator<KSDeclaration, Unit>
+	lateinit var entryPointGenerator: XProcessingStepVoid<KSDeclaration, Unit>
 
 	@Inject
 	lateinit var moduleProcessingStep: XProcessingStepVoid<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
@@ -81,15 +75,16 @@ class DIProcessor(
 				} catch (e: ValidationException) {
 					xEnv.messenger.error(e.message.toString(), symbol)
 					false
+				} catch (e: FileAlreadyExistsException) {
+					true
 				} catch (e: Exception) {
-					// todo check if need to differ the symbol is any one is failed
-					false
+					throw e
 				}
 			}
 
 			EntryPoint::class.qualifiedName -> {
 				if (currentRoundModules.isEmpty()) {
-					entryPointGenerator.generate(symbol as KSDeclaration)
+					entryPointGenerator.process(symbol as KSDeclaration)
 					true
 				} else {
 					false

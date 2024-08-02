@@ -79,6 +79,15 @@ fun Resolver.getAllModuleProviders(): Sequence<KSClassDeclaration> {
 }
 
 fun Resolver.getSymbolsWithClassAnnotation(
+	clazz: KClass<*>
+) = with(clazz.asClassName()) {
+	getSymbolsWithClassAnnotation(
+		packageName = packageName,
+		simpleName = simpleName
+	)
+}
+
+fun Resolver.getSymbolsWithClassAnnotation(
 	packageName: String,
 	simpleName: String,
 ): Sequence<KSClassDeclaration> {
@@ -125,3 +134,5 @@ fun ClassName.toAnnotationSpec() = AnnotationSpec.builder(this).build()
 fun ClassName.toLowerName() = simpleName.replaceFirstChar { it.lowercaseChar() }
 
 fun String.capitalize() = replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+
+fun String.camelCase() = replaceFirstChar { char -> char.lowercaseChar() }

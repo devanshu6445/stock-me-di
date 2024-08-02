@@ -13,6 +13,7 @@ import `in`.stock.core.di.compiler.core.XCodeGenerator
 import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.data.ProvidesInfo
 import `in`.stock.core.di.compiler.ksp.utils.INJECT
+import `in`.stock.core.di.runtime.annotations.internals.GeneratedDepProvider
 import `in`.stock.core.di.runtime.components.Provider
 import javax.inject.Inject
 
@@ -31,6 +32,17 @@ class ProviderGenerator @Inject constructor(
       className
     ).addType(
       TypeSpec.classBuilder(className)
+				.addAnnotation(
+					annotationSpec = AnnotationSpec.builder(GeneratedDepProvider::class.asClassName())
+						.addMember(
+							CodeBlock.of(
+								"%L = %T::class",
+								"clazz",
+								resolvedDepType.toClassName()
+							)
+						)
+						.build()
+				)
         .addAnnotation(INJECT)
         .addAnnotation(data.scope.toAnnotationSpec())
         .addSuperinterface(

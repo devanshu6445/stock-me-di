@@ -14,6 +14,7 @@ di-compiler = "1.0.0"
 dagger = "2.48"
 kmp-convention = "1.0.0-SNAPSHOT"
 stockMeLinter = "1.0.0-SNAPSHOT"
+adriankuta-tree-structure = "3.0.2"
 
 [libraries]
 # Kotlin inject
@@ -49,6 +50,7 @@ dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", versi
 # Linting
 stock-me-linter = { group = "in.stock.me", name = "linter", version.ref = "stockMeLinter" }
 
+adriankuta-tree-structure = { group = "com.github.adriankuta", name = "tree-structure", version.ref = "adriankuta-tree-structure" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

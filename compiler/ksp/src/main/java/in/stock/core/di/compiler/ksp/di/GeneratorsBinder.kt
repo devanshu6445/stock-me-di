@@ -9,6 +9,7 @@ import `in`.stock.core.di.compiler.core.ProcessingStepValidator
 import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.ksp.data.*
 import `in`.stock.core.di.compiler.ksp.generators.*
+import `in`.stock.core.di.compiler.ksp.steps.EntryPointProcessingStep
 import `in`.stock.core.di.compiler.ksp.steps.ModuleProcessingStep
 import `in`.stock.core.di.compiler.ksp.validators.ModuleValidator
 
@@ -16,13 +17,19 @@ import `in`.stock.core.di.compiler.ksp.validators.ModuleValidator
 interface GeneratorsBinder {
 
 	@Binds
-	fun bindModuleGenerator(moduleGenerator: ModuleGenerator): Generator<ModuleInfo, Unit>
+	fun bindModuleGenerator(
+		moduleGenerator: ModuleGenerator
+	): Generator<ModuleInfo, Unit>
 
 	@Binds
-	fun providerGenerator(providerGenerator: ProviderGenerator): Generator<ProvidesInfo, Unit>
+	fun providerGenerator(
+		providerGenerator: ProviderGenerator
+	): Generator<ProvidesInfo, Unit>
 
 	@Binds
-	fun bindComponentGenerator(componentGenerator: ComponentGenerator): Generator<ComponentInfo, ComponentGeneratorResult>
+	fun bindComponentGenerator(
+		componentGenerator: ComponentGenerator
+	): Generator<ComponentInfo, ComponentGeneratorResult>
 
 	@Binds
 	fun bindModuleProviderGenerator(
@@ -35,7 +42,9 @@ interface GeneratorsBinder {
 	): Generator<List<ModuleProviderResult>, Unit>
 
 	@Binds
-	fun bindEntryPointGenerator(entryPointGenerator: EntryPointGenerator): Generator<KSDeclaration, Unit>
+	fun bindEntryPointGenerator(
+		entryPointProcessingStep: EntryPointProcessingStep
+	): XProcessingStepVoid<KSDeclaration, Unit>
 
 	@Binds
 	fun bindProcessModule(
