@@ -37,16 +37,6 @@ object EntryPointModule {
 @AssociatedWith(EntryPointTest::class)
 annotation class EScope
 
-@Module
-@InstallIn(EntryPointTest::class)
-object EntryPointModule1 {
-
-	@Provides
-	fun provideEDep1() = EDep1()
-}
-
-class EDep1
-
 class EDep
 
 abstract class ParentEntryPoint {

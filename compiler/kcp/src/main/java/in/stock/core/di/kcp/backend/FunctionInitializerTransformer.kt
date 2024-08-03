@@ -46,7 +46,7 @@ class FunctionInitializerTransformer(private val context: IrPluginContext) :
 				val creatorFunc = this@FunctionInitializerTransformer.context.referenceFunctions(
 					callableId = CallableId(
 						packageName = data.parentFunction.parentAsClass.packageFqName!!,
-						callableName = Name.identifier("create")
+						callableName = Name.identifier("createBoundedComponent")
 					)
 				)
 					.first {
@@ -61,10 +61,9 @@ class FunctionInitializerTransformer(private val context: IrPluginContext) :
 						extensionReceiver = kClassReference(
 							data.componentField.type
 						)
-						putValueArgument(0, null)
 
 						putValueArgument(
-							1,
+							0,
 							irGet(data.parentFunction.dispatchReceiverParameter!!)
 						)
 					},

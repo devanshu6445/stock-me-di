@@ -51,12 +51,10 @@ class ComponentGenerator @Inject constructor(
 					.addModifiers(KModifier.ABSTRACT)
 					.build()
 			)
-			/*.generateCreatorFunction(
-				components = data.parentComponents,
-				dependencies = data.dependencies,
-				componentType = data.root.toClassName(),
-				generatedComponent = data.generatedName
-			)*/
+			.generateCreatorFunction(
+				root = data.root,
+				generatedComponentName = data.generatedName
+			)
 			.apply {
 				addFunction(createCreatorFunction(componentFileBuilder = this, data.root))
 			}
@@ -67,56 +65,34 @@ class ComponentGenerator @Inject constructor(
 
 	@Suppress("UnusedPrivateMember")
 	private fun FileSpec.Builder.generateCreatorFunction(
-		components: List<ClassName>,
-		dependencies: List<ClassName>,
-		componentType: TypeName,
-		generatedComponent: TypeName,
+		root: KSClassDeclaration,
+		generatedComponentName: ClassName,
 	) = apply {
 		addFunction(
 			FunSpec.builder(MemberName(packageName, "create"))
-				.receiver(KClass::class.asTypeName().plusParameter(componentType))
+				.receiver(KClass::class.asTypeName().plusParameter(root.toClassName()))
 				.addParameters(
-					components.map {
-						// adding import manually for create because CodeBlock is not able to resolve the extension function import
-						addImport(packageName = it.packageName, "create")
-						ParameterSpec.builder(it.simpleName.replaceFirstChar { char -> char.lowercaseChar() }, it)
-							.defaultValue(
-								CodeBlock.of(
-									"%T${
-										if (it.canonicalName == SingletonComponent::class.qualifiedName) {
-											".getInstance()"
-										} else {
-											"::class.create()"
-										}
-									}",
-									it,
-								)
-							)
-							.build()
-					}
-				)
-				.addParameters(
-					dependencies.map {
+					root.primaryConstructor?.parameters?.map { param ->
 						ParameterSpec.builder(
-							it.simpleName.replaceFirstChar { char -> char.lowercaseChar() },
-							it
+							param.name?.asString().orEmpty(),
+							param.type.resolve().toClassName()
 						).build()
-					}
+					} ?: emptyList()
 				)
-				.returns(componentType)
+				.returns(root.toClassName())
 				.addStatement(
-					"""
-                    return %T::class.create(
-                    ${
+					"return %T::class.%T(${
 						buildString {
-							(components + dependencies).map { it.toLowerName() }.forEach {
-								append("$it,")
+							root.primaryConstructor?.parameters?.forEach {
+								append("${it.name?.asString()},")
 							}
 						}
-					}
-                    )
-                """.trimIndent(),
-					generatedComponent
+					})",
+					generatedComponentName,
+					ClassName(
+						packageName = generatedComponentName.packageName,
+						"create"
+					)
 				)
 				.build()
 		)

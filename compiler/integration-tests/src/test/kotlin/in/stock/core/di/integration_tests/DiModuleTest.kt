@@ -118,8 +118,10 @@ class DiModuleTest : FreeSpec({
 			"""
                 package com.dev
                 import com.sub.SubjectComponent
+                import com.sub.create
                 import com.sub.DepA
                 import `in`.stock.core.di.runtime.annotations.Component
+                import `in`.stock.core.di.runtime.SingletonComponent
                 import me.tatarka.inject.annotations.Inject
 
                 @Component
@@ -135,7 +137,7 @@ class DiModuleTest : FreeSpec({
                 }
 
                 fun main() {
-                val comp = Science::class.create() 
+                val comp = Science::class.create(SubjectComponent::class.create(SingletonComponent.getInstance())) 
                 println(comp.depB)
                 }
 
