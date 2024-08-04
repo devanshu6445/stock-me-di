@@ -20,8 +20,8 @@ class ModuleProcessorTest : FreeSpec({
 
             import `in`.stock.core.di.runtime.Module
 
-            @Module            
-            class HttpClient 
+            @Module
+            class HttpClient
         """.trimIndent()
       ),
 			providers = listOf(DIProcessor.Provider())

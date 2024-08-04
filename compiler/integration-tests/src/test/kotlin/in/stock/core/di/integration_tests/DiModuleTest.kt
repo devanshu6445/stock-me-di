@@ -50,7 +50,7 @@ class DiModuleTest : FreeSpec({
 					@InstallIn(Comp1::class)
 					@Comp1Scope
 					object Comp1Module {
-					    
+
 					    @Provides
 					    fun provideA() = A()
 					}
@@ -97,7 +97,7 @@ class DiModuleTest : FreeSpec({
                 @Singleton
                 @Module
                 object Subject {
-                
+
                 @Provides
                 fun ab() : DepA = DepA()
                 }
@@ -137,7 +137,7 @@ class DiModuleTest : FreeSpec({
                 }
 
                 fun main() {
-                val comp = Science::class.create(SubjectComponent::class.create(SingletonComponent.getInstance())) 
+                val comp = Science::class.create(SubjectComponent::class.create(SingletonComponent.getInstance()))
                 println(comp.depB)
                 }
 

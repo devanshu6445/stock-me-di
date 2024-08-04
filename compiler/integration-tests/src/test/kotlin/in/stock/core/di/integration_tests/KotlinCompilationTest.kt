@@ -17,11 +17,11 @@ class KotlinCompilationTest : FreeSpec({
       fileName = "Sub.kt",
       """
                 package com.sub
-                
+
                 fun function1() {
                     println("function 1")
                 }
-                
+
             """.trimIndent()
     )
 
