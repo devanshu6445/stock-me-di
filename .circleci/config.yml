@@ -4,8 +4,8 @@ orbs:
 jobs:
   lint:
     environment:
-      _JAVA_OPTIONS: "-Xmx6g"
-      GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
+      _JAVA_OPTIONS: "-Xmx4g"
+      GRADLE_OPTS: "-Dorg.gradle.workers.max=2 -Xmx2g"
     resource_class: medium+
     docker:
       - image: cimg/openjdk:17.0.9

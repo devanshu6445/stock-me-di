@@ -1,4 +1,4 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
+import `in`.stock.core.di.plugin.dependsOn
 
 plugins {
   alias(libs.plugins.org.jetbrains.kotlin.jvm)
