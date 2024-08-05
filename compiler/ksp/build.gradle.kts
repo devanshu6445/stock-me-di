@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "in.stock.me"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0"
 
 publishing {
   publications {
@@ -37,6 +37,7 @@ publishing {
     }
     create<MavenPublication>("maven") {
       artifactId = "di-compiler"
+      from(components["kotlin"])
     }
   }
 }
@@ -52,7 +53,8 @@ kotlin {
 dependencies {
   implementation(libs.di.runtime)
   ksp(libs.dagger.compiler)
-  implementation(projects.compiler.core)
+  implementation("in.stock.me:di-core:${project.version}")
+  implementation(libs.adriankuta.tree.structure)
 
   testImplementation(libs.ksp.testing)
   testImplementation(libs.koTest)

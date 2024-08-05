@@ -6,14 +6,15 @@ ksp = "1.9.21-1.0.16"
 kotlin-inject = "0.7.1"
 detekt = "1.23.4"
 kotlinPoet = "1.15.3"
-kspTesting = "1.5.0"
+kspTesting = "1.6.0"
 koTest = "5.7.2"
 stockMePublish = "1.0.0-SNAPSHOT"
-di-runtime = "1.0.0-SNAPSHOT"
-di-compiler = "1.0.0-SNAPSHOT"
+di-runtime = "1.0.0"
+di-compiler = "1.0.0"
 dagger = "2.48"
 kmp-convention = "1.0.0-SNAPSHOT"
 stockMeLinter = "1.0.0-SNAPSHOT"
+adriankuta-tree-structure = "3.0.2"
 
 [libraries]
 # Kotlin inject
@@ -49,6 +50,7 @@ dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", versi
 # Linting
 stock-me-linter = { group = "in.stock.me", name = "linter", version.ref = "stockMeLinter" }
 
+adriankuta-tree-structure = { group = "com.github.adriankuta", name = "tree-structure", version.ref = "adriankuta-tree-structure" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

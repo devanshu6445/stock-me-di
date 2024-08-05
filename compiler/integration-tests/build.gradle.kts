@@ -1,4 +1,4 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
+import `in`.stock.core.di.plugin.dependsOn
 
 plugins {
   alias(libs.plugins.org.jetbrains.kotlin.jvm)
@@ -42,6 +42,7 @@ dependencies {
   testImplementation(projects.compiler.ksp)
   testImplementation(libs.ksp.testing)
   testImplementation(libs.koTest)
+  testImplementation(projects.compiler.core)
 
   kotlinCompilerPluginClasspath(projects.compiler.kcp)
 }

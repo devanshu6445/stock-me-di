@@ -242,7 +242,7 @@ exceptions:
   PrintStackTrace:
     active: true
   RethrowCaughtException:
-    active: true
+    active: false
   ReturnFromFinally:
     active: true
     ignoreLabeled: false
@@ -367,7 +367,7 @@ naming:
     minimumVariableNameLength: 1
   VariableNaming:
     active: true
-    variablePattern: '[a-z][A-Za-z0-9]*'
+    variablePattern: '(_)?[a-z][A-Za-z0-9]*'
     privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
 

@@ -1,14 +1,49 @@
 package `in`.stock.core.di.integration_tests
 
-import `in`.stock.core.di.runtime.annotations.EntryPoint
-import `in`.stock.core.di.runtime.annotations.Inject
+import `in`.stock.core.di.runtime.annotations.*
+import `in`.stock.core.di.runtime.annotations.Module
+import me.tatarka.inject.annotations.Provides
+import me.tatarka.inject.annotations.Scope
 
-@EntryPoint
-class EntryPointTest {
+@EntryPoint(initializer = "onCreate", isSuperCalledFirst = true)
+class EntryPointTest : ParentEntryPoint() {
 
-  @Inject
-  lateinit var a: Dep
+	@Inject
+	lateinit var aLazy: Lazy<B>
 
-  @Inject
-  lateinit var aLazy: Lazy<B>
+	@Inject
+	lateinit var eDep: EDep
+
+// 	@Inject
+// 	lateinit var eDep1: EDep1
+
+	override fun onCreate() {
+		super.onCreate()
+
+		println(a)
+	}
+}
+
+@Module
+@InstallIn(EntryPointTest::class)
+@EScope
+object EntryPointModule {
+
+	@Provides
+	fun provideEDep() = EDep()
+}
+
+@Scope
+@AssociatedWith(EntryPointTest::class)
+annotation class EScope
+
+class EDep
+
+abstract class ParentEntryPoint {
+
+	@Inject
+	lateinit var a: Dep
+
+	open fun onCreate() {
+	}
 }

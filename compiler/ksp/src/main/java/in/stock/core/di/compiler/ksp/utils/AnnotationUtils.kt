@@ -9,9 +9,9 @@ fun KSAnnotated.getAnnotationArgument(qualifiedName: String) = (
     ?.arguments?.first()?.value as KSType
   ).declaration
 
-fun KSDeclaration.findAnnotation(qualifiedName: String) = annotations.filter {
+fun KSDeclaration.findScope() = annotations.filter {
   it.annotationType.resolve()
     .declaration.annotations.any { annotation ->
-      annotation.annotationType.resolve().declaration.qualifiedName?.asString() == qualifiedName
+			annotation.annotationType.resolve().declaration.qualifiedName?.asString() == Scope.canonicalName
     }
 }.single()

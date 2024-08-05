@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.expressions.IrBody
+import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionExpressionImpl
@@ -47,7 +47,7 @@ fun IrProperty.addDefaultSetter(
     }
 }
 
-fun IrSymbol.irBlockBody(irBuiltIns: IrBuiltIns, builder: IrBlockBodyBuilder.() -> Unit): IrBody {
+fun IrSymbol.irBlockBody(irBuiltIns: IrBuiltIns, builder: IrBlockBodyBuilder.() -> Unit): IrBlockBody {
   return IrBlockBodyBuilder(
     context = IrGeneratorContextBase(irBuiltIns),
     scope = Scope(this),

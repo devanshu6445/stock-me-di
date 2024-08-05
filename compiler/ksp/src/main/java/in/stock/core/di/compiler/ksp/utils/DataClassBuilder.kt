@@ -27,11 +27,11 @@ fun valProperty(name: String, type: TypeName, vararg annotation: ClassName): Pro
 }
 
 fun FunSpec.Builder.addConstructorProperty(
-  typeSpec: TypeSpec.Builder,
-  name: String,
-  type: TypeName,
-  annotations: List<AnnotationSpec> = emptyList(),
-  addInitializer: Boolean = true
+	typeSpec: TypeSpec.Builder,
+	name: String,
+	type: TypeName,
+	annotations: List<AnnotationSpec> = emptyList(),
+	addInitializer: Boolean = true
 ) = apply {
   addParameter(ParameterSpec.builder(name, type).addAnnotations(annotations).build())
   typeSpec.addProperty(

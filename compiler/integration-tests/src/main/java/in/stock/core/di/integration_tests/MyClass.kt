@@ -27,6 +27,11 @@ object Module1 {
 @NewScope
 object Module2 {
 
+	// todo uncomment to break a test case
+	// https://develope.youtrack.cloud/issue/DI-3/
+// 	@Provides
+// 	fun bind() = Dep()
+
   @Provides
   fun bind(dep: Dep): Dep2 {
     return Dep2(dep = dep)
@@ -51,7 +56,7 @@ class Dep2(private val dep: Dep) {
 class Dep3 {
   private val a: Dep
     get() = TestComponent::class.create(
-      dep3 = this
+			singletonComponent = SingletonComponent.getInstance()
     ).dep
 
   override fun toString(): String {

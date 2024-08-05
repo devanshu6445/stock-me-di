@@ -1,19 +1,24 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
-  alias(libs.plugins.org.jetbrains.kotlin.jvm)
+  `kotlin-dsl`
   `maven-publish`
+  alias(libs.plugins.org.jetbrains.kotlin.jvm)
   id("stock.me.di.merge-tests")
 }
 
 group = "in.stock.me"
 version = "1.0.0"
 
-// stockMePublish {
-//    group = "in.stock.me"
-//    publishingName = "di-kotlin-compiler"
-//    version = "1.0.0"
-// }
+gradlePlugin {
+  plugins {
+    register("di-gradle") {
+      id = "plugin.di.compiler"
+      implementationClass = "in.stock.core.di.kcp.DiGradlePlugin"
+      version = project.version
+    }
+  }
+}
 
 publishing {
   publications {
@@ -34,6 +39,16 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
   }
 }
 
+tasks.withType<Test>().configureEach {
+  useJUnitPlatform()
+}
+
 dependencies {
   compileOnly(libs.kotlinCompilerEmbeddable)
+  compileOnly(libs.kotlin.gradle.plugin)
+  testImplementation(projects.compiler.core)
+  testImplementation(libs.ksp.testing)
+  testImplementation(libs.koTest)
+  testImplementation(projects.compiler.ksp)
+  testImplementation(libs.kotlin.inject.compiler)
 }
