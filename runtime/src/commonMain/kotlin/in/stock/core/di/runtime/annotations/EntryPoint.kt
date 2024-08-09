@@ -13,6 +13,5 @@ import kotlin.reflect.KClass
 annotation class EntryPoint(
 	val parentComponent: KClass<*> = SingletonComponent::class,
 	val dependencies: Array<KClass<*>> = [],
-	val initializer: String = "constructor",
-	val isSuperCalledFirst: Boolean = false
+	val initializer: String = "constructor"
 )

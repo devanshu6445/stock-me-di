@@ -76,7 +76,7 @@ open class SyntheticResolver : SyntheticResolveExtension {
 				annotations = Annotations.create(listOf()),
 				name = Name.identifier("component"),
 				outType = componentClass.defaultType,
-				declaresDefaultValue = false,
+				declaresDefaultValue = true,
 				isCrossinline = false,
 				isNoinline = false,
 				varargElementType = null,
@@ -137,7 +137,7 @@ open class SyntheticResolver : SyntheticResolveExtension {
 		typeParameters: List<TypeParameterDescriptor>
 	): PropertyDescriptor {
 		val propertyDescriptor = PropertyDescriptorImpl.create(
-			this, Annotations.create(listOfNotNull()), modality, visibility, false, name,
+			this, Annotations.create(listOfNotNull()), modality, DescriptorVisibilities.PROTECTED, false, name,
 			CallableMemberDescriptor.Kind.SYNTHESIZED, source, false, false, false, false, false, false
 		)
 
@@ -151,14 +151,26 @@ open class SyntheticResolver : SyntheticResolveExtension {
 		)
 
 		val propertyGetter = PropertyGetterDescriptorImpl(
-			propertyDescriptor, Annotations.create(listOfNotNull()), modality, visibility, false, false, false,
+			propertyDescriptor,
+			Annotations.create(
+				listOfNotNull()
+			),
+			modality,
+			DescriptorVisibilities.PROTECTED,
+			false,
+			false,
+			false,
 			CallableMemberDescriptor.Kind.SYNTHESIZED, null, source
 		)
 
 		propertyGetter.initialize(type)
 
 		val propertySetter = PropertySetterDescriptorImpl(
-			propertyDescriptor, Annotations.create(listOfNotNull()), modality, visibility, false, false, false,
+			propertyDescriptor,
+			Annotations.create(
+				listOfNotNull()
+			),
+			modality, DescriptorVisibilities.PROTECTED, false, false, false,
 			CallableMemberDescriptor.Kind.SYNTHESIZED, null, source
 		)
 

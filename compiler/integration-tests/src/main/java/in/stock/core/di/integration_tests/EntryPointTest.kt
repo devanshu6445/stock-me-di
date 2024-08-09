@@ -5,7 +5,7 @@ import `in`.stock.core.di.runtime.annotations.Module
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
 
-@EntryPoint(initializer = "onCreate", isSuperCalledFirst = true)
+@EntryPoint(initializer = "onCreate")
 class EntryPointTest : ParentEntryPoint() {
 
 	@Inject
@@ -14,12 +14,10 @@ class EntryPointTest : ParentEntryPoint() {
 	@Inject
 	lateinit var eDep: EDep
 
-// 	@Inject
-// 	lateinit var eDep1: EDep1
-
 	override fun onCreate() {
 		super.onCreate()
 
+		println(component)
 		println(a)
 	}
 }
