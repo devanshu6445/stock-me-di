@@ -12,7 +12,9 @@ import org.jetbrains.kotlin.ir.builders.Scope
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
+import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
+import org.jetbrains.kotlin.name.FqName
 
 abstract class AbstractTransformerForGenerator : IrElementTransformerVoid() {
 
@@ -81,7 +83,9 @@ abstract class AbstractTransformerForGenerator : IrElementTransformerVoid() {
     return if (afterK2) {
       origin is IrDeclarationOrigin.GeneratedByPlugin && keys.any { it == origin.pluginKey }
     } else {
-      (descriptor as? CallableMemberDescriptor)?.kind == CallableMemberDescriptor.Kind.SYNTHESIZED
+			(descriptor as? CallableMemberDescriptor)?.kind == CallableMemberDescriptor.Kind.SYNTHESIZED && hasAnnotation(
+				FqName("in.stock.core.di.runtime.annotations.internals.GeneratedByPlugin")
+			)
     }
   }
 }

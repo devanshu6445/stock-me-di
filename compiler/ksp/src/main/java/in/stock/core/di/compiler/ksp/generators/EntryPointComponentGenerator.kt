@@ -170,8 +170,6 @@ class EntryPointComponentGenerator @Inject constructor(
 		parentComponent: Sequence<ClassName>,
 		arguments: List<ClassName>
 	) = apply {
-		if (parentComponent.count() == 0) return@apply
-
 		val constructorBuilder = FunSpec.constructorBuilder()
 
 		parentComponent.forEach { component ->

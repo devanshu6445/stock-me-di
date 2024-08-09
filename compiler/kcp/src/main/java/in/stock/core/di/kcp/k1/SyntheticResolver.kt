@@ -2,9 +2,11 @@ package `in`.stock.core.di.kcp.k1
 
 import `in`.stock.core.di.kcp.utils.FqNames
 import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptorImpl
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.*
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.descriptorUtil.classId
@@ -63,7 +65,11 @@ open class SyntheticResolver : SyntheticResolveExtension {
 
 		val constructor = ClassConstructorDescriptorImpl.createSynthesized(
 			classDescriptor,
-			Annotations.create(listOf()),
+			Annotations.create(
+				listOf(
+					classDescriptor.getAnnotationDescriptor("in.stock.core.di.runtime.annotations.internals", "GeneratedByPlugin")
+				)
+			),
 			false,
 			SourceElement.NO_SOURCE
 		)
@@ -76,7 +82,7 @@ open class SyntheticResolver : SyntheticResolveExtension {
 				annotations = Annotations.create(listOf()),
 				name = Name.identifier("component"),
 				outType = componentClass.defaultType,
-				declaresDefaultValue = true,
+				declaresDefaultValue = false,
 				isCrossinline = false,
 				isNoinline = false,
 				varargElementType = null,
@@ -93,6 +99,14 @@ open class SyntheticResolver : SyntheticResolveExtension {
 
 		result.add(constructor)
 	}
+
+	private fun ClassDescriptor.getAnnotationDescriptor(packageName: String, name: String) = AnnotationDescriptorImpl(
+		module.findClassAcrossModuleDependencies(
+			ClassId(FqName(packageName), Name.identifier(name))
+		)?.defaultType!!,
+		emptyMap(),
+		SourceElement.NO_SOURCE
+	)
 
 	override fun generateSyntheticProperties(
 		thisDescriptor: ClassDescriptor,
@@ -136,8 +150,16 @@ open class SyntheticResolver : SyntheticResolveExtension {
 		type: KotlinType,
 		typeParameters: List<TypeParameterDescriptor>
 	): PropertyDescriptor {
+		val generatedByPluginAnnotation =
+			getAnnotationDescriptor("in.stock.core.di.runtime.annotations.internals", "GeneratedByPlugin")
 		val propertyDescriptor = PropertyDescriptorImpl.create(
-			this, Annotations.create(listOfNotNull()), modality, DescriptorVisibilities.PROTECTED, false, name,
+			this,
+			Annotations.create(
+				listOf(
+					generatedByPluginAnnotation
+				)
+			),
+			modality, DescriptorVisibilities.PROTECTED, false, name,
 			CallableMemberDescriptor.Kind.SYNTHESIZED, source, false, false, false, false, false, false
 		)
 
@@ -153,7 +175,7 @@ open class SyntheticResolver : SyntheticResolveExtension {
 		val propertyGetter = PropertyGetterDescriptorImpl(
 			propertyDescriptor,
 			Annotations.create(
-				listOfNotNull()
+				listOfNotNull(generatedByPluginAnnotation)
 			),
 			modality,
 			DescriptorVisibilities.PROTECTED,
@@ -168,7 +190,7 @@ open class SyntheticResolver : SyntheticResolveExtension {
 		val propertySetter = PropertySetterDescriptorImpl(
 			propertyDescriptor,
 			Annotations.create(
-				listOfNotNull()
+				listOfNotNull(generatedByPluginAnnotation)
 			),
 			modality, DescriptorVisibilities.PROTECTED, false, false, false,
 			CallableMemberDescriptor.Kind.SYNTHESIZED, null, source

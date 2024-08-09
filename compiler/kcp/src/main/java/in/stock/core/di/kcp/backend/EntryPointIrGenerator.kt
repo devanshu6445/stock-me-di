@@ -5,7 +5,6 @@ import `in`.stock.core.di.kcp.k2.FirDeclarationGenerator
 import `in`.stock.core.di.kcp.utils.*
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.backend.jvm.ir.kClassReference
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.backend.js.utils.typeArguments
@@ -20,7 +19,10 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrDelegatingConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.types.*
+import org.jetbrains.kotlin.ir.types.IrSimpleType
+import org.jetbrains.kotlin.ir.types.classFqName
+import org.jetbrains.kotlin.ir.types.getClass
+import org.jetbrains.kotlin.ir.types.typeOrFail
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
@@ -130,28 +132,27 @@ class EntryPointIrGenerator(
 		return declaration.symbol.irBlockBody {
 			// call the primary constructor of this class
 
-			declaration.valueParameters.forEach { param ->
-
-				val creatorFunc = this@EntryPointIrGenerator.context.referenceFunctions(
-					callableId = CallableId(
-						packageName = declaration.parentAsClass.packageFqName!!,
-						callableName = Name.identifier("createBoundedComponent")
-					)
-				)
-					.first {
-						(it.owner.extensionReceiverParameter?.type as IrSimpleType)
-							.arguments.first().typeOrNull?.classFqName == param.type.classFqName
-					}
-
-				param.defaultValue = irExprBody(
-					irCall(callee = creatorFunc, type = param.type).apply {
-						extensionReceiver = kClassReference(
-							param.type
-						)
-
-					}
-				)
-			}
+//			declaration.valueParameters.forEach { param ->
+//
+//				val creatorFunc = this@EntryPointIrGenerator.context.referenceFunctions(
+//					callableId = CallableId(
+//						packageName = declaration.parentAsClass.packageFqName!!,
+//						callableName = Name.identifier("createBoundedComponent")
+//					)
+//				)
+//					.first {
+//						(it.owner.extensionReceiverParameter?.type as IrSimpleType)
+//							.arguments.first().typeOrNull?.classFqName == param.type.classFqName
+//					}
+//
+//				param.defaultValue = irExprBody(
+//					irCall(callee = creatorFunc, type = param.type).apply {
+//						extensionReceiver = kClassReference(
+//							param.type
+//						)
+//					}
+//				)
+//			}
 
 			+irDelegatingConstructorCall(constructor).apply {
 				val properties = componentClassSymbol.irProperties().associateBy {
@@ -437,4 +438,3 @@ class EntryPointIrGenerator(
 		const val ASSIGN_INJECTABLE_PROPERTIES = "assignInjectableProperties"
 	}
 }
-
