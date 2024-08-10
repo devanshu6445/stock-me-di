@@ -1,7 +1,9 @@
 package `in`.stock.core.di.compiler.ksp.generators
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.XCodeGenerator
@@ -24,7 +26,8 @@ class ModuleProviderGenerator @Inject constructor(
       .createProvider(
         moduleName = moduleName,
         providers = data.providers,
-        installInComponent = data.installInComponent
+				installInComponent = data.installInComponent,
+				originatingFile = data.root.containingFile
       )
       .build()
 			.writeTo(xCodeGenerator)
@@ -38,10 +41,16 @@ class ModuleProviderGenerator @Inject constructor(
   private fun FileSpec.Builder.createProvider(
     moduleName: ClassName,
     providers: List<ProvidesInfo>,
-    installInComponent: KSClassDeclaration
+		installInComponent: KSClassDeclaration,
+		originatingFile: KSFile?
   ) = apply {
     addType(
       TypeSpec.interfaceBuilder(moduleName)
+				.apply {
+					if (originatingFile != null) {
+						addOriginatingKSFile(originatingFile)
+					}
+				}
         .addAnnotation(
           AnnotationSpec.builder(ModuleProvider::class.asClassName())
             .addMember(

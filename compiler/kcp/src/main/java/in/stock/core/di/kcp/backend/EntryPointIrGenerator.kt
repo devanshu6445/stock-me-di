@@ -132,27 +132,27 @@ class EntryPointIrGenerator(
 		return declaration.symbol.irBlockBody {
 			// call the primary constructor of this class
 
-//			declaration.valueParameters.forEach { param ->
+// 			declaration.valueParameters.forEach { param ->
 //
-//				val creatorFunc = this@EntryPointIrGenerator.context.referenceFunctions(
-//					callableId = CallableId(
-//						packageName = declaration.parentAsClass.packageFqName!!,
-//						callableName = Name.identifier("createBoundedComponent")
-//					)
-//				)
-//					.first {
-//						(it.owner.extensionReceiverParameter?.type as IrSimpleType)
-//							.arguments.first().typeOrNull?.classFqName == param.type.classFqName
-//					}
+// 				val creatorFunc = this@EntryPointIrGenerator.context.referenceFunctions(
+// 					callableId = CallableId(
+// 						packageName = declaration.parentAsClass.packageFqName!!,
+// 						callableName = Name.identifier("createBoundedComponent")
+// 					)
+// 				)
+// 					.first {
+// 						(it.owner.extensionReceiverParameter?.type as IrSimpleType)
+// 							.arguments.first().typeOrNull?.classFqName == param.type.classFqName
+// 					}
 //
-//				param.defaultValue = irExprBody(
-//					irCall(callee = creatorFunc, type = param.type).apply {
-//						extensionReceiver = kClassReference(
-//							param.type
-//						)
-//					}
-//				)
-//			}
+// 				param.defaultValue = irExprBody(
+// 					irCall(callee = creatorFunc, type = param.type).apply {
+// 						extensionReceiver = kClassReference(
+// 							param.type
+// 						)
+// 					}
+// 				)
+// 			}
 
 			+irDelegatingConstructorCall(constructor).apply {
 				val properties = componentClassSymbol.irProperties().associateBy {

@@ -3,6 +3,7 @@ package `in`.stock.core.di.compiler.ksp.generators
 import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import `in`.stock.core.di.compiler.core.Generator
@@ -104,6 +105,9 @@ class EntryPointComponentGenerator @Inject constructor(
 
 		FileSpec.builder(componentName).addType(
 			TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
+				.apply {
+					this@generateComponent.containingFile?.let { addOriginatingKSFile(it) }
+				}
 				.addAnnotation(Component::class)
 				.apply {
 					if (entryPointScope != null) {

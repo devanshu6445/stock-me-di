@@ -6,6 +6,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.XCodeGenerator
@@ -28,6 +29,9 @@ class ComponentGenerator @Inject constructor(
 		FileSpec.builder(name)
 			.addType(
 				TypeSpec.classBuilder(name)
+					.apply {
+						data.root.containingFile?.let { addOriginatingKSFile(it) }
+					}
 					.addAnnotation(COMPONENT)
 					.superclass(data.root.toClassName())
 					.apply {
@@ -70,6 +74,9 @@ class ComponentGenerator @Inject constructor(
 	) = apply {
 		addFunction(
 			FunSpec.builder(MemberName(packageName, "create"))
+				.apply {
+					root.containingFile?.let { addOriginatingKSFile(it) }
+				}
 				.receiver(KClass::class.asTypeName().plusParameter(root.toClassName()))
 				.addParameters(
 					root.primaryConstructor?.parameters?.map { param ->
@@ -131,6 +138,7 @@ class ComponentGenerator @Inject constructor(
 		val componentTree = generateComponentTree(root)
 
 		return FunSpec.builder(MemberName(root.toClassName().packageName, "createBoundedComponent"))
+			.apply { root.containingFile?.let { addOriginatingKSFile(it) } }
 			.receiver(KClass::class.asTypeName().plusParameter(root.toClassName()))
 			.returns(root.toClassName())
 			.addParameters(

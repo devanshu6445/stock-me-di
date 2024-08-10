@@ -2,8 +2,11 @@ package `in`.stock.core.di.compiler.ksp.generators
 
 import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
+import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.XCodeGenerator
@@ -40,6 +43,7 @@ class EntryPointInjectorGenerator @Inject constructor(
 			.addType(
 				TypeSpec.classBuilder(transformedClassName)
 					.apply {
+						data.containingFile?.let { addOriginatingKSFile(it) }
 						superClasses.forEach {
 							superclass(it.toTypeName())
 						}
@@ -60,7 +64,11 @@ class EntryPointInjectorGenerator @Inject constructor(
 
 						addFunction(
 							FunSpec.builder(injectorGeneratorFunction.simpleName.asString())
-								.addModifiers(KModifier.OVERRIDE)
+								.apply {
+									addModifiers(
+										injectorGeneratorFunction.modifiers.mapNotNull { it.toKModifier() }
+									)
+								}
 								.addParameters(
 									injectorGeneratorFunction.parameters.map { param ->
 										ParameterSpec.builder(name = param.name?.asString().orEmpty(), type = param.type.toTypeName())
@@ -72,6 +80,16 @@ class EntryPointInjectorGenerator @Inject constructor(
 								.addCode(
 									CodeBlock.of(
 										"""
+										${
+											if (injectorGeneratorFunction.modifiers.contains(Modifier.OVERRIDE)) {
+												"super.${injectorGeneratorFunction.simpleName.asString()}(${
+													injectorGeneratorFunction.parameters.map { it.name?.asString() }.toList().toString()
+														.removePrefix("[").removeSuffix("]")
+												})"
+											} else {
+												""
+											}
+										}
 										this.component = ${data.simpleName.asString()}Component::class.createBoundedComponent(this as ${data.simpleName.asString()})
 										.apply { inject(this@$transformedClassName) }
 									""".trimIndent()
