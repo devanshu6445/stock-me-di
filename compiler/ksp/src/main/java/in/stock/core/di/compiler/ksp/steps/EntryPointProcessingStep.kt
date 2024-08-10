@@ -23,13 +23,14 @@ class EntryPointProcessingStep @Inject constructor(
 		// Generate the injector class for the entry point
 		when (node) {
 			is KSClassDeclaration -> {
-				entryPointInjectorGenerator.generate(node)
-
+				val entryPointProcessors = ServiceLoader.load(EntryPointProcessorProvider::class.java)
+					.map { it.create(xRoundEnv) } + entryPointInjectorGenerator
 				// load the different providers from the consuming library
-				ServiceLoader.load(EntryPointProcessorProvider::class.java).forEach { provider ->
-					val entryPointProcessor = provider.create(xRoundEnv)
-
-					entryPointProcessor.generate(node)
+				for (entryPointProcessor in entryPointProcessors) {
+					if (entryPointProcessor.isApplicable(xRoundEnv, node)) {
+						entryPointProcessor.process(xRoundEnv, node)
+						break
+					}
 				}
 			}
 
