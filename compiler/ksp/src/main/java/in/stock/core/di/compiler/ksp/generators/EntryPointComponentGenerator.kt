@@ -92,7 +92,6 @@ class EntryPointComponentGenerator @Inject constructor(
 		properties: Sequence<PropertySpec>,
 		arguments: List<ClassName> = emptyList()
 	) {
-
 		val parentComponent = getArgument<KSType>(EntryPoint::class, ParentComponentProperty)
 		val requiredData = typeCollector.findRequiredComponents(this)
 		val entryPointSpecificProviders = typeCollector.findModuleProvidersByModule(requiredData.second)

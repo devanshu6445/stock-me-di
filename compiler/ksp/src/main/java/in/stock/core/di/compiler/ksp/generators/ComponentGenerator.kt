@@ -4,27 +4,48 @@ import com.github.adriankuta.datastructure.tree.TreeNode
 import com.github.adriankuta.datastructure.tree.iterators.TreeNodeIterators
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import `in`.stock.core.di.compiler.core.Generator
+import `in`.stock.core.di.compiler.core.Messenger
 import `in`.stock.core.di.compiler.core.XCodeGenerator
+import `in`.stock.core.di.compiler.core.XResolver
 import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.data.ComponentGeneratorResult
 import `in`.stock.core.di.compiler.ksp.data.ComponentInfo
+import `in`.stock.core.di.compiler.ksp.ext.getArgument
 import `in`.stock.core.di.compiler.ksp.utils.*
 import `in`.stock.core.di.runtime.SingletonComponent
 import `in`.stock.core.di.runtime.annotations.Component
+import `in`.stock.core.di.runtime.annotations.internals.ModuleProvider
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
 class ComponentGenerator @Inject constructor(
 	private val xCodeGenerator: XCodeGenerator,
+	private val xResolver: XResolver,
+	private val messenger: Messenger
 ) :
 	Generator<ComponentInfo, ComponentGeneratorResult> {
 	override fun generate(data: ComponentInfo): ComponentGeneratorResult {
 		val name = data.generatedName
+
+		val parentComponents = data.parentComponents.map { it.canonicalName }
+
+		// Filter out all the providers from previous rounds od ksp processing as well as from the other
+		// todo only pick the dependent modules providers
+		//  as `data.moduleProviders` contains all the ModuleProvider of this compilation round
+		val providersToImplement = xResolver.getAllModuleProviders()
+			.filter {
+				it.getArgument<KSType>(ModuleProvider::class, "clazz").let { moduleProvider ->
+					messenger.warn("${data.root} -> $parentComponents $it $moduleProvider")
+					parentComponents.contains(moduleProvider.declaration.qualifiedName?.asString()) ||
+						moduleProvider.declaration.qualifiedName?.asString() == data.root.qualifiedName?.asString()
+				}
+			}.map { it.toClassName() }
 
 		FileSpec.builder(name)
 			.addType(
@@ -47,7 +68,7 @@ class ComponentGenerator @Inject constructor(
 							addSuperclassConstructorParameter(it)
 						}
 					}
-					.addSuperinterfaces(data.providersToImplement)
+					.addSuperinterfaces(data.providersToImplement + providersToImplement)
 					.constructorBuilder(
 						parentComponent = data.parentComponents,
 						dependencies = data.dependencies

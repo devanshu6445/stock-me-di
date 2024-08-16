@@ -8,7 +8,10 @@ import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.ProcessingStepValidator
 import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.ksp.data.*
-import `in`.stock.core.di.compiler.ksp.generators.*
+import `in`.stock.core.di.compiler.ksp.generators.ComponentGenerator
+import `in`.stock.core.di.compiler.ksp.generators.ModuleGenerator
+import `in`.stock.core.di.compiler.ksp.generators.ModuleProviderGenerator
+import `in`.stock.core.di.compiler.ksp.generators.ProviderGenerator
 import `in`.stock.core.di.compiler.ksp.steps.EntryPointProcessingStep
 import `in`.stock.core.di.compiler.ksp.steps.ModuleProcessingStep
 import `in`.stock.core.di.compiler.ksp.validators.ModuleValidator
@@ -35,11 +38,6 @@ interface GeneratorsBinder {
 	fun bindModuleProviderGenerator(
 		moduleProviderGenerator: ModuleProviderGenerator
 	): Generator<ModuleInfo, ModuleProviderResult>
-
-	@Binds
-	fun bindModuleProviderRegistryGenerator(
-		moduleProviderRegistryGenerator: ModuleProviderRegistryGenerator
-	): Generator<List<ModuleProviderResult>, Unit>
 
 	@Binds
 	fun bindEntryPointGenerator(

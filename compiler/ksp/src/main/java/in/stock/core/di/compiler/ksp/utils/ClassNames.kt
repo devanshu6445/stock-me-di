@@ -10,6 +10,4 @@ val INJECT = ClassName(AnnotationPackageName, "Inject")
 val Provides = ClassName(AnnotationPackageName, "Provides")
 val Scope = ClassName(AnnotationPackageName, "Scope")
 
-val ModuleProviderRegistry = ClassName(InternalPackage, "ModuleProvidersRegistry")
-
 const val LazyName = "kotlin.Lazy"

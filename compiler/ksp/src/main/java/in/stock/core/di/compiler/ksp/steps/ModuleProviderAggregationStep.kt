@@ -1,20 +1,18 @@
 package `in`.stock.core.di.compiler.ksp.steps
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
-import `in`.stock.core.di.compiler.core.ProcessingStepValidator
 import `in`.stock.core.di.compiler.core.XCodeGenerator
 import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.utils.InternalPackage
 import `in`.stock.core.di.compiler.ksp.utils.capitalize
-import `in`.stock.core.di.runtime.annotations.Retriever
 import `in`.stock.core.di.runtime.annotations.internals.Aggregated
+import `in`.stock.core.di.runtime.annotations.internals.ModuleProvider
 import javax.inject.Inject
 
-class RetrieverAggregationStep @Inject constructor(
+class ModuleProviderAggregationStep @Inject constructor(
 	private val xCodeGenerator: XCodeGenerator,
 	validator: AllValidator
 ) : XProcessingStepVoid<KSClassDeclaration, Unit>(
@@ -38,7 +36,7 @@ class RetrieverAggregationStep @Inject constructor(
 										appendLine("aggregationOf = %T::class,")
 										appendLine("topLevelElement = %T::class")
 									},
-									Retriever::class.asTypeName(),
+									ModuleProvider::class.asTypeName(),
 									node.toClassName()
 								)
 							)
@@ -48,8 +46,4 @@ class RetrieverAggregationStep @Inject constructor(
 			)
 			.build().writeTo(xCodeGenerator)
 	}
-}
-
-class AllValidator @Inject constructor() : ProcessingStepValidator<KSClassDeclaration> {
-	override fun validate(element: KSClassDeclaration): Boolean = element.validate()
 }

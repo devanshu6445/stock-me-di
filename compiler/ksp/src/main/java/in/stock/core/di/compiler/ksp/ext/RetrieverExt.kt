@@ -20,7 +20,11 @@ fun XResolver.getAllRetrievers() = sequence {
 					return
 				}
 
-				if (node.hasAnnotation(Aggregated::class)) {
+				if (node.hasAnnotation(Aggregated::class) && node.getArgument<KSType>(
+						Aggregated::class,
+						"aggregationOf"
+					).declaration.qualifiedName?.asString() == Retriever::class.qualifiedName
+				) {
 					yield(
 						node.getArgument<KSType>(Aggregated::class, "topLevelClass")
 							.declaration as KSClassDeclaration

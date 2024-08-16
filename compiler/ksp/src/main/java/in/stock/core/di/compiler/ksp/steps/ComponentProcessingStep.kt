@@ -12,7 +12,6 @@ import javax.inject.Inject
 
 class ComponentProcessingStep @Inject constructor(
 	private val componentGenerator: Generator<ComponentInfo, ComponentGeneratorResult>,
-	private val moduleProviderRegistryGenerator: Generator<List<ModuleProviderResult>, Unit>,
 	validator: ComponentValidator
 ) : XProcessingStep<KSClassDeclaration, ComponentGeneratorResult, ComponentProcessingStep.Params>(
 	validator
@@ -25,10 +24,6 @@ class ComponentProcessingStep @Inject constructor(
 				modules = data.generatedModules.map { it.first },
 				modulesProvider = data.generatedModules.map { it.second }
 			)
-		)
-
-		moduleProviderRegistryGenerator.generate(
-			data = data.generatedModules.map { it.second }
 		)
 
 		return result
