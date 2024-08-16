@@ -11,10 +11,15 @@ import `in`.stock.core.di.compiler.core.XCodeGenerator
 import `in`.stock.core.di.compiler.core.XResolver
 import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.TypeCollector
+import `in`.stock.core.di.compiler.ksp.ext.getAllRetrievers
+import `in`.stock.core.di.compiler.ksp.ext.getArgument
 import `in`.stock.core.di.compiler.ksp.utils.*
+import `in`.stock.core.di.compiler.ksp.validators.ParentComponentProperty
 import `in`.stock.core.di.runtime.annotations.AssociatedWith
 import `in`.stock.core.di.runtime.annotations.Component
 import `in`.stock.core.di.runtime.annotations.EntryPoint
+import `in`.stock.core.di.runtime.annotations.Retriever
+import `in`.stock.core.di.runtime.internal.GeneratedComponent
 import javax.inject.Inject
 
 class EntryPointComponentGenerator @Inject constructor(
@@ -87,8 +92,14 @@ class EntryPointComponentGenerator @Inject constructor(
 		properties: Sequence<PropertySpec>,
 		arguments: List<ClassName> = emptyList()
 	) {
+
+		val parentComponent = getArgument<KSType>(EntryPoint::class, ParentComponentProperty)
 		val requiredData = typeCollector.findRequiredComponents(this)
 		val entryPointSpecificProviders = typeCollector.findModuleProvidersByModule(requiredData.second)
+		val entryPointRetrievers = xResolver.getAllRetrievers().filter {
+			it.getArgument<KSType>(Retriever::class, "component").declaration
+				.qualifiedName?.asString() == parentComponent.declaration.qualifiedName?.asString()
+		}
 
 		val depComponents = requiredData.first
 			.map { ClassName(it.packageName.asString(), it.simpleName.asString()) }
@@ -107,6 +118,8 @@ class EntryPointComponentGenerator @Inject constructor(
 			TypeSpec.classBuilder(componentName).addModifiers(KModifier.ABSTRACT)
 				.apply {
 					this@generateComponent.containingFile?.let { addOriginatingKSFile(it) }
+					addSuperinterface(GeneratedComponent::class)
+					addSuperinterfaces(entryPointRetrievers.map { it.toClassName() }.toList())
 				}
 				.addAnnotation(Component::class)
 				.apply {
@@ -188,7 +201,10 @@ class EntryPointComponentGenerator @Inject constructor(
 				name = name,
 				type = component,
 				annotations = listOf(
-					AnnotationSpec.builder(Component::class).build()
+					AnnotationSpec.builder(Component::class).build(),
+					AnnotationSpec.builder(Provides)
+						.useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
+						.build()
 				)
 			)
 		}

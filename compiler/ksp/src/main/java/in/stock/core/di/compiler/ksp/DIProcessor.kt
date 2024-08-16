@@ -15,9 +15,12 @@ import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.di.DaggerCompilerComponent
 import `in`.stock.core.di.compiler.ksp.di.ProcessorMapper
 import `in`.stock.core.di.compiler.ksp.steps.ComponentProcessingStep
+import `in`.stock.core.di.compiler.ksp.steps.RetrieverAggregationStep
+import `in`.stock.core.di.compiler.ksp.utils.getSymbolsWithClassAnnotation
 import `in`.stock.core.di.runtime.annotations.Component
 import `in`.stock.core.di.runtime.annotations.EntryPoint
 import `in`.stock.core.di.runtime.annotations.Module
+import `in`.stock.core.di.runtime.annotations.Retriever
 import javax.inject.Inject
 
 class DIProcessor(
@@ -36,6 +39,9 @@ class DIProcessor(
 
 	@Inject
 	lateinit var componentProcessingStep: ComponentProcessingStep
+
+	@Inject
+	lateinit var aggregationStep: RetrieverAggregationStep
 
 	override val annotations: List<String>
 		get() = listOf(
@@ -103,6 +109,13 @@ class DIProcessor(
 
 	override fun postRound(xRoundEnv: XRoundEnv) {
 		currentRoundModules.clear()
+	}
+
+	override fun finish() {
+		super.finish()
+		xEnv.resolver
+			.getSymbolsWithClassAnnotation(Retriever::class)
+			.forEach(aggregationStep::process)
 	}
 
 	class Provider : SymbolProcessorProvider {

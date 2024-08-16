@@ -5,6 +5,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toKModifier
@@ -15,7 +16,9 @@ import `in`.stock.core.di.compiler.core.ext.writeTo
 import `in`.stock.core.di.compiler.ksp.EntryPointProcessor
 import `in`.stock.core.di.compiler.ksp.ext.getArgument
 import `in`.stock.core.di.runtime.annotations.EntryPoint
+import `in`.stock.core.di.runtime.internal.ComponentGenerator
 import javax.inject.Inject
+import kotlin.reflect.KMutableProperty0
 
 class EntryPointInjectorGenerator @Inject constructor(
 	private val xCodeGenerator: XCodeGenerator
@@ -34,6 +37,8 @@ class EntryPointInjectorGenerator @Inject constructor(
 			if (initializer == "constructor") {
 				return
 			}
+
+			val componentType = ClassName(packageName = node.packageName.asString(), "${node.simpleName.asString()}Component")
 
 			val injectorGeneratorFunction =
 				node.getAllFunctions()
@@ -54,18 +59,41 @@ class EntryPointInjectorGenerator @Inject constructor(
 								superclass(it.toTypeName())
 							}
 							addSuperinterfaces(superInterfaces.map { it.toTypeName() })
+							addSuperinterface(ComponentGenerator::class.asTypeName().parameterizedBy(componentType))
 
 							// just a workaround for the Ir and Synthetic Resolver
 							// as the synthetic resolver is adding the component property
 							addProperty(
 								PropertySpec.builder(
 									name = "component",
-									type = ClassName(packageName = node.packageName.asString(), "${node.simpleName.asString()}Component")
+									type = componentType
 								).mutable().addModifiers(
 									KModifier.PROTECTED,
 									KModifier.LATEINIT,
 									KModifier.OPEN
 								).build()
+							)
+
+							addFunction(
+								FunSpec.builder("generateComponent")
+									.addModifiers(KModifier.OVERRIDE)
+									.addCode(
+										CodeBlock.of(
+											"""
+												return synchronized(this) {
+													try {
+														component!!
+													} catch(e: NullPointerException) {
+														component = ${node.simpleName.asString()}Component::class.createBoundedComponent(this as ${node.simpleName.asString()})
+														component
+													}
+												}
+											""".trimIndent(),
+											KMutableProperty0::class.asTypeName().parameterizedBy(componentType)
+										)
+									)
+									.returns(componentType)
+									.build()
 							)
 
 							addFunction(
@@ -96,8 +124,7 @@ class EntryPointInjectorGenerator @Inject constructor(
 													""
 												}
 											}
-										this.component = ${node.simpleName.asString()}Component::class.createBoundedComponent(this as ${node.simpleName.asString()})
-										.apply { inject(this@$transformedClassName) }
+										this.generateComponent().inject(this@$transformedClassName as ${node.simpleName.asString()})
 									""".trimIndent()
 										)
 									)
