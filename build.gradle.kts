@@ -37,3 +37,7 @@ checkApple.finalizedBy(testReportApple, copyTestResultsApple)
 tasks.withType<Detekt> {
     exclude("**/testData/**")
 }
+
+tasks.named("installGitHooks") {
+    enabled = false
+}
