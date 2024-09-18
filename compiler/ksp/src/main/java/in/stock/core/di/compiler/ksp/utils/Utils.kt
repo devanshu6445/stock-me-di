@@ -6,7 +6,9 @@ import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
+import `in`.stock.core.di.compiler.ksp.ext.getArgument
 import `in`.stock.core.di.runtime.annotations.Module
+import `in`.stock.core.di.runtime.annotations.internals.Aggregated
 import `in`.stock.core.di.runtime.annotations.internals.ModuleProvider
 import java.util.*
 import kotlin.reflect.KClass
@@ -54,6 +56,7 @@ fun Resolver.getAllProviders(): Sequence<KSFunctionDeclaration> {
 	}
 }
 
+@OptIn(KspExperimental::class)
 fun Resolver.getAllModuleProviders(): Sequence<KSClassDeclaration> {
 	suspend fun SequenceScope<KSClassDeclaration>.visit(declarations: Sequence<KSDeclaration>) {
 		declarations.forEach {
@@ -61,6 +64,19 @@ fun Resolver.getAllModuleProviders(): Sequence<KSClassDeclaration> {
 				is KSClassDeclaration -> {
 					if (it.hasAnnotation(ModuleProvider::class)) {
 						yield(it)
+					}
+
+					if (it.hasAnnotation(Aggregated::class) && it.getArgument<KSType>(
+							Aggregated::class,
+							"aggregationOf"
+						).declaration.qualifiedName?.asString() == Aggregated::class.qualifiedName
+					) {
+						yield(
+							it.getArgument<KSType>(
+								Aggregated::class,
+								"topLevelElement"
+							).declaration as KSClassDeclaration
+						)
 					}
 				}
 			}
@@ -74,7 +90,7 @@ fun Resolver.getAllModuleProviders(): Sequence<KSClassDeclaration> {
 		}
 
 		// get all the provider from other dependent module
-// 		visit(getDeclarationsFromPackage(InternalPackage))
+		visit(getDeclarationsFromPackage(InternalPackage))
 	}
 }
 

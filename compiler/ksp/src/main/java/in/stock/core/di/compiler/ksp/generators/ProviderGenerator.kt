@@ -5,6 +5,7 @@ import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
@@ -32,6 +33,9 @@ class ProviderGenerator @Inject constructor(
       className
     ).addType(
       TypeSpec.classBuilder(className)
+				.apply {
+					resolvedDepType.declaration.containingFile?.let { addOriginatingKSFile(it) }
+				}
 				.addAnnotation(
 					annotationSpec = AnnotationSpec.builder(GeneratedDepProvider::class.asClassName())
 						.addMember(

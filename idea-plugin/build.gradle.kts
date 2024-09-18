@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "in.stock.core.di.idea.plugin"
-version = "unspecified"
+version = "1.0.0"
 
 repositories {
   mavenCentral()

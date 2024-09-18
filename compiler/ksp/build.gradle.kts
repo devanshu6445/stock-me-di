@@ -58,4 +58,5 @@ dependencies {
 
   testImplementation(libs.ksp.testing)
   testImplementation(libs.koTest)
+  testImplementation(libs.kotlin.inject.compiler)
 }

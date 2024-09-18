@@ -1,28 +1,31 @@
 package `in`.stock.core.di.kcp.backend
 
 import `in`.stock.core.di.kcp.backend.core.AbstractTransformerForGenerator
-import `in`.stock.core.di.kcp.backend.core.Origin
 import `in`.stock.core.di.kcp.k2.FirDeclarationGenerator
 import `in`.stock.core.di.kcp.utils.*
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
+import org.jetbrains.kotlin.ir.backend.js.utils.typeArguments
 import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.addBackingField
-import org.jetbrains.kotlin.ir.builders.declarations.addFunction
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrBody
-import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
+import org.jetbrains.kotlin.ir.expressions.impl.IrBlockBodyImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrDelegatingConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.classFqName
+import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.types.typeOrFail
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
@@ -128,6 +131,29 @@ class EntryPointIrGenerator(
 
 		return declaration.symbol.irBlockBody {
 			// call the primary constructor of this class
+
+// 			declaration.valueParameters.forEach { param ->
+//
+// 				val creatorFunc = this@EntryPointIrGenerator.context.referenceFunctions(
+// 					callableId = CallableId(
+// 						packageName = declaration.parentAsClass.packageFqName!!,
+// 						callableName = Name.identifier("createBoundedComponent")
+// 					)
+// 				)
+// 					.first {
+// 						(it.owner.extensionReceiverParameter?.type as IrSimpleType)
+// 							.arguments.first().typeOrNull?.classFqName == param.type.classFqName
+// 					}
+//
+// 				param.defaultValue = irExprBody(
+// 					irCall(callee = creatorFunc, type = param.type).apply {
+// 						extensionReceiver = kClassReference(
+// 							param.type
+// 						)
+// 					}
+// 				)
+// 			}
+
 			+irDelegatingConstructorCall(constructor).apply {
 				val properties = componentClassSymbol.irProperties().associateBy {
 					it.getter?.returnType ?: return@apply
@@ -258,7 +284,7 @@ class EntryPointIrGenerator(
 		}
 	}
 
-	override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
+	/*override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
 		return try {
 			// check if class is to be injected
 			val injectableClass = declaration.parentAsClass.let { clazz ->
@@ -308,53 +334,105 @@ class EntryPointIrGenerator(
 		}
 	}
 
-	private fun generatePropertyAssigningFunction(declaration: IrClass): IrFunction {
-		val existingFunction = declaration.functions.firstOrNull { it.name.asString() == "assignInjectableProperties" }
-		if (existingFunction != null) {
-			return existingFunction
+ 	private fun generatePropertyAssigningFunction(declaration: IrClass): IrFunction {
+ 		val existingFunction = declaration.functions.firstOrNull { it.name.asString() == "assignInjectableProperties" }
+ 		if (existingFunction != null) {
+ 			return existingFunction
+ 		}
+
+ 		val generatedFunction = declaration.addFunction(
+ 			name = ASSIGN_INJECTABLE_PROPERTIES,
+ 			returnType = context.irBuiltIns.unitType,
+ 			visibility = DescriptorVisibilities.PRIVATE,
+ 			origin = Origin
+ 		).apply {
+ 			val componentType = declaration.properties.first { it.name == Name.identifier("component") }
+
+ 			body = symbol.irBlockBody {
+ 				propertyAssignment(
+ 					declaration = this@apply,
+ 					componentClassSymbol = this@EntryPointIrGenerator.context.irClass(
+ 						componentType.getter?.returnType!!
+ 					)?.symbol!!,
+ 					componentGetter = componentType.getter!!,
+ 					receiver = dispatchReceiverParameter!!
+ 				)
+ 			}
+ 		}
+
+ 		return generatedFunction
+ 	}*/
+
+	override fun visitClass(declaration: IrClass): IrStatement {
+		if (declaration.hasAnnotation(FqNames.EntryPoint) && !declaration.superTypes.contains(irBuiltIns.anyType)) {
+			declaration.superTypes = listOf(
+				context.referenceClass(
+					ClassId(
+						declaration.packageFqName!!,
+						Name.identifier("KDI_${declaration.name.asString()}")
+					)
+				)!!.owner.defaultType
+			)
 		}
-
-		val generatedFunction = declaration.addFunction(
-			name = ASSIGN_INJECTABLE_PROPERTIES,
-			returnType = context.irBuiltIns.unitType,
-			visibility = DescriptorVisibilities.PRIVATE,
-			origin = Origin
-		).apply {
-			val componentType = declaration.properties.first { it.name == Name.identifier("component") }
-
-			body = symbol.irBlockBody {
-				propertyAssignment(
-					declaration = this@apply,
-					componentClassSymbol = this@EntryPointIrGenerator.context.irClass(
-						componentType.getter?.returnType!!
-					)?.symbol!!,
-					componentGetter = componentType.getter!!,
-					receiver = dispatchReceiverParameter!!
-				)
-			}
-		}
-
-		return generatedFunction
+		return super.visitClass(declaration)
 	}
 
-// 	override fun visitClass(declaration: IrClass): IrStatement {
-// 		if (declaration.hasAnnotation(FqNames.EntryPoint)) {
-// 			declaration.superTypes = listOf(
-// 				irBuiltIns.anyType
-// 			)
-// 		}
-// 		return super.visitClass(declaration)
-// 	}
-//
-// 	override fun visitConstructor(declaration: IrConstructor): IrStatement {
-// 		if (declaration.parentAsClass.hasAnnotation(FqNames.EntryPoint)
-// 			&& declaration.isPrimary && declaration.valueParameters.isEmpty()) {
-// 			declaration.body = declaration.symbol.irBlockBody {
-// 				+irDelegatingConstructorCall(irBuiltIns.anyType.classOrNull?.owner?.primaryConstructor!!)
-// 			}
-// 		}
-// 		return super.visitConstructor(declaration)
-// 	}
+	override fun visitConstructor(declaration: IrConstructor): IrStatement {
+		val statement = super.visitConstructor(declaration)
+		if (declaration.parentAsClass.hasAnnotation(FqNames.EntryPoint) &&
+			!declaration.parentAsClass.superTypes.contains(irBuiltIns.anyType)
+		) {
+			val transformedClass = context.referenceClass(
+				ClassId(
+					declaration.parentAsClass.packageFqName!!,
+					Name.identifier("KDI_${declaration.parentAsClass.name.asString()}")
+				)
+			)
+
+			declaration.body = IrBlockBodyImpl(
+				startOffset = UNDEFINED_OFFSET,
+				endOffset = UNDEFINED_OFFSET,
+				statements = MutableList(declaration.body!!.statements.size) { declaration.body!!.statements[it] }
+					.apply {
+						replaceIf(
+							predicate = {
+								it is IrDelegatingConstructorCall
+							}
+						) { _, e ->
+							e as IrDelegatingConstructorCall
+
+							val callee = transformedClass?.constructors?.first {
+								if (it.owner.valueParameters.size != e.symbol.owner.valueParameters.size) {
+									return@first false
+								}
+
+								for ((index, valueParameter) in it.owner.valueParameters.withIndex()) {
+									val newDelegateType = valueParameter.type.getClass()!!
+									val oldDelegateType = e.symbol.owner.valueParameters[index].type.getClass()!!
+
+									if (oldDelegateType.packageFqName?.asString() != newDelegateType.packageFqName?.asString() &&
+										oldDelegateType.name.asString() == newDelegateType.name.asString()
+									) {
+										return@first false
+									}
+								}
+
+								true
+							}?.owner ?: error("No constructors found.")
+
+							IrDelegatingConstructorCallImpl(
+								UNDEFINED_OFFSET, UNDEFINED_OFFSET, context.irBuiltIns.unitType, callee.symbol,
+								callee.parentAsClass.typeParameters.size, callee.valueParameters.size
+							).apply {
+								e.typeArguments.forEachIndexed(::putTypeArgument)
+								e.valueArguments.forEachIndexed(::putValueArgument)
+							}
+						}
+					}
+			)
+		}
+		return statement
+	}
 
 	companion object {
 		const val ASSIGN_INJECTABLE_PROPERTIES = "assignInjectableProperties"

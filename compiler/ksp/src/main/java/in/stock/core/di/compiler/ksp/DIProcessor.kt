@@ -15,9 +15,14 @@ import `in`.stock.core.di.compiler.ksp.data.ModuleProviderResult
 import `in`.stock.core.di.compiler.ksp.di.DaggerCompilerComponent
 import `in`.stock.core.di.compiler.ksp.di.ProcessorMapper
 import `in`.stock.core.di.compiler.ksp.steps.ComponentProcessingStep
+import `in`.stock.core.di.compiler.ksp.steps.ModuleProviderAggregationStep
+import `in`.stock.core.di.compiler.ksp.steps.RetrieverAggregationStep
+import `in`.stock.core.di.compiler.ksp.utils.getSymbolsWithClassAnnotation
 import `in`.stock.core.di.runtime.annotations.Component
 import `in`.stock.core.di.runtime.annotations.EntryPoint
 import `in`.stock.core.di.runtime.annotations.Module
+import `in`.stock.core.di.runtime.annotations.Retriever
+import `in`.stock.core.di.runtime.annotations.internals.ModuleProvider
 import javax.inject.Inject
 
 class DIProcessor(
@@ -36,6 +41,12 @@ class DIProcessor(
 
 	@Inject
 	lateinit var componentProcessingStep: ComponentProcessingStep
+
+	@Inject
+	lateinit var aggregationStep: RetrieverAggregationStep
+
+	@Inject
+	lateinit var moduleProviderAggregationStep: ModuleProviderAggregationStep
 
 	override val annotations: List<String>
 		get() = listOf(
@@ -56,9 +67,13 @@ class DIProcessor(
 	override fun processSymbol(xRoundEnv: XRoundEnv, symbol: KSAnnotated, annotationFullName: String): Boolean {
 		val isProcessed = when (annotationFullName) {
 			Module::class.qualifiedName -> {
-				runCatching {
+				try {
 					currentRoundModules.add(moduleProcessingStep.process(symbol as KSClassDeclaration))
-				}.isSuccess
+					true
+				} catch (e: FileAlreadyExistsException) {
+					e.printStackTrace()
+					false
+				}
 			}
 
 			Component::class.qualifiedName -> {
@@ -103,6 +118,19 @@ class DIProcessor(
 
 	override fun postRound(xRoundEnv: XRoundEnv) {
 		currentRoundModules.clear()
+	}
+
+	override fun finish() {
+		super.finish()
+		// aggregate all the retriever for the next round of compilation
+		xEnv.resolver
+			.getSymbolsWithClassAnnotation(Retriever::class)
+			.forEach(aggregationStep::process)
+
+		// aggregate all the ModuleProvider for the next round of compilation
+		xEnv.resolver
+			.getSymbolsWithClassAnnotation(ModuleProvider::class)
+			.forEach(moduleProviderAggregationStep::process)
 	}
 
 	class Provider : SymbolProcessorProvider {
