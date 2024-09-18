@@ -9,7 +9,6 @@ import `in`.stock.core.di.compiler.core.ProcessingStepValidator
 import `in`.stock.core.di.compiler.core.XProcessingStepVoid
 import `in`.stock.core.di.compiler.ksp.data.*
 import `in`.stock.core.di.compiler.ksp.generators.ComponentGenerator
-import `in`.stock.core.di.compiler.ksp.generators.ModuleGenerator
 import `in`.stock.core.di.compiler.ksp.generators.ModuleProviderGenerator
 import `in`.stock.core.di.compiler.ksp.generators.ProviderGenerator
 import `in`.stock.core.di.compiler.ksp.steps.EntryPointProcessingStep
@@ -18,11 +17,6 @@ import `in`.stock.core.di.compiler.ksp.validators.ModuleValidator
 
 @Module
 interface GeneratorsBinder {
-
-	@Binds
-	fun bindModuleGenerator(
-		moduleGenerator: ModuleGenerator
-	): Generator<ModuleInfo, Unit>
 
 	@Binds
 	fun providerGenerator(

@@ -67,9 +67,13 @@ class DIProcessor(
 	override fun processSymbol(xRoundEnv: XRoundEnv, symbol: KSAnnotated, annotationFullName: String): Boolean {
 		val isProcessed = when (annotationFullName) {
 			Module::class.qualifiedName -> {
-				runCatching {
+				try {
 					currentRoundModules.add(moduleProcessingStep.process(symbol as KSClassDeclaration))
-				}.isSuccess
+					true
+				} catch (e: FileAlreadyExistsException) {
+					e.printStackTrace()
+					false
+				}
 			}
 
 			Component::class.qualifiedName -> {
