@@ -9,6 +9,7 @@ import java.util.*
 plugins {
   alias(libs.plugins.kotlinMultiplatform)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.di.compiler.internal)
   id("stock.me.di.merge-tests")
   `maven-publish`
 }
@@ -71,13 +72,16 @@ kotlin {
 dependencies {
   kotlin.targets.filterIsInstance<KotlinNativeTarget>().forEach {
     add("ksp${it.name.capitalized()}", libs.kotlin.inject.compiler)
+    add("ksp${it.name.capitalized()}", libs.di.compiler)
   }
 
   kotlin.targets.filterIsInstance<KotlinJvmTarget>().forEach {
     add("ksp${it.name.capitalized()}", libs.kotlin.inject.compiler)
+    add("ksp${it.name.capitalized()}", libs.di.compiler)
   }
 
   kspCommonMainMetadata(libs.kotlin.inject.compiler)
+  kspCommonMainMetadata(libs.di.compiler)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {

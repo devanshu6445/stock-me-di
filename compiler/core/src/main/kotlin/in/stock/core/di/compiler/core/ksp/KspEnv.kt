@@ -1,6 +1,7 @@
 package `in`.stock.core.di.compiler.core.ksp
 
 import com.google.devtools.ksp.processing.JvmPlatformInfo
+import com.google.devtools.ksp.processing.PlatformInfo
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import `in`.stock.core.di.compiler.core.KspResolver
 import `in`.stock.core.di.compiler.core.XCodeGenerator
@@ -12,8 +13,14 @@ class KspEnv(
 ) : XEnv {
 	override val messenger = MessengerImpl(environment.logger)
 
-	override val jvmPlatformInfo: JvmPlatformInfo? = environment.platforms.filterIsInstance<JvmPlatformInfo>()
-		.firstOrNull()
+	override val platforms: List<PlatformInfo> by lazy {
+		environment.platforms
+	}
+
+	override val jvmPlatformInfo: JvmPlatformInfo? by lazy {
+		platforms.filterIsInstance<JvmPlatformInfo>()
+			.firstOrNull()
+	}
 
 	internal var _resolver: KspResolver? = null
 
@@ -27,7 +34,7 @@ class KspEnv(
 	override val jvmVersion: Int by lazy {
 		when (jvmPlatformInfo?.jvmTarget) {
 			"1.8", null -> 8
-			else -> jvmPlatformInfo.jvmTarget.toInt()
+			else -> jvmPlatformInfo!!.jvmTarget.toInt()
 		}
 	}
 }

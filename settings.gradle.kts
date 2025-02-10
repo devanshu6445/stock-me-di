@@ -74,3 +74,5 @@ findProject(":compiler:ksp")?.name = "ksp"
 include("compiler:kcp")
 findProject(":compiler:kcp")?.name = "kcp"
 include("compiler:integration-tests")
+include("runtime:kdi-viewmodel")
+findProject(":runtime:kdi-viewmodel")?.name = "kdi-viewmodel"

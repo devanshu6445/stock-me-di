@@ -67,7 +67,53 @@ class ModuleProviderGenerator @Inject constructor(
 	}
 
 	private fun TypeSpec.Builder.addProviderBinders(providers: List<ProvidesInfo>) = apply {
-		addFunctions(providers.map { addProviderBinder(it) })
+
+		addFunctions(providers.map { provider ->
+			if (provider.isCollectedIntoMap) {
+				createMapProvider(
+					provider = provider
+				)
+			} else {
+				addProviderBinder(
+					providesInfo = provider
+				)
+			}
+		})
+	}
+
+	private fun createMapProvider(provider: ProvidesInfo): FunSpec {
+		return FunSpec.builder(provider.functionName.asString())
+			.returns(provider.reference.returnType?.toTypeName() ?: error("No return type"))
+			.addAnnotations(
+				provider.reference.annotations.map {
+					it.toAnnotationSpec()
+				}.toList()
+			)
+			.addParameters(provider.reference.parameters.map { param ->
+				ParameterSpec.builder(
+					name = param.name?.asString() ?: error("No name value parameter"),
+					type = param.type.toTypeName(),
+				).build()
+			})
+			.addCode(
+				CodeBlock.of(
+					"""
+								return %T.${provider.reference.simpleName.asString()}(
+								${
+						buildString {
+							provider.reference.parameters.forEach {
+								append(it.name?.asString())
+								append(" = ")
+								append(it.name?.asString())
+							}
+						}
+					}
+								)
+							""".trimIndent(),
+					(provider.reference.parentDeclaration as KSClassDeclaration).toClassName()
+				)
+			)
+			.build()
 	}
 
 	private fun addProviderBinder(providesInfo: ProvidesInfo) =

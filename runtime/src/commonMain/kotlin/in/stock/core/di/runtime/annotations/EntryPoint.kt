@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
  * The generated [Component] will be bound to the lifecycle of the marked entity.
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.BINARY)
 annotation class EntryPoint(
 	val parentComponent: KClass<*> = SingletonComponent::class,
 	val dependencies: Array<KClass<*>> = [],

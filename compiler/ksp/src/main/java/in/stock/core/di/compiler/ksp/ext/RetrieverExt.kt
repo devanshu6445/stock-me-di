@@ -26,7 +26,7 @@ fun XResolver.getAllRetrievers() = sequence {
 					).declaration.qualifiedName?.asString() == Retriever::class.qualifiedName
 				) {
 					yield(
-						node.getArgument<KSType>(Aggregated::class, "topLevelClass")
+						node.getArgument<KSType>(Aggregated::class, "topLevelElement")
 							.declaration as KSClassDeclaration
 					)
 				}

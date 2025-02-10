@@ -1,5 +1,6 @@
 package `in`.stock.core.di.integration_tests
 
+import `in`.stock.core.di.runtime.SingletonComponent
 import `in`.stock.core.di.runtime.annotations.AssociatedWith
 import `in`.stock.core.di.runtime.annotations.Component
 import `in`.stock.core.di.runtime.annotations.InstallIn
@@ -8,10 +9,19 @@ import me.tatarka.inject.annotations.IntoSet
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Qualifier
 import me.tatarka.inject.annotations.Scope
+import kotlin.math.sin
 
 fun main(args: Array<String>) {
-	val entryPoint = EntryPointTest()
-	entryPoint.onCreate()
+//	val entryPoint = EntryPointTest()
+//	entryPoint.onCreate()
+
+	println(
+		PrimaryConstructorEntryPoint(
+			PrimaryConstructorEntryPointComponent::class.create(
+				singletonComponent1 = SingletonComponent.getInstance()
+			)
+		).dep
+	)
 }
 
 @Component

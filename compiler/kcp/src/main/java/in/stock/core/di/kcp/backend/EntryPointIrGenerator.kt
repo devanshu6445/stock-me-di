@@ -13,6 +13,8 @@ import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.addBackingField
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrBody
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrConstantValue
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrBlockBodyImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
@@ -364,7 +366,16 @@ class EntryPointIrGenerator(
  	}*/
 
 	override fun visitClass(declaration: IrClass): IrStatement {
-		if (declaration.hasAnnotation(FqNames.EntryPoint) && !declaration.superTypes.contains(irBuiltIns.anyType)) {
+
+		val entryPointInitializer = (declaration.getAnnotation(FqNames.EntryPoint)
+			?.valueArguments
+			?.get(2) as? IrConst<String>)?.value
+
+		if (
+			entryPointInitializer != null
+			&& entryPointInitializer != "constructor"
+			&& !declaration.superTypes.contains(irBuiltIns.anyType)
+		) {
 			declaration.superTypes = listOf(
 				context.referenceClass(
 					ClassId(
@@ -379,8 +390,14 @@ class EntryPointIrGenerator(
 
 	override fun visitConstructor(declaration: IrConstructor): IrStatement {
 		val statement = super.visitConstructor(declaration)
-		if (declaration.parentAsClass.hasAnnotation(FqNames.EntryPoint) &&
-			!declaration.parentAsClass.superTypes.contains(irBuiltIns.anyType)
+
+		val entryPointInitializer = declaration.parentAsClass.getEntryPointInitializerValueArgument()
+
+		if (
+			declaration.parentAsClass.hasAnnotation(FqNames.EntryPoint)
+			&& !declaration.parentAsClass.superTypes.contains(irBuiltIns.anyType)
+			&& entryPointInitializer != null
+			&& entryPointInitializer != "constructor"
 		) {
 			val transformedClass = context.referenceClass(
 				ClassId(
@@ -432,6 +449,12 @@ class EntryPointIrGenerator(
 			)
 		}
 		return statement
+	}
+
+	private fun IrDeclaration.getEntryPointInitializerValueArgument(): String? {
+		return (getAnnotation(FqNames.EntryPoint)
+			?.valueArguments
+			?.get(2) as? IrConst<String>)?.value
 	}
 
 	companion object {

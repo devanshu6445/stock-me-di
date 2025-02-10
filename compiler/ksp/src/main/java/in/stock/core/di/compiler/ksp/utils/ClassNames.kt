@@ -12,3 +12,5 @@ val Scope = ClassName(AnnotationPackageName, "Scope")
 val IntoMap = ClassName(AnnotationPackageName, "IntoMap")
 
 const val LazyName = "kotlin.Lazy"
+
+const val ViewModel = "androidx.lifecycle.ViewModel"
