@@ -9,11 +9,10 @@ import me.tatarka.inject.annotations.IntoSet
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Qualifier
 import me.tatarka.inject.annotations.Scope
-import kotlin.math.sin
 
 fun main(args: Array<String>) {
-//	val entryPoint = EntryPointTest()
-//	entryPoint.onCreate()
+// 	val entryPoint = EntryPointTest()
+// 	entryPoint.onCreate()
 
 	println(
 		PrimaryConstructorEntryPoint(
@@ -36,7 +35,6 @@ abstract class Sample {
 @AssociatedWith(Sample::class)
 annotation class SampleScope
 
-
 @Module
 @InstallIn(Sample::class)
 @SampleScope
@@ -58,7 +56,8 @@ object SampleModule {
 	AnnotationTarget.PROPERTY_GETTER,
 	AnnotationTarget.FUNCTION,
 	AnnotationTarget.VALUE_PARAMETER,
-	AnnotationTarget.TYPE, AnnotationTarget.PROPERTY
+	AnnotationTarget.TYPE,
+    AnnotationTarget.PROPERTY
 )
 annotation class Named(val value: String)
 

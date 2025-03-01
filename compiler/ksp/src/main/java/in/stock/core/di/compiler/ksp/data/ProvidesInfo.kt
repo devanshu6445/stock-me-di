@@ -6,6 +6,7 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import `in`.stock.core.di.compiler.ksp.utils.IntoMap
 import `in`.stock.core.di.compiler.ksp.utils.hasAnnotation
 
+@Suppress("DataClassShouldBeImmutable")
 data class ProvidesInfo(
 	val reference: KSFunctionDeclaration,
 ) {

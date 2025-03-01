@@ -32,7 +32,7 @@ class EntryPointProcessingStep @Inject constructor(
 					// Let all the applicable processor process the node
 					if (entryPointProcessor.isApplicable(xRoundEnv, node)) {
 						entryPointProcessor.process(xRoundEnv, node)
-						//break
+						// break
 					}
 				}
 			}

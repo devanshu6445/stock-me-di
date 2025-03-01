@@ -71,7 +71,7 @@ class DIProcessor(
 					currentRoundModules.add(moduleProcessingStep.process(symbol as KSClassDeclaration))
 					true
 				} catch (e: FileAlreadyExistsException) {
-					e.printStackTrace()
+					xRoundEnv.xEnv.messenger.warn(e.localizedMessage, symbol)
 					false
 				}
 			}

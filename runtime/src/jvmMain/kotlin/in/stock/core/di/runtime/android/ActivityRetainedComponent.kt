@@ -9,8 +9,8 @@ import me.tatarka.inject.annotations.Scope
 @ActivityRetainedScope
 abstract class ActivityRetainedComponent(
     @Component
-		@get:Provides
-		val singletonComponent: SingletonComponent
+    @get:Provides
+    val singletonComponent: SingletonComponent
 )
 
 @Scope

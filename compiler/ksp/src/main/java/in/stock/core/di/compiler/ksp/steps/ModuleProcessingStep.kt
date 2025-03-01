@@ -19,7 +19,6 @@ class ModuleProcessingStep @Inject constructor(
 ) {
 
 	override fun step(node: KSClassDeclaration): Pair<ModuleInfo, ModuleProviderResult> {
-
 		val module = node.asModule()
 
 		for (provider in module.providers.distinctBy { it.resolvedDepType }) {

@@ -67,8 +67,8 @@ class ModuleProviderGenerator @Inject constructor(
 	}
 
 	private fun TypeSpec.Builder.addProviderBinders(providers: List<ProvidesInfo>) = apply {
-
-		addFunctions(providers.map { provider ->
+		addFunctions(
+		    providers.map { provider ->
 			if (provider.isCollectedIntoMap) {
 				createMapProvider(
 					provider = provider
@@ -78,7 +78,8 @@ class ModuleProviderGenerator @Inject constructor(
 					providesInfo = provider
 				)
 			}
-		})
+		}
+		)
 	}
 
 	private fun createMapProvider(provider: ProvidesInfo): FunSpec {
@@ -89,12 +90,14 @@ class ModuleProviderGenerator @Inject constructor(
 					it.toAnnotationSpec()
 				}.toList()
 			)
-			.addParameters(provider.reference.parameters.map { param ->
+			.addParameters(
+			    provider.reference.parameters.map { param ->
 				ParameterSpec.builder(
 					name = param.name?.asString() ?: error("No name value parameter"),
 					type = param.type.toTypeName(),
 				).build()
-			})
+			}
+			)
 			.addCode(
 				CodeBlock.of(
 					"""
