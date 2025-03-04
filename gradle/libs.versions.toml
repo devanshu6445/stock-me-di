@@ -17,12 +17,14 @@ kmp-convention = "1.0.0-SNAPSHOT"
 stockMeLinter = "1.0.0-SNAPSHOT"
 adriankuta-tree-structure = "3.0.2"
 lifecycleRuntimeKtx = "2.8.7"
+com-vanniktech-maven-publish = "0.30.0"
 
 [libraries]
 # Kotlin inject
 androidx-lifecycle-viewmodel-android = { module = "androidx.lifecycle:lifecycle-viewmodel-android", version.ref = "lifecycleRuntimeKtx" }
 auto-service = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+gradle-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "com-vanniktech-maven-publish" }
 kotlin-gradle-plugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-inject-compiler = { group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "kotlin-inject" }
@@ -69,3 +71,4 @@ di-compiler = { id = "plugin.di.compiler", version.ref = "di-compiler" }
 di-compiler-internal = { id = "plugin.di.compiler.internal", version.ref = "di-compiler" }
 stock-me-linter = { id = "in.stock.me.linter", version.ref = "stockMeLinter" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+com-vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "com-vanniktech-maven-publish" }
