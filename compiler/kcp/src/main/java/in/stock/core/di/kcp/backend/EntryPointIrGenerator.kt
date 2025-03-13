@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
-import org.jetbrains.kotlin.ir.expressions.impl.IrBlockBodyImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrDelegatingConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
@@ -173,7 +172,6 @@ class EntryPointIrGenerator(
 							type = irValueParameter.type,
 							symbol = property?.getter?.symbol ?: return@forEachIndexed,
 							typeArgumentsCount = 0,
-							valueArgumentsCount = 0
 						).apply {
 							dispatchReceiver = IrGetValueImpl(
 								startOffset = -1,
@@ -368,8 +366,8 @@ class EntryPointIrGenerator(
 		val entryPointInitializer = (
 		    declaration.getAnnotation(FqNames.EntryPoint)
 			?.valueArguments
-			?.get(2) as? IrConst<String>
-		)?.value
+			?.get(2) as? IrConst
+		)?.value as? String
 
 		if (
 			entryPointInitializer != null &&
@@ -407,7 +405,7 @@ class EntryPointIrGenerator(
 				)
 			)
 
-			declaration.body = IrBlockBodyImpl(
+			declaration.body = context.irFactory.createBlockBody(
 				startOffset = UNDEFINED_OFFSET,
 				endOffset = UNDEFINED_OFFSET,
 				statements = MutableList(declaration.body!!.statements.size) { declaration.body!!.statements[it] }
@@ -440,7 +438,7 @@ class EntryPointIrGenerator(
 
 							IrDelegatingConstructorCallImpl(
 								UNDEFINED_OFFSET, UNDEFINED_OFFSET, context.irBuiltIns.unitType, callee.symbol,
-								callee.parentAsClass.typeParameters.size, callee.valueParameters.size
+								callee.parentAsClass.typeParameters.size,
 							).apply {
 								e.typeArguments.forEachIndexed(::putTypeArgument)
 								e.valueArguments.forEachIndexed(::putValueArgument)
@@ -456,8 +454,8 @@ class EntryPointIrGenerator(
 		return (
 		    getAnnotation(FqNames.EntryPoint)
 			?.valueArguments
-			?.get(2) as? IrConst<String>
-		)?.value
+			?.get(2) as? IrConst
+		)?.value as? String
 	}
 
 	companion object {

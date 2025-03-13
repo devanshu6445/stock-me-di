@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.extensions.ExperimentalTopLevelDeclarationsGenerationApi
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationGenerationExtension
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationPredicateRegistrar
 import org.jetbrains.kotlin.fir.extensions.MemberGenerationContext
@@ -76,6 +77,7 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
     return listOf(constructor.symbol)
   }
 
+  @OptIn(ExperimentalTopLevelDeclarationsGenerationApi::class)
   override fun generateFunctions(
     callableId: CallableId,
     context: MemberGenerationContext?
@@ -86,7 +88,7 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
           createTopLevelFunction(
             Key,
             callableId,
-            session.builtinTypes.stringType.type
+            session.builtinTypes.stringType.coneType
           ).symbol
         )
       }
@@ -105,12 +107,14 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
     }
   }
 
+  @ExperimentalTopLevelDeclarationsGenerationApi
   override fun getTopLevelCallableIds(): Set<CallableId> {
     return matchedTopLevelFunctions.map {
       it.callableId
     }.toSet()
   }
 
+  @ExperimentalTopLevelDeclarationsGenerationApi
   override fun getTopLevelClassIds(): Set<ClassId> {
     messageCollector.report(
       CompilerMessageSeverity.STRONG_WARNING,

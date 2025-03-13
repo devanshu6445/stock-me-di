@@ -1,27 +1,10 @@
+import java.net.URI
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
 
 	repositories {
 		maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-		maven {
-			url =
-				java.net.URI.create("https://maven.pkg.jetbrains.space/stockme/p/main/stock-me-android")
-
-			val usernameConst = "REPO_USERNAME"
-			val token = "TOKEN"
-			val properties = java.util.Properties().apply {
-				try {
-					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
-				} catch (e: java.io.FileNotFoundException) {
-					put(usernameConst, System.getenv(usernameConst) ?: "")
-					put(token, System.getenv(token) ?: "")
-				}
-			}
-			credentials {
-				username = (properties[usernameConst] ?: "") as String
-				password = (properties[token] ?: "") as String
-			}
-		}
 		maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 		google()
 		mavenCentral()
@@ -39,28 +22,10 @@ dependencyResolutionManagement {
 	repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
 	repositories {
 		maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-		maven {
-			url =
-				java.net.URI.create("https://maven.pkg.jetbrains.space/stockme/p/main/stock-me-android")
-
-			val usernameConst = "REPO_USERNAME"
-			val token = "TOKEN"
-			val properties = java.util.Properties().apply {
-				try {
-					load(java.io.FileInputStream(File("${rootDir.absolutePath}/local.properties")))
-				} catch (e: java.io.FileNotFoundException) {
-					put(usernameConst, System.getenv(usernameConst) ?: "")
-					put(token, System.getenv(token) ?: "")
-				}
-			}
-			credentials {
-				username = (properties[usernameConst] ?: "") as String
-				password = (properties[token] ?: "") as String
-			}
-		}
 		google()
 		mavenCentral()
 		mavenLocal()
+		maven { url = URI.create("https://oss.sonatype.org/content/repositories/snapshots") }
 	}
 }
 

@@ -1,9 +1,3 @@
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.net.URI
-import java.util.Properties
-import kotlin.apply
-
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.android)
@@ -64,26 +58,6 @@ kotlin {
 }
 
 publishing {
-    repositories {
-        maven {
-            url = URI.create("https://maven.pkg.jetbrains.space/stockme/p/main/stock-me-android")
-
-            credentials {
-                // todo commonize this logic
-                Properties().apply {
-                    try {
-                        load(FileInputStream(File("${rootProject.rootDir.absolutePath}/local.properties")))
-                    } catch (e: FileNotFoundException) {
-                        put("REPO_USERNAME", System.getenv("REPO_USERNAME")?.toString() ?: "")
-                        put("TOKEN", System.getenv("TOKEN")?.toString() ?: "")
-                    }
-
-                    username = get("REPO_USERNAME") as String
-                    password = get("TOKEN") as String
-                }
-            }
-        }
-    }
     publications {
         create<MavenPublication>("release") {
             artifactId = "kdi-view-model"

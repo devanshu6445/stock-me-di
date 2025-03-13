@@ -1,11 +1,11 @@
-import org.gradle.configurationcache.extensions.capitalized
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+@file:OptIn(KspExperimental::class)
+
+import com.google.devtools.ksp.KspExperimental
+import `in`.stock.core.di.plugin.addAllKspTargets
 
 plugins {
 	alias(libs.plugins.kotlinMultiplatform)
 	alias(libs.plugins.ksp)
-	alias(libs.plugins.di.compiler.internal)
 	alias(libs.plugins.com.vanniktech.maven.publish)
 	id("stock.me.di.merge-tests")
 	id("maven.publish")
@@ -35,8 +35,10 @@ kotlin {
 
 	sourceSets {
 		commonMain {
+			kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+
 			dependencies {
-				implementation(libs.kotlin.inject.runtime)
+				implementation(libs.inject.kotlin.inject.runtime.kmp)
 			}
 		}
 	}
@@ -45,26 +47,8 @@ kotlin {
 }
 
 dependencies {
-	kotlin.targets.filterIsInstance<KotlinNativeTarget>().forEach {
-		add("ksp${it.name.capitalized()}", libs.kotlin.inject.compiler)
-		add("ksp${it.name.capitalized()}", libs.di.compiler)
-	}
-
-	kotlin.targets.filterIsInstance<KotlinJvmTarget>().forEach {
-		add("ksp${it.name.capitalized()}", libs.kotlin.inject.compiler)
-		add("ksp${it.name.capitalized()}", libs.di.compiler)
-	}
-
-	kspCommonMainMetadata(libs.kotlin.inject.compiler)
-	kspCommonMainMetadata(libs.di.compiler)
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {
-	if (name != "kspCommonMainKotlinMetadata") {
-		dependsOn("kspCommonMainKotlinMetadata")
-	}
-}
-
-tasks.named("sourcesJar") {
-	dependsOn("kspCommonMainKotlinMetadata")
+	addAllKspTargets(
+		kotlin = kotlin,
+		dependencyNotation = libs.kotlin.inject.compiler
+	)
 }

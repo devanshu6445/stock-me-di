@@ -4,7 +4,7 @@ plugins {
   alias(libs.plugins.org.jetbrains.kotlin.jvm)
   alias(libs.plugins.ksp)
   application
-  id("com.bennyhuo.kotlin.ir.printer") version "1.9.20-1.0.2"
+  id("com.bennyhuo.kotlin.ir.printer") version "2.1.0-1.1.6"
   id("stock.me.di.merge-tests")
 }
 

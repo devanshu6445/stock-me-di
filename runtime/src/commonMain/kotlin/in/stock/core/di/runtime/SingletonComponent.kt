@@ -3,6 +3,7 @@ package `in`.stock.core.di.runtime
 import `in`.stock.core.di.runtime.SingletonComponent.Companion.getInstance
 import `in`.stock.core.di.runtime.annotations.AssociatedWith
 import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.KmpComponentCreate
 import me.tatarka.inject.annotations.Scope
 
 /**
@@ -24,6 +25,9 @@ abstract class SingletonComponent {
         /**
          * Get a singleton instance of [SingletonComponent].
          */
-        fun getInstance() = instance ?: SingletonComponent::class.create().also { instance = it }
+        fun getInstance(): SingletonComponent = instance ?: createSingletonComponent().also { instance = it }
     }
 }
+
+@KmpComponentCreate
+expect fun createSingletonComponent(): SingletonComponent

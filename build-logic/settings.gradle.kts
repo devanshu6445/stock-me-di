@@ -10,4 +10,11 @@ dependencyResolutionManagement {
   }
 }
 
+pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
 rootProject.name = "stock-me-di-conventions"
