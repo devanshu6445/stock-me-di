@@ -8,6 +8,7 @@ import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
+import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import `in`.stock.core.di.compiler.core.Generator
 import `in`.stock.core.di.compiler.core.Messenger
@@ -54,6 +55,9 @@ class ComponentGenerator @Inject constructor(
 						data.root.containingFile?.let { addOriginatingKSFile(it) }
 					}
 					.addAnnotation(COMPONENT)
+					.addAnnotations(data.root.annotations.filterNot {
+						it.annotationType.resolve().declaration.qualifiedName?.asString() == Component::class.qualifiedName
+					}.map { it.toAnnotationSpec() }.toList())
 					.superclass(data.root.toClassName())
 					.apply {
 						(data.parentComponents + data.dependencies).map {
@@ -133,7 +137,7 @@ class ComponentGenerator @Inject constructor(
 			is KSClassDeclaration -> {
 				declaration.primaryConstructor?.parameters?.forEach {
 					val resolvedDeclaration = it.type.resolve().declaration
-					if (it.hasAnnotation(Component::class)) {
+					if (it.hasAnnotation(Component::class) || it.hasAnnotation(COMPONENT.packageName, COMPONENT.simpleName)) {
 						currentNode.addChild(generateComponentTree(resolvedDeclaration))
 					} else {
 						currentNode.addChild(

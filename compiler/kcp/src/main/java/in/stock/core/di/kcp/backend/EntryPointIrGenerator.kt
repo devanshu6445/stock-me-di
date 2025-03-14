@@ -1,3 +1,5 @@
+@file:OptIn(UnsafeDuringIrConstructionAPI::class)
+
 package `in`.stock.core.di.kcp.backend
 
 import `in`.stock.core.di.kcp.backend.core.AbstractTransformerForGenerator
@@ -19,6 +21,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrDelegatingConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.getClass
@@ -242,6 +245,8 @@ class EntryPointIrGenerator(
 								endOffset,
 								propertyTypeWithoutLazy!!
 							) {
+								it.parent = declaration
+
 								it.body = it.symbol.irBlockBody {
 									+irReturn(
 										irGet(
