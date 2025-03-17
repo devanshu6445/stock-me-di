@@ -39,9 +39,11 @@ abstract class AbstractTransformerForGenerator : IrElementTransformerVoid() {
 
 	override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
 		val shouldGenerateBody =
-			(declaration.isFromPlugin(context.afterK2) || declaration.correspondingPropertySymbol?.owner?.isFromPlugin(context.afterK2) == true)
-				&& declaration.shouldTransform()
-				&& declaration.body == null
+			(
+				declaration.isFromPlugin(context.afterK2) ||
+					declaration.correspondingPropertySymbol?.owner?.isFromPlugin(context.afterK2) == true
+				) && declaration.shouldTransform() &&
+				declaration.body == null
 
 		if (shouldGenerateBody) {
 			declaration.body = generateBodyForFunction(declaration)

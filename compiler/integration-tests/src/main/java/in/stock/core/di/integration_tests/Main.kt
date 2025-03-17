@@ -42,12 +42,12 @@ object SampleModule {
 
 	@IntoSet
 	@Provides
-	@Named("one")
+//	@Named("one")
 	fun provideVMMap(): Foo = Foo()
 
 	@IntoSet
 	@Provides
-	@Named("one")
+//	@Named("one")
 	fun provideVMMap1(): Foo = Foo()
 }
 

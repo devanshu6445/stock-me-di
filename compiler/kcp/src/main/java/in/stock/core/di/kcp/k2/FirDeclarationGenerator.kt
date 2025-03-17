@@ -49,8 +49,9 @@ class FirDeclarationGenerator(session: FirSession, private val messageCollector:
 	}
 
 	override fun generateProperties(callableId: CallableId, context: MemberGenerationContext?): List<FirPropertySymbol> {
-		if (context == null)
-			return super.generateProperties(callableId, context)
+		if (context == null) {
+		    return super.generateProperties(callableId, context)
+		}
 
 		val component = session.firProvider.getFirClassifierByFqName(
 			ClassId(

@@ -17,7 +17,6 @@ class EntryPointTest : ParentEntryPoint() {
 	override fun onCreate() {
 		super.onCreate()
 
-		println(component)
 		println(a)
 	}
 }
