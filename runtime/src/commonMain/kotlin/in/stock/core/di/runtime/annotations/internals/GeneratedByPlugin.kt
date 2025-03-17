@@ -1,5 +1,5 @@
 package `in`.stock.core.di.runtime.annotations.internals
 
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CONSTRUCTOR)
 @Retention(AnnotationRetention.BINARY)
-annotation class Registry
+annotation class GeneratedByPlugin

@@ -3,3 +3,7 @@ root = true
 [*.kt]
 indent_style = tab
 indent_size = 2
+
+[*.gradle.kts]
+indent_style = tab
+indent_size = 2

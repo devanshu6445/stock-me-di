@@ -9,7 +9,8 @@ val COMPONENT = ClassName(AnnotationPackageName, "Component")
 val INJECT = ClassName(AnnotationPackageName, "Inject")
 val Provides = ClassName(AnnotationPackageName, "Provides")
 val Scope = ClassName(AnnotationPackageName, "Scope")
-
-val ModuleProviderRegistry = ClassName(InternalPackage, "ModuleProvidersRegistry")
+val IntoMap = ClassName(AnnotationPackageName, "IntoMap")
 
 const val LazyName = "kotlin.Lazy"
+
+const val ViewModel = "androidx.lifecycle.ViewModel"

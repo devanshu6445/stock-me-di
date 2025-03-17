@@ -1,31 +1,35 @@
 import io.gitlab.arturbosch.detekt.Detekt
 
 plugins {
-    alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.kotlinMultiplatform) apply false
-    alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
-    alias(libs.plugins.stock.me.linter)
-    base
+	alias(libs.plugins.ksp) apply false
+	alias(libs.plugins.kotlinMultiplatform) apply false
+	alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
+	alias(libs.plugins.kotlin.android) apply false
+	alias(libs.plugins.androidLibrary) apply false
+	alias(libs.plugins.di.compiler) apply false
+	alias(libs.plugins.di.compiler.internal) apply false
+	alias(libs.plugins.stock.me.linter)
+	base
 }
 
 val testReport by tasks.registering(TestReport::class) {
-    destinationDirectory = layout.buildDirectory.map { it.asFile.resolve("reports") }
+	destinationDirectory = layout.buildDirectory.map { it.asFile.resolve("reports") }
 }
 
 val copyTestResults by tasks.registering(Copy::class) {
-    destinationDir = layout.buildDirectory.get().asFile.resolve("test-results")
-    includeEmptyDirs = false
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	destinationDir = layout.buildDirectory.get().asFile.resolve("test-results")
+	includeEmptyDirs = false
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 val testReportApple by tasks.registering(TestReport::class) {
-    destinationDirectory = layout.buildDirectory.map { it.asFile.resolve("reports") }
+	destinationDirectory = layout.buildDirectory.map { it.asFile.resolve("reports") }
 }
 
 val copyTestResultsApple by tasks.registering(Copy::class) {
-    destinationDir = layout.buildDirectory.get().asFile.resolve("test-results")
-    includeEmptyDirs = false
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	destinationDir = layout.buildDirectory.get().asFile.resolve("test-results")
+	includeEmptyDirs = false
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 val check: Task by tasks.getting
@@ -35,5 +39,9 @@ check.finalizedBy(testReport, copyTestResults)
 checkApple.finalizedBy(testReportApple, copyTestResultsApple)
 
 tasks.withType<Detekt> {
-    exclude("**/testData/**")
+	exclude("**/testData/**")
+}
+
+tasks.named("installGitHooks") {
+	enabled = false
 }

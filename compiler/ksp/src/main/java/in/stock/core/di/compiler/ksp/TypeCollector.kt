@@ -1,14 +1,11 @@
 package `in`.stock.core.di.compiler.ksp
 
-import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.asClassName
 import `in`.stock.core.di.compiler.core.Messenger
 import `in`.stock.core.di.compiler.core.XResolver
-import `in`.stock.core.di.compiler.ksp.exceptions.ClassConstructException
 import `in`.stock.core.di.compiler.ksp.ext.eqv
 import `in`.stock.core.di.compiler.ksp.ext.getAllFunctionExceptPrimitive
 import `in`.stock.core.di.compiler.ksp.ext.getArgument
@@ -29,139 +26,6 @@ class TypeCollector @Inject constructor(
 	private val resolver: XResolver,
 	private val messenger: Messenger
 ) {
-
-	private val typeToComponentMap = hashMapOf<String, List<KSClassDeclaration>>()
-
-	private val allProvidersMap by lazy {
-		resolver.getAllProviders().associate {
-			it.returnType?.resolve()?.declaration?.qualifiedName?.asString() to it.parentDeclaration
-		}
-	}
-
-	fun collectTypes(type: KSDeclaration): Sequence<KSClassDeclaration> {
-		return when (type) {
-			is KSClassDeclaration, is KSFunctionDeclaration -> {
-				val components = type.getComponents()
-					.distinctBy { it.qualifiedName?.asString() }
-
-				typeToComponentMap[type.qualifiedName?.asString().orEmpty()] = components.toList()
-				components
-			}
-
-			else -> {
-				TODO()
-			}
-		}
-	}
-
-	private fun KSDeclaration.getDependencies(): Sequence<KSDeclaration> {
-		val resolveParameters = when (this) {
-			is KSClassDeclaration -> {
-				getConstructors().flatMap { it.parameters }.map { it.type } + getAllProperties().filter {
-					it.hasAnnotation(
-						`in`.stock.core.di.runtime.annotations.Inject::class
-					)
-				}.map {
-					if (it.type.resolve().declaration.qualifiedName?.asString() == "kotlin.Lazy") {
-						it.type.resolve().arguments.first().type
-							?: messenger.fatalError(IllegalStateException("Generic type information not present for Lazy"), it)
-					} else {
-						it.type
-					}
-				}
-			}
-
-			is KSFunctionDeclaration -> {
-				parameters.map { it.type }.asSequence()
-			}
-
-			else -> {
-				messenger.fatalError(IllegalArgumentException("This type is not supported by @EntryPoint"), this)
-			}
-		}.map {
-			it.resolve().declaration
-		}
-		return resolveParameters + resolveParameters.flatMap { it.getDependencies() }
-	}
-
-	private fun KSDeclaration.getComponents(): Sequence<KSClassDeclaration> {
-		val types = getDependencies().distinctBy { it.qualifiedName?.asString() }
-
-		return sequence {
-			yield(
-				getArgument<KSType>(EntryPoint::class, name = ParentComponentProperty)
-					.declaration as KSClassDeclaration
-			)
-
-			yieldAll(
-				getArrayArgument<KSType>(annotation = EntryPoint::class, name = DependenciesProperty).map {
-					it.declaration as KSClassDeclaration
-				}
-			)
-
-			types.forEach {
-				when (it) {
-					is KSClassDeclaration -> {
-						when {
-							it.hasAnnotation(INJECT.packageName, INJECT.simpleName) -> {
-								val components = typeToComponentMap[qualifiedName?.asString().orEmpty()]
-
-								if (components != null) {
-									yieldAll(components)
-								} else {
-									val component =
-										it.annotations.firstOrNull { annotation ->
-											annotation.annotationType.resolve()
-												.declaration.hasAnnotation(Scope.packageName, Scope.simpleName)
-										}
-											// todo remove this `AssociatedWith` annotation dependency from codebase
-											?.annotationType?.resolve()?.declaration?.getAnnotationArgument(
-												AssociatedWith::class.qualifiedName.orEmpty()
-											) as? KSClassDeclaration?
-									if (component != null) {
-										yield(component)
-									}
-								}
-							}
-
-							allProvidersMap[it.qualifiedName?.asString()] != null -> {
-								yield(
-									allProvidersMap[it.qualifiedName?.asString()]
-										?.getAnnotationArgument(InstallIn::class.qualifiedName.orEmpty()) as KSClassDeclaration
-								)
-							}
-
-							else -> {
-								// todo improve logging information
-								messenger.fatalError(
-									ClassConstructException("Please mark the class with @Inject or provide it through @Provides"),
-									it
-								)
-							}
-						}
-					}
-
-					is KSFunctionDeclaration -> {
-						throw NotImplementedError()
-					}
-
-					else -> throw NotImplementedError()
-				}
-			}
-		}
-	}
-
-	fun collectEntryPointProviders(type: KSDeclaration): Sequence<KSClassDeclaration> {
-		return sequence {
-			resolver.getAllModuleProviders().associateBy { a -> a.qualifiedName?.asString() }.values.forEach { provider ->
-				if ((provider.getAnnotationNonNull(ModuleProvider::class).arguments.first().value as KSType)
-						.declaration.qualifiedName?.asString() == type.qualifiedName?.asString()
-				) {
-					yield(provider)
-				}
-			}
-		}
-	}
 
 	@Suppress("CyclomaticComplexMethod", "NestedBlockDepth")
 	fun findRequiredComponents(
@@ -206,19 +70,16 @@ class TypeCollector @Inject constructor(
 		when (rootNode) {
 			is KSClassDeclaration -> {
 				with(rootNode) {
-					(
-						getArrayArgument<KSType>(
-						annotation = EntryPoint::class,
-							name = DependenciesProperty
-					) + listOf(
-						getArgument(
-							EntryPoint::class,
-							ParentComponentProperty
-						)
-						)
-						).map { it.declaration as KSClassDeclaration }.forEach { comp ->
-						comp.gatherComponents()
-					}
+					val parentComponent = getArgument<KSType>(EntryPoint::class, ParentComponentProperty)
+
+					val allComponents = getArrayArgument<KSType>(annotation = EntryPoint::class, name = DependenciesProperty) +
+						listOf(parentComponent)
+
+					allComponents
+						.map { it.declaration as KSClassDeclaration }
+						.forEach { comp ->
+							comp.gatherComponents()
+						}
 
 					val dependencyToComponentMap = hashMapOf<String, KSClassDeclaration>()
 
@@ -305,6 +166,9 @@ class TypeCollector @Inject constructor(
 					val componentsSequence = sequence {
 						yieldAll(directlyRequiredComponents)
 						yieldAll(transitivelyRequiredComponents)
+
+						// always add the parent component even if it is not used in the component to maintain its hierarchy
+						yield(parentComponent.declaration as KSClassDeclaration)
 					}
 						.distinctBy { it.qualifiedName?.asString() }
 

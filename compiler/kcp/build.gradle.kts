@@ -17,6 +17,12 @@ gradlePlugin {
       implementationClass = "in.stock.core.di.kcp.DiGradlePlugin"
       version = project.version
     }
+
+    register("di-gradle-internal") {
+      id = "plugin.di.compiler.internal"
+      implementationClass = "in.stock.core.di.kcp.InternalDiPlugin"
+      version = project.version
+    }
   }
 }
 
