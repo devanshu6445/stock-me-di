@@ -87,6 +87,7 @@ class TypeCollector @Inject constructor(
 						findModules(entry.value).flatMap { module ->
 							module.getAllFunctionExceptPrimitive().map { func -> func.returnType!! }
 						}.forEach {
+							// TODO: Single dependency can be bound to multiple components, fix this
 							dependencyToComponentMap[it.resolve().declaration.qualifiedName?.asString().orEmpty()] = entry.value
 						}
 					}

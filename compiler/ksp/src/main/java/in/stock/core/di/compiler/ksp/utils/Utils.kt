@@ -128,6 +128,13 @@ fun KSAnnotated.hasAnnotation(packageName: String, simpleName: String): Boolean 
 	return annotations.any { it.hasName(packageName, simpleName) }
 }
 
+fun KSAnnotated.hasAnnotation(className: ClassName): Boolean {
+	return hasAnnotation(
+		packageName = className.packageName,
+		simpleName = className.simpleName
+	)
+}
+
 fun KSAnnotated.hasAnnotation(type: KClass<*>): Boolean {
 	val annotationClassName = type.asClassName()
 	return annotations.any {

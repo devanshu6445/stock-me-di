@@ -55,9 +55,11 @@ class ComponentGenerator @Inject constructor(
 						data.root.containingFile?.let { addOriginatingKSFile(it) }
 					}
 					.addAnnotation(COMPONENT)
-					.addAnnotations(data.root.annotations.filterNot {
+					.addAnnotations(
+					    data.root.annotations.filterNot {
 						it.annotationType.resolve().declaration.qualifiedName?.asString() == Component::class.qualifiedName
-					}.map { it.toAnnotationSpec() }.toList())
+					}.map { it.toAnnotationSpec() }.toList()
+					)
 					.superclass(data.root.toClassName())
 					.apply {
 						(data.parentComponents + data.dependencies).map {
@@ -116,7 +118,22 @@ class ComponentGenerator @Inject constructor(
 					"return %T::class.%T(${
 						buildString {
 							root.primaryConstructor?.parameters?.forEach {
-								append("${it.name?.asString()},")
+								val resolvedType = it.type.resolve()
+								
+								val needToAddTypeCast = resolvedType.declaration.hasAnnotation(Component::class)
+
+								val typeCastName =
+									if (needToAddTypeCast) {
+										if (resolvedType.declaration.qualifiedName?.asString() == SingletonComponent::class.qualifiedName) {
+											""
+										} else {
+											" as Generated${it.type.resolve().declaration.simpleName.asString()}"
+										}
+									} else {
+										""
+									}
+								
+								append("${it.name?.asString()}$typeCastName,")
 							}
 						}
 					})",
@@ -305,4 +322,5 @@ class ComponentGenerator @Inject constructor(
 
 		primaryConstructor(constructorBuilder.build())
 	}
+
 }
