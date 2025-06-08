@@ -9,6 +9,8 @@ plugins {
 	alias(libs.plugins.di.compiler) apply false
 	alias(libs.plugins.di.compiler.internal) apply false
 	alias(libs.plugins.stock.me.linter)
+	alias(libs.plugins.com.vanniktech.maven.publish) apply false
+	id("maven.publish") apply false
 	base
 }
 

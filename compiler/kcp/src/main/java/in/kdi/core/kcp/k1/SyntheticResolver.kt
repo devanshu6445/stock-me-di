@@ -67,7 +67,7 @@ open class SyntheticResolver : SyntheticResolveExtension {
 			classDescriptor,
 			Annotations.create(
 				listOf(
-					classDescriptor.getAnnotationDescriptor("in.stock.core.di.runtime.annotations.internals", "GeneratedByPlugin")
+					classDescriptor.getAnnotationDescriptor("in.kdi.runtime.annotations.internals", "GeneratedByPlugin")
 				)
 			),
 			false,
@@ -151,7 +151,7 @@ open class SyntheticResolver : SyntheticResolveExtension {
 		typeParameters: List<TypeParameterDescriptor>
 	): PropertyDescriptor {
 		val generatedByPluginAnnotation =
-			getAnnotationDescriptor("in.stock.core.di.runtime.annotations.internals", "GeneratedByPlugin")
+			getAnnotationDescriptor("in.kdi.runtime.annotations.internals", "GeneratedByPlugin")
 		val propertyDescriptor = PropertyDescriptorImpl.create(
 			this,
 			Annotations.create(

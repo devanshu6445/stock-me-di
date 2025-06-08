@@ -1,7 +1,7 @@
 package main
 
-import `in`.stock.core.di.runtime.annotations.EntryPoint
-import `in`.stock.core.di.runtime.annotations.Inject
+import `in`.kdi.runtime.annotations.EntryPoint
+import `in`.kdi.runtime.annotations.Inject
 
 @EntryPoint
 class EntryPointTest(val b: B) {

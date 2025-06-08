@@ -1,23 +1,23 @@
-import `in`.kdi.core.di.plugin.addAllKspTargets
-import kotlin.math.sign
+import `in`.kdi.plugin.addAllKspTargets
 
 plugins {
 	`maven-publish`
 	alias(libs.plugins.kotlinMultiplatform)
 	alias(libs.plugins.ksp)
-	alias(libs.plugins.com.vanniktech.maven.publish)
 	id("stock.me.di.merge-tests")
-	signing
+	id("maven.publish")
 }
+
+group = "in.bitzz"
+version = "0.0.1-SNAPSHOT"
 
 mavenPublishing {
 	// Define coordinates for the published artifact
 	coordinates(
-		groupId = "in.bitzz",
+		groupId = project.group.toString(),
 		artifactId = "di-runtime",
-		version = "0.0.1-SNAPSHOT"
+		version = project.version.toString()
 	)
-	signAllPublications()
 }
 
 kotlin {

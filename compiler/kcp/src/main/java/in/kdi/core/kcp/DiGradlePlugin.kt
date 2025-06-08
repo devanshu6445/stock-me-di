@@ -8,6 +8,10 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
+private const val DICompilerVersion = "1.0.0"
+private const val DIRuntimeVersion = "1.0.0"
+private const val KotlinInjectVersion = "0.7.1"
+
 class DiGradlePlugin : InternalDiPlugin() {
 
 	override fun apply(target: Project) {
@@ -19,22 +23,22 @@ class DiGradlePlugin : InternalDiPlugin() {
 			target.dependencies {
 				if (target.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
 					configureKspForMultiplatform(
-						dependencyNotation = "me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.1",
+						dependencyNotation = "me.tatarka.inject:kotlin-inject-compiler-ksp:$KotlinInjectVersion",
 						project = target
 					)
 
 					configureKspForMultiplatform(
-						dependencyNotation = "in.stock.me:di-compiler:1.0.0",
+						dependencyNotation = "in.bitzz:di-compiler:$DICompilerVersion",
 						project = target
 					)
 				} else {
-					add("ksp", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.1")
-					add("ksp", "in.stock.me:di-compiler:1.0.0")
+					add("ksp", "me.tatarka.inject:kotlin-inject-compiler-ksp:$KotlinInjectVersion")
+					add("ksp", "in.bitzz:di-compiler:$DICompilerVersion")
 				}
 
-				add("implementation", "me.tatarka.inject:kotlin-inject-runtime:0.7.1")
+				add("implementation", "me.tatarka.inject:kotlin-inject-runtime:$KotlinInjectVersion")
 
-				add("implementation", "in.stock.me:di-runtime:1.0.0")
+				add("implementation", "in.bitzz:di-runtime:$DIRuntimeVersion")
 			}
 		}
 	}

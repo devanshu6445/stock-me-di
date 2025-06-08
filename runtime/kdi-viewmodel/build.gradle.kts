@@ -6,7 +6,7 @@ plugins {
     `maven-publish`
 }
 
-group = "in.stock.me"
+group = "in.bitzz"
 version = "1.0.0"
 
 android {

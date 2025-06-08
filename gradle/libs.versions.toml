@@ -10,8 +10,9 @@ kotlinPoet = "2.1.0"
 kspTesting = "1.6.0"
 koTest = "5.7.2"
 stockMePublish = "1.0.0-SNAPSHOT"
-di-runtime = "1.0.0"
+di-runtime = "0.0.1-SNAPSHOT"
 di-compiler = "1.0.0-SNAPSHOT"
+di-core = "0.0.1-SNAPSHOT"
 di-compiler-plugin = "0.0.1"
 dagger = "2.55"
 kmp-convention = "1.0.0-SNAPSHOT"
@@ -48,8 +49,9 @@ ksp-testing = { group = "com.github.tschuchortdev", name = "kotlin-compile-testi
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler", version.ref = "kotlin" }
 
 # Core dependency
-di-runtime = { group = "in.stock.me", name = "di-runtime", version.ref = "di-runtime" }
-di-compiler = { group = "in.stock.me", name = "di-compiler", version.ref = "di-compiler" }
+di-runtime = { group = "in.bitzz", name = "di-runtime", version.ref = "di-runtime" }
+di-compiler = { group = "in.bitzz", name = "di-compiler", version.ref = "di-compiler" }
+di-core = { group = "in.bitzz", name = "di-core", version.ref = "di-core" }
 
 # Dagger
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }

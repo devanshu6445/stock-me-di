@@ -1,8 +1,8 @@
 package `in`.kdi.core.di.kcp
 
-import `in`.kdi.core.di.compiler.core.test.Function
-import `in`.stock.core.di.compiler.core.test.ProjectCompiler
-import `in`.stock.core.di.compiler.ksp.DIProcessor
+import `in`.kdi.compiler.core.test.Function
+import `in`.kdi.compiler.core.test.ProjectCompiler
+import `in`.kdi.compiler.ksp.DIProcessor
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.engine.spec.tempdir
 import me.tatarka.inject.compiler.ksp.InjectProcessorProvider

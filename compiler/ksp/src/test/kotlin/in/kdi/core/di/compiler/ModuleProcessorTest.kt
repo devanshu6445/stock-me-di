@@ -4,7 +4,7 @@ package `in`.kdi.core.di.compiler
 
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.tschuchort.compiletesting.*
-import `in`.stock.core.di.compiler.ksp.DIProcessor
+import `in`.kdi.compiler.ksp.DIProcessor
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -18,7 +18,7 @@ class ModuleProcessorTest : FreeSpec({
         """
             package main
 
-            import `in`.stock.core.di.runtime.Module
+            import `in`.kdi.runtime.Module
 
             @Module            
             class HttpClient 

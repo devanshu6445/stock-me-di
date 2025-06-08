@@ -9,9 +9,9 @@ object FqNames {
   private const val KotlinInject = "$KotlinInjectAnnotationPackageName.Inject"
 
   private fun classIdFor(cname: String) =
-    ClassId(FqName("in.stock.core.di.runtime.annotations"), Name.identifier(cname))
+    ClassId(FqName("in.kdi.runtime.annotations"), Name.identifier(cname))
 
-  val EntryPoint = FqName("in.stock.core.di.runtime.annotations.EntryPoint")
+  val EntryPoint = FqName("in.kdi.runtime.annotations.EntryPoint")
 
   val EntryPointClassId = classIdFor("EntryPoint")
 

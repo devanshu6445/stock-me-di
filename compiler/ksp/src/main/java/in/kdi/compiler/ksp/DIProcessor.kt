@@ -1,0 +1,143 @@
+package `in`.kdi.compiler.ksp
+
+import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
+import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import `in`.kdi.compiler.core.XProcessingStepVoid
+import `in`.kdi.compiler.core.XRoundEnv
+import `in`.kdi.compiler.core.exceptions.ValidationException
+import `in`.kdi.compiler.core.ksp.KspBaseProcessor
+import `in`.kdi.compiler.ksp.data.ModuleInfo
+import `in`.kdi.compiler.ksp.data.ModuleProviderResult
+import `in`.kdi.compiler.ksp.di.DaggerCompilerComponent
+import `in`.kdi.compiler.ksp.di.ProcessorMapper
+import `in`.kdi.compiler.ksp.steps.ComponentProcessingStep
+import `in`.kdi.compiler.ksp.steps.ModuleProviderAggregationStep
+import `in`.kdi.compiler.ksp.steps.RetrieverAggregationStep
+import `in`.kdi.compiler.ksp.utils.getSymbolsWithClassAnnotation
+import `in`.kdi.runtime.annotations.Component
+import `in`.kdi.runtime.annotations.EntryPoint
+import `in`.kdi.runtime.annotations.Module
+import `in`.kdi.runtime.annotations.Retriever
+import `in`.kdi.runtime.annotations.internals.ModuleProvider
+import javax.inject.Inject
+
+class DIProcessor(
+	environment: SymbolProcessorEnvironment
+) : KspBaseProcessor(environment) {
+
+	private val currentRoundModules = mutableListOf<Pair<ModuleInfo, ModuleProviderResult>>() // todo change to sequence
+
+	private val allGeneratedModule = mutableSetOf<Pair<ModuleInfo, ModuleProviderResult>>()
+
+	@Inject
+	lateinit var entryPointGenerator: XProcessingStepVoid<KSDeclaration, Unit>
+
+	@Inject
+	lateinit var moduleProcessingStep: XProcessingStepVoid<KSClassDeclaration, Pair<ModuleInfo, ModuleProviderResult>>
+
+	@Inject
+	lateinit var componentProcessingStep: ComponentProcessingStep
+
+	@Inject
+	lateinit var aggregationStep: RetrieverAggregationStep
+
+	@Inject
+	lateinit var moduleProviderAggregationStep: ModuleProviderAggregationStep
+
+	override val annotations: List<String>
+		get() = listOf(
+			Module::class.qualifiedName.orEmpty(),
+			Component::class.qualifiedName.orEmpty(),
+			EntryPoint::class.qualifiedName.orEmpty()
+		)
+
+	override fun preRound(xRoundEnv: XRoundEnv) {
+		ProcessorMapper(
+			DaggerCompilerComponent.factory().create(
+				xRoundEnv = xRoundEnv
+			),
+			this
+		).injectProcessors()
+	}
+
+	override fun processSymbol(xRoundEnv: XRoundEnv, symbol: KSAnnotated, annotationFullName: String): Boolean {
+		val isProcessed = when (annotationFullName) {
+			Module::class.qualifiedName -> {
+				try {
+					currentRoundModules.add(moduleProcessingStep.process(symbol as KSClassDeclaration))
+					true
+				} catch (e: FileAlreadyExistsException) {
+					xRoundEnv.xEnv.messenger.warn(e.localizedMessage, symbol)
+					false
+				}
+			}
+
+			Component::class.qualifiedName -> {
+				if (symbol as? KSClassDeclaration == null) return false
+
+				try {
+					componentProcessingStep.process(
+						node = symbol,
+						data = ComponentProcessingStep.Params(
+							generatedModules = allGeneratedModule.toList()
+						)
+					)
+					true
+				} catch (e: ValidationException) {
+					xEnv.messenger.error(e.message.toString(), symbol)
+					false
+				} catch (e: FileAlreadyExistsException) {
+					true
+				} catch (e: Exception) {
+					throw e
+				}
+			}
+
+			EntryPoint::class.qualifiedName -> {
+				if (currentRoundModules.isEmpty()) {
+					entryPointGenerator.process(symbol as KSDeclaration)
+					true
+				} else {
+					false
+				}
+			}
+
+			else -> {
+				false
+			}
+		}
+
+		allGeneratedModule.addAll(currentRoundModules)
+
+		return isProcessed
+	}
+
+	override fun postRound(xRoundEnv: XRoundEnv) {
+		currentRoundModules.clear()
+	}
+
+	override fun finish() {
+		super.finish()
+		// aggregate all the retriever for the next round of compilation
+		xEnv.resolver
+			.getSymbolsWithClassAnnotation(Retriever::class)
+			.forEach(aggregationStep::process)
+
+		// aggregate all the ModuleProvider for the next round of compilation
+		xEnv.resolver
+			.getSymbolsWithClassAnnotation(ModuleProvider::class)
+			.forEach(moduleProviderAggregationStep::process)
+	}
+
+	class Provider : SymbolProcessorProvider {
+		override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
+			return DIProcessor(
+				environment = environment,
+			)
+		}
+	}
+}

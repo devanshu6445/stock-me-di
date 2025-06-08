@@ -8,11 +8,11 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
-const val GroupId = "in.stock.me"
+const val GroupId = "in.bitzz"
 const val ArtifactId = "di-kotlin-compiler"
 const val PluginVersion = "1.0.0"
 
-const val CompilerPluginId = "stock-me-di-compiler"
+const val CompilerPluginId = "kdi-compiler"
 
 open class InternalDiPlugin : KotlinCompilerPluginSupportPlugin {
 

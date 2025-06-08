@@ -90,7 +90,7 @@ abstract class AbstractTransformerForGenerator : IrElementTransformerVoid() {
 			origin is IrDeclarationOrigin.GeneratedByPlugin && keys.any { it == origin.pluginKey }
 		} else {
 			(descriptor as? CallableMemberDescriptor)?.kind == CallableMemberDescriptor.Kind.SYNTHESIZED && hasAnnotation(
-				FqName("in.stock.core.di.runtime.annotations.internals.GeneratedByPlugin")
+				FqName("in.kdi.runtime.annotations.internals.GeneratedByPlugin")
 			)
 		}
 	}

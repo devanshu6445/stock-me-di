@@ -1,8 +1,8 @@
 package main
 
-import `in`.stock.core.di.runtime.annotations.Retriever
-import `in`.stock.core.di.runtime.annotations.Component
-import `in`.stock.core.di.runtime.SingletonComponent
+import `in`.kdi.runtime.annotations.Retriever
+import `in`.kdi.runtime.annotations.Component
+import `in`.kdi.runtime.SingletonComponent
 
 @Component
 abstract class Comp1(

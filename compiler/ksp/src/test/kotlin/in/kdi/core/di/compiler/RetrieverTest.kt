@@ -1,8 +1,8 @@
 package `in`.kdi.core.di.compiler
 
-import `in`.stock.core.di.compiler.core.test.Function
-import `in`.stock.core.di.compiler.core.test.ProjectCompiler
-import `in`.stock.core.di.compiler.ksp.DIProcessor
+import `in`.kdi.compiler.core.test.Function
+import `in`.kdi.compiler.core.test.ProjectCompiler
+import `in`.kdi.compiler.ksp.DIProcessor
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.core.spec.style.FreeSpec
 import me.tatarka.inject.compiler.ksp.InjectProcessorProvider
