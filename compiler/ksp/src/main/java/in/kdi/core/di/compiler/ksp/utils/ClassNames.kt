@@ -1,0 +1,16 @@
+package `in`.kdi.core.di.compiler.ksp.utils
+
+import com.squareup.kotlinpoet.ClassName
+
+private const val AnnotationPackageName = "me.tatarka.inject.annotations"
+const val InternalPackage = "in.stock.core.di.internal"
+
+val COMPONENT = ClassName(AnnotationPackageName, "Component")
+val INJECT = ClassName(AnnotationPackageName, "Inject")
+val Provides = ClassName(AnnotationPackageName, "Provides")
+val Scope = ClassName(AnnotationPackageName, "Scope")
+val IntoMap = ClassName(AnnotationPackageName, "IntoMap")
+
+const val LazyName = "kotlin.Lazy"
+
+const val ViewModel = "androidx.lifecycle.ViewModel"

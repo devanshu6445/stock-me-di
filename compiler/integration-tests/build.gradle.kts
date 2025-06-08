@@ -1,4 +1,4 @@
-import `in`.stock.core.di.plugin.dependsOn
+import `in`.kdi.core.di.plugin.dependsOn
 
 plugins {
   alias(libs.plugins.org.jetbrains.kotlin.jvm)

@@ -1,6 +1,7 @@
 .gradle
 local.properties
 /build
+private.gpg
 
 /.idea/*
 !/.idea/codeStyles

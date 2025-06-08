@@ -11,7 +11,8 @@ kspTesting = "1.6.0"
 koTest = "5.7.2"
 stockMePublish = "1.0.0-SNAPSHOT"
 di-runtime = "1.0.0"
-di-compiler = "1.0.0"
+di-compiler = "1.0.0-SNAPSHOT"
+di-compiler-plugin = "0.0.1"
 dagger = "2.55"
 kmp-convention = "1.0.0-SNAPSHOT"
 stockMeLinter = "1.0.0-SNAPSHOT"
@@ -68,8 +69,8 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 stock-me-publish = { id = "in.stock.me.publish", version.ref = "stockMePublish" }
 kmp-convention = { id = "plugin.kmp.convention", version.ref = "kmp-convention" }
-di-compiler = { id = "plugin.di.compiler", version.ref = "di-compiler" }
-di-compiler-internal = { id = "plugin.di.compiler.internal", version.ref = "di-compiler" }
+di-compiler = { id = "in.bitzz.kdi.compiler", version.ref = "di-compiler-plugin" }
+di-compiler-internal = { id = "in.bitzz.kdi.compiler.internal", version.ref = "di-compiler-plugin" }
 stock-me-linter = { id = "in.stock.me.linter", version.ref = "stockMeLinter" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 com-vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "com-vanniktech-maven-publish" }
