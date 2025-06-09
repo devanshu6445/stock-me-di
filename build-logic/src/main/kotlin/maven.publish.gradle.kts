@@ -41,18 +41,18 @@ mavenPublishing {
 	signAllPublications()
 }
 
-//signing {
+// signing {
 //
-//	val privateKeyFile = project.findProperty("signing.privateKeyFile") as? String
-//		?: error("No Private key file found")
-//	val passphrase = project.findProperty("signing.password") as? String
-//		?: error("No Passphrase found for signing")
+// 	val privateKeyFile = project.findProperty("signing.privateKeyFile") as? String
+// 		?: error("No Private key file found")
+// 	val passphrase = project.findProperty("signing.password") as? String
+// 		?: error("No Passphrase found for signing")
 //
-//	// Read the private key from the file
-//	val privateKey = File(privateKeyFile).readText(Charsets.UTF_8)
+// 	// Read the private key from the file
+// 	val privateKey = File(privateKeyFile).readText(Charsets.UTF_8)
 //
-//	useInMemoryPgpKeys(privateKey, passphrase)
-//	publishing.publications.all {
-//		sign(this)
-//	}
-//}
+// 	useInMemoryPgpKeys(privateKey, passphrase)
+// 	publishing.publications.all {
+// 		sign(this)
+// 	}
+// }

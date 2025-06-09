@@ -12,14 +12,14 @@ tasks.withType<Test> {
   useJUnitPlatform()
 }
 // Adding kotlin compiler plugin tp the build, doing this instead of using gradle plugin to not publish compiler
-// plugin artifact o maven/mavenLocal to reflect the changes
+// plugin artifact to maven/mavenLocal to reflect the changes
 kotlin {
   compilerOptions {
 //        languageVersion.set(KotlinVersion.KOTLIN_2_0)
 
     freeCompilerArgs.addAll(
       listOf(
-        "-Xdump-directory=$buildDir/ir-dump/",
+        "-Xdump-directory=${project.layout.buildDirectory}/ir-dump/",
       )
     )
   }

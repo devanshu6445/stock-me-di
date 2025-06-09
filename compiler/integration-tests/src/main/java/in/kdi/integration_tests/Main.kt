@@ -40,14 +40,14 @@ annotation class SampleScope
 @SampleScope
 object SampleModule {
 
+	// 	@Named("one")
 	@IntoSet
 	@Provides
-//	@Named("one")
 	fun provideVMMap(): Foo = Foo()
 
+	// 	@Named("one")
 	@IntoSet
 	@Provides
-//	@Named("one")
 	fun provideVMMap1(): Foo = Foo()
 }
 

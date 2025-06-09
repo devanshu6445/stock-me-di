@@ -3,6 +3,8 @@ package `in`.kdi.core.di.kcp
 import `in`.kdi.compiler.core.test.Function
 import `in`.kdi.compiler.core.test.ProjectCompiler
 import `in`.kdi.compiler.ksp.DIProcessor
+import `in`.kdi.core.kcp.DiCommandLineProcessor
+import `in`.kdi.core.kcp.DiComponentRegistrar
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.engine.spec.tempdir
 import me.tatarka.inject.compiler.ksp.InjectProcessorProvider
@@ -30,7 +32,7 @@ class EntryPointIrGeneratorTest : BehaviorSpec({
 					fileName = "src/testData/secondary_constructor_test.kt",
 				).compile().apply {
 					runStaticFunction(
-						`in`.kdi.core.di.compiler.core.test.Function(
+						Function(
 							className = "main.Secondary_constructor_testKt",
 							functionName = "main",
 							args = emptyList()

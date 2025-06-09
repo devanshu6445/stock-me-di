@@ -59,16 +59,17 @@ data class ComponentInfo(
 			}
 		}
 
-
 		modulesProvider.filter {
 			// check whether this Module Provider is installed/created for any of the parent components or
 			// for this component(For which we are generating this component) itself
 			val installIn = it.installingComponent.toClassName().canonicalName
 			val installingComponentArgs = arguments[installIn]
 
-			root.qualifiedName?.asString() == installIn || (parentComponents.contains(installIn) && installingComponentArgs?.contains(
+			root.qualifiedName?.asString() == installIn || (
+			    parentComponents.contains(installIn) && installingComponentArgs?.contains(
 				it.name
-			) == false)
+			) == false
+			)
 		}.map { it.name }
 	}
 }

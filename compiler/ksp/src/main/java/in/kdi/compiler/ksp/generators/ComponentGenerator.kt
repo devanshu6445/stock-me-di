@@ -322,5 +322,4 @@ class ComponentGenerator @Inject constructor(
 
 		primaryConstructor(constructorBuilder.build())
 	}
-
 }
