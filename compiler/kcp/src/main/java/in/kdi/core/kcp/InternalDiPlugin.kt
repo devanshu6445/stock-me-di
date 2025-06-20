@@ -9,8 +9,8 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 const val GroupId = "in.bitzz"
-const val ArtifactId = "di-kotlin-compiler"
-const val PluginVersion = "1.0.0"
+const val ArtifactId = "kdi-compiler-kcp"
+const val PluginVersion = "0.0.2"
 
 const val CompilerPluginId = "kdi-compiler"
 

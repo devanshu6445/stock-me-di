@@ -4,6 +4,7 @@ plugins {
 	`maven-publish`
 	alias(libs.plugins.kotlinMultiplatform)
 	alias(libs.plugins.ksp)
+	alias(libs.plugins.di.compiler.internal)
 	id("stock.me.di.merge-tests")
 	id("maven.publish")
 }
@@ -49,5 +50,10 @@ dependencies {
 	addAllKspTargets(
 		kotlin = kotlin,
 		dependencyNotation = libs.kotlin.inject.compiler
+	)
+
+	addAllKspTargets(
+		kotlin = kotlin,
+		dependencyNotation = libs.di.compiler,
 	)
 }

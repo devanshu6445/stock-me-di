@@ -17,19 +17,19 @@ annotation class Singleton
  * The main application component. Use [getInstance] to ensure the same instance is shared.
  */
 @Component
-@`in`.kdi.runtime.Singleton
+@Singleton
 abstract class SingletonComponent {
     companion object {
-        private var instance: `in`.kdi.runtime.SingletonComponent? = null
+        private var instance: SingletonComponent? = null
 
         /**
          * Get a singleton instance of [SingletonComponent].
          */
-        fun getInstance(): `in`.kdi.runtime.SingletonComponent = `in`.kdi.runtime.SingletonComponent.Companion.instance
-            ?: `in`.kdi.runtime.createSingletonComponent()
-                .also { `in`.kdi.runtime.SingletonComponent.Companion.instance = it }
+        fun getInstance(): SingletonComponent = instance
+            ?: createSingletonComponent()
+                .also { instance = it }
     }
 }
 
 @KmpComponentCreate
-expect fun createSingletonComponent(): `in`.kdi.runtime.SingletonComponent
+expect fun createSingletonComponent(): SingletonComponent

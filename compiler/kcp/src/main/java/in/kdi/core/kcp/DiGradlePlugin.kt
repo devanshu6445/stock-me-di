@@ -8,9 +8,9 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
-private const val DICompilerVersion = "1.0.0"
-private const val DIRuntimeVersion = "1.0.0"
-private const val KotlinInjectVersion = "0.7.1"
+private const val DICompilerVersion = "0.0.1-SNAPSHOT"
+private const val DIRuntimeVersion = "0.0.1-SNAPSHOT"
+private const val KotlinInjectVersion = "0.8.0"
 
 class DiGradlePlugin : InternalDiPlugin() {
 
