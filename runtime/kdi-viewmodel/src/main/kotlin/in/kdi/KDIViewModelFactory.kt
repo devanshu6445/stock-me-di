@@ -3,7 +3,7 @@ package `in`.kdi
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import `in`.stock.core.di.runtime.RetrieverGetter
+import `in`.kdi.runtime.RetrieverGetter
 
 @Suppress("UNCHECKED_CAST")
 class KDIViewModelFactory(

@@ -1,11 +1,11 @@
 package `in`.kdi
 
 import androidx.lifecycle.ViewModel
-import `in`.stock.core.di.runtime.android.ActivityComponent
-import `in`.stock.core.di.runtime.android.ActivityRetainedComponent
-import `in`.stock.core.di.runtime.annotations.Component
-import `in`.stock.core.di.runtime.annotations.Retriever
-import `in`.stock.core.di.runtime.components.Provider
+import `in`.kdi.runtime.android.ActivityComponent
+import `in`.kdi.runtime.android.ActivityRetainedComponent
+import `in`.kdi.runtime.annotations.Component
+import `in`.kdi.runtime.annotations.Retriever
+import `in`.kdi.runtime.components.Provider
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
 import kotlin.reflect.KClass

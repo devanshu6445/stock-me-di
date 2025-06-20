@@ -1,23 +1,23 @@
-@file:OptIn(KspExperimental::class)
-
-import com.google.devtools.ksp.KspExperimental
-import `in`.stock.core.di.plugin.addAllKspTargets
+import `in`.kdi.plugin.addAllKspTargets
 
 plugins {
+	`maven-publish`
 	alias(libs.plugins.kotlinMultiplatform)
 	alias(libs.plugins.ksp)
-	alias(libs.plugins.com.vanniktech.maven.publish)
+	alias(libs.plugins.di.compiler.internal)
 	id("stock.me.di.merge-tests")
 	id("maven.publish")
-	signing
 }
+
+group = "in.bitzz"
+version = "0.0.1-SNAPSHOT"
 
 mavenPublishing {
 	// Define coordinates for the published artifact
 	coordinates(
-		groupId = "in.bitzz",
+		groupId = project.group.toString(),
 		artifactId = "di-runtime",
-		version = "0.0.1-SNAPSHOT"
+		version = project.version.toString()
 	)
 }
 
@@ -50,5 +50,10 @@ dependencies {
 	addAllKspTargets(
 		kotlin = kotlin,
 		dependencyNotation = libs.kotlin.inject.compiler
+	)
+
+	addAllKspTargets(
+		kotlin = kotlin,
+		dependencyNotation = libs.di.compiler,
 	)
 }

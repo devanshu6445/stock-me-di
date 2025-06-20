@@ -1,5 +1,0 @@
-package `in`.stock.core.di.runtime.annotations
-
-@Target(AnnotationTarget.CLASS, AnnotationTarget.VALUE_PARAMETER)
-@Retention(AnnotationRetention.BINARY)
-annotation class Component

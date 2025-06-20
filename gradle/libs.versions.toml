@@ -4,14 +4,16 @@ autoService = "1.0-rc4"
 coreKtx = "1.15.0"
 kotlin = "2.1.10"
 ksp = "2.1.10-1.0.30"
-kotlin-inject = "0.7.3-SNAPSHOT"
+kotlin-inject = "0.8.0"
 detekt = "1.23.4"
 kotlinPoet = "2.1.0"
 kspTesting = "1.6.0"
 koTest = "5.7.2"
 stockMePublish = "1.0.0-SNAPSHOT"
-di-runtime = "1.0.0"
-di-compiler = "1.0.0"
+di-runtime = "0.0.1-SNAPSHOT"
+di-compiler = "0.0.1-SNAPSHOT"
+di-core = "0.0.1-SNAPSHOT"
+di-compiler-plugin = "0.0.2"
 dagger = "2.55"
 kmp-convention = "1.0.0-SNAPSHOT"
 stockMeLinter = "1.0.0-SNAPSHOT"
@@ -47,8 +49,9 @@ ksp-testing = { group = "com.github.tschuchortdev", name = "kotlin-compile-testi
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler", version.ref = "kotlin" }
 
 # Core dependency
-di-runtime = { group = "in.stock.me", name = "di-runtime", version.ref = "di-runtime" }
-di-compiler = { group = "in.stock.me", name = "di-compiler", version.ref = "di-compiler" }
+di-runtime = { group = "in.bitzz", name = "di-runtime", version.ref = "di-runtime" }
+di-compiler = { group = "in.bitzz", name = "di-compiler", version.ref = "di-compiler" }
+di-core = { group = "in.bitzz", name = "di-core", version.ref = "di-core" }
 
 # Dagger
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
@@ -68,8 +71,8 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 stock-me-publish = { id = "in.stock.me.publish", version.ref = "stockMePublish" }
 kmp-convention = { id = "plugin.kmp.convention", version.ref = "kmp-convention" }
-di-compiler = { id = "plugin.di.compiler", version.ref = "di-compiler" }
-di-compiler-internal = { id = "plugin.di.compiler.internal", version.ref = "di-compiler" }
+di-compiler = { id = "in.bitzz.kdi.compiler", version.ref = "di-compiler-plugin" }
+di-compiler-internal = { id = "in.bitzz.kdi.compiler.internal", version.ref = "di-compiler-plugin" }
 stock-me-linter = { id = "in.stock.me.linter", version.ref = "stockMeLinter" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 com-vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "com-vanniktech-maven-publish" }

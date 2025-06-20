@@ -2,19 +2,20 @@ plugins {
   `maven-publish`
   alias(libs.plugins.org.jetbrains.kotlin.jvm)
   alias(libs.plugins.ksp)
+	alias(libs.plugins.com.vanniktech.maven.publish)
   id("stock.me.di.merge-tests")
+	id("maven.publish")
 }
 
-group = "in.stock.me"
-version = "1.0.0"
+group = "in.bitzz"
+version = "0.0.1-SNAPSHOT"
 
-publishing {
-  publications {
-    create<MavenPublication>("maven") {
-      artifactId = "di-core"
-      from(components["kotlin"])
-    }
-  }
+mavenPublishing {
+	coordinates(
+		groupId = project.group.toString(),
+		artifactId = "di-core",
+		version = project.version.toString()
+	)
 }
 
 dependencies {

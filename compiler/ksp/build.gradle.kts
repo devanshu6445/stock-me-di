@@ -3,18 +3,18 @@ plugins {
   `maven-publish`
   alias(libs.plugins.ksp)
   id("stock.me.di.merge-tests")
+	id("maven.publish")
 }
 
-group = "in.stock.me"
-version = "1.0.0"
+group = "in.bitzz"
+version = "0.0.1-SNAPSHOT"
 
-publishing {
-  publications {
-    create<MavenPublication>("maven") {
-      artifactId = "di-compiler"
-      from(components["kotlin"])
-    }
-  }
+mavenPublishing {
+	coordinates(
+		groupId = project.group.toString(),
+		artifactId = "di-compiler",
+		version = project.version.toString()
+	)
 }
 
 tasks.withType<Test> {
@@ -28,7 +28,7 @@ kotlin {
 dependencies {
   implementation(libs.di.runtime)
   ksp(libs.dagger.compiler)
-  implementation("in.stock.me:di-core:${project.version}")
+  implementation(libs.di.core)
   implementation(libs.adriankuta.tree.structure)
 
   testImplementation(libs.ksp.testing)
